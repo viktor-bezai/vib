@@ -1,35 +1,69 @@
+from xml.etree.ElementTree import ParseError
+from drf_yasg import openapi
+from django.conf import settings
+from drf_yasg.utils import swagger_auto_schema
 from googleapiclient.discovery import build
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 
-# Replace with your own API key
-api_key = "AIzaSyClgw5F0_jP5D9xU2mwXyoG4F78MHi885w"
-youtube = build('youtube', 'v3', developerKey=api_key)
+from backend.search.serializers.search_serializer import SearchVideoSerializer, SearchSerializer
+from backend.youtube.adapters.youtube_search_adapter import YouTubeSearchAdapter
 
 
-def search_videos(query):
-    request = youtube.search().list(
-        part="snippet",
-        maxResults=5,  # Number of results to fetch
-        q=query,
-        type="video"
+class SearchView(APIView):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'next_page_token',
+                openapi.IN_QUERY,
+                description="Token for getting next page",
+                type=openapi.TYPE_STRING,
+                required=False
+            ),
+        ]
     )
-    response = request.execute()
+    def get(self, request, query):
+        next_page_token = request.query_params.get('next_page_token')
 
-    videos = []
-    for item in response['items']:
-        video_data = {
-            'title': item['snippet']['title'],
-            'description': item['snippet']['description'],
-            'video_url': f"https://www.youtube.com/watch?v={item['id']['videoId']}"
+        youtube_search_adapter = YouTubeSearchAdapter()
+        youtube_search_dto = youtube_search_adapter.search(query=query, next_page_token=next_page_token)
+
+        results = []
+        for youtube_video in youtube_search_dto.items:
+            timestamped_url = self._get_timestamped_url(youtube_video.id.video_id, query)
+            if timestamped_url:
+                timestamped_video = {
+                    "channel_id": youtube_video.snippet.channel_id,
+                    "channel_title": youtube_video.snippet.channel_title,
+                    "title": youtube_video.snippet.title,
+                    "timestamped_url": timestamped_url,
+                }
+                search_video_serializer = SearchVideoSerializer(data=timestamped_video)
+                results.append(timestamped_video)
+
+        search = {
+            "videos": results,
+            "next_page_token": youtube_search_dto.next_page_token,
         }
-        videos.append(video_data)
+        search_serializer = SearchSerializer(data=search)
+        search_serializer.is_valid(raise_exception=True)
 
-    return videos
+        return Response(search_serializer.data, status=status.HTTP_200_OK)
 
+    def _get_timestamped_url(self, video_id, word):
+        try:
+            transcript = YouTubeTranscriptApi.get_transcript(video_id)
+            for entry in transcript:
+                if word.lower() in entry['text'].lower():
+                    timestamp = int(entry['start'])
+                    return f"https://www.youtube.com/watch?v={video_id}&t={timestamp}s"
+        except NoTranscriptFound:
+            return None
+        except TranscriptsDisabled:
+            return None
+        except ParseError:
+            return None
 
-# Example usage
-keyword = "Python programming tutorials"
-videos = search_videos(keyword)
-for idx, video in enumerate(videos):
-    print(f"{idx + 1}. Title: {video['title']}")
-    print(f"   Description: {video['description']}")
-    print(f"   URL: {video['video_url']}\n")
+        return None
