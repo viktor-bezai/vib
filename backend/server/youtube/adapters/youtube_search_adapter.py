@@ -1,6 +1,6 @@
-from backend.youtube.apis.youtube_search_api import YoutubeSearchAPI
-from backend.youtube.assemblers.youtube_search_assembler import YouTubeSearchAssembler
-from backend.youtube.dtos.youtube_search_dto import YouTubeSearchDTO
+from server.youtube.api.youtube_search_api import YoutubeSearchAPI
+from server.youtube.assemblers.youtube_search_assembler import YouTubeSearchAssembler
+from server.youtube.dtos.youtube_search_dto import YouTubeSearchDTO
 
 
 class YouTubeSearchAdapter:

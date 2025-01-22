@@ -1,5 +1,5 @@
-from backend.youtube.assemblers.youtube_list_videos_assembler import YouTubeListVideosAssembler
-from backend.youtube.dtos.youtube_search_dto import YouTubeSearchDTO, YouTubeSearchPageInfoDTO
+from server.youtube.assemblers.youtube_list_videos_assembler import YouTubeListVideosAssembler
+from server.youtube.dtos.youtube_search_dto import YouTubeSearchDTO, YouTubeSearchPageInfoDTO
 
 
 class YouTubeSearchAssembler(object):

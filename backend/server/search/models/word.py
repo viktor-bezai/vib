@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.video.models.video import Video
+from server.video.models import Video
 
 
 class Word(models.Model):

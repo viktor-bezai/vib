@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from backend.youtube.dtos.youtube_video_dto import YouTubeVideoDto
+from server.youtube.dtos.youtube_video_dto import YouTubeVideoDto
 
 
 @dataclass

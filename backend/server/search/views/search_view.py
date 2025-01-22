@@ -1,15 +1,13 @@
 from xml.etree.ElementTree import ParseError
 from drf_yasg import openapi
-from django.conf import settings
 from drf_yasg.utils import swagger_auto_schema
-from googleapiclient.discovery import build
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 
-from backend.search.serializers.search_serializer import SearchVideoSerializer, SearchSerializer
-from backend.youtube.adapters.youtube_search_adapter import YouTubeSearchAdapter
+from server.search.serializers.search_serializer import SearchVideoSerializer, SearchSerializer
+from server.youtube.adapters.youtube_search_adapter import YouTubeSearchAdapter
 
 
 class SearchView(APIView):

@@ -1,4 +1,4 @@
-from backend.youtube.dtos.youtube_video_dto import YouTubeVideoDto, YouTubeVideoIdDto, YouTubeVideoSnippetDto
+from server.youtube.dtos.youtube_video_dto import YouTubeVideoDto, YouTubeVideoIdDto, YouTubeVideoSnippetDto
 
 
 class YouTubeVideoAssembler(object):

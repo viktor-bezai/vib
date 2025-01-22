@@ -1,4 +1,4 @@
-from backend.youtube.apis.youtube_authentication_api import YouTubeAuthenticationAPI
+from server.youtube.api.youtube_authentication_api import YouTubeAuthenticationAPI
 
 
 class YoutubeSearchAPI(YouTubeAuthenticationAPI):
