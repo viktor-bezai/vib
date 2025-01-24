@@ -13,3 +13,8 @@ class YoutubeWord(models.Model):
     language = models.CharField(max_length=3, choices=LANGUAGE_CHOICES, default=ENGLISH)
     timestamped_url = models.CharField(max_length=500)
     video = models.ForeignKey(YoutubeVideo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.word
+    class Meta:
+        db_table = 'youtube_word'

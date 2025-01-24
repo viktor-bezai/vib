@@ -6,3 +6,4 @@ from server.youtube.models import YoutubeWord
 class YoutubeWordResponseSerializer(serializers.ModelSerializer):
     class Meta:
         model = YoutubeWord
+        fields = '__all__'

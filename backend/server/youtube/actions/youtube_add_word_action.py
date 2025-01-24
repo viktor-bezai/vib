@@ -12,11 +12,11 @@ class YoutubeAddWordAction:
     def __init__(self):
         self.youtube_search_adapter = YouTubeSearchAdapter()
 
-    def execute(self, request, youtube_word: str) -> None:
+    def execute(self, youtube_word: str) -> None:
         """
         Search YouTube for videos containing the given word and associate them with timestamped URLs.
         """
-        next_page_token = request.query_params.get("next_page_token")
+        next_page_token = None
         while True:
             youtube_search_dto = self.youtube_search_adapter.search(youtube_word=youtube_word, next_page_token=next_page_token)
 

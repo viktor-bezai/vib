@@ -1,2 +1,1 @@
-from .search.models import *  # noqa
-from server.youtube.models import *  # noqa
+from .youtube.models import *  # noqa

@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 
+from server.youtube.actions.youtube_add_word_action import YoutubeAddWordAction
 from server.youtube.adapters.youtube_search_adapter import YouTubeSearchAdapter
 from server.youtube.models import YoutubeWord
 from server.youtube.serializers.youtube_word_request_serializer import YoutubeWordRequestSerializer
@@ -13,14 +14,30 @@ from server.youtube.serializers.youtube_word_response_serializer import YoutubeW
 
 class YoutubeWordView(APIView):
     @swagger_auto_schema(
-        request_body=YoutubeWordRequestSerializer,
+        query_serializer=YoutubeWordRequestSerializer(),
     )
     def get(self, request):
         language = "ENG"
-        request_serializer = YoutubeWordRequestSerializer(data=request.data)
+        request_serializer = YoutubeWordRequestSerializer(data=request.query_params)
         request_serializer.is_valid(raise_exception=True)
 
-        youtube_words = YoutubeWord.objects.filter(word=request_serializer.word, language=language)
-        response_serializer = YoutubeWordResponseSerializer(youtube_words, many=True)
+        word = request_serializer.validated_data["word"]
+        youtube_words = YoutubeWord.objects.filter(word=word, language=language)
 
+        response_serializer = YoutubeWordResponseSerializer(youtube_words, many=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(
+        query_serializer=YoutubeWordRequestSerializer(),
+    )
+    def post(self, request):
+        language = "ENG"
+        request_serializer = YoutubeWordRequestSerializer(data=request.query_params)
+        request_serializer.is_valid(raise_exception=True)
+
+        word = request_serializer.validated_data["word"]
+
+        youtube__add_word_action = YoutubeAddWordAction()
+        youtube__add_word_action.execute(youtube_word=word)
+
+        return Response("response_serializer.data", status=status.HTTP_200_OK)
