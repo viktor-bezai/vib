@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 
-from server.search.serializers.search_serializer import SearchVideoSerializer, SearchSerializer
+from server.youtube.serializers.search_serializer import SearchVideoSerializer, SearchSerializer
 from server.youtube.adapters.youtube_search_adapter import YouTubeSearchAdapter
 
 
