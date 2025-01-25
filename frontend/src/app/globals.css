@@ -1,0 +1,16 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+header h1 {
+  margin: 0;
+}
+
+header ul {
+  padding: 0;
+}
+
+header li {
+  list-style: none;
+}
