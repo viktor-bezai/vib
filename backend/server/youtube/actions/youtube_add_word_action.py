@@ -17,19 +17,20 @@ class YoutubeAddWordAction:
         Search YouTube for videos containing the given word and associate them with timestamped URLs.
         """
         next_page_token = None
+        youtube_words = []
         while True:
             youtube_search_dto = self.youtube_search_adapter.search(youtube_word=youtube_word, next_page_token=next_page_token)
 
             youtube_videos = self._filter_and_prepare_youtube_videos(items=youtube_search_dto.items)
             YoutubeVideo.objects.bulk_create(youtube_videos)
 
-            youtube_words = self._prepare_youtube_words(youtube_videos, youtube_word)
-            if youtube_words:
-                YoutubeWord.objects.bulk_create(youtube_words)
+            youtube_words.extend(self._prepare_youtube_words(youtube_videos, youtube_word))
 
             # Stop fetching additional pages if we have 5 or more words or no next page token
             if len(youtube_words) >= 5 or not youtube_search_dto.next_page_token:
-                break
+                created_youtube_words = YoutubeWord.objects.bulk_create(youtube_words)
+                return created_youtube_words
+
             next_page_token = youtube_search_dto.next_page_token
 
     def _filter_and_prepare_youtube_videos(self, items) -> List[YoutubeVideo]:

@@ -37,7 +37,8 @@ class YoutubeWordView(APIView):
 
         word = request_serializer.validated_data["word"]
 
-        youtube__add_word_action = YoutubeAddWordAction()
-        youtube__add_word_action.execute(youtube_word=word)
+        youtube_add_word_action = YoutubeAddWordAction()
+        youtube_words = youtube_add_word_action.execute(youtube_word=word)
 
-        return Response("response_serializer.data", status=status.HTTP_200_OK)
+        response_serializer = YoutubeWordResponseSerializer(youtube_words, many=True)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
