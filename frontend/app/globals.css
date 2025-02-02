@@ -1,0 +1,48 @@
+/* General Reset */
+body, html {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif; /* Or your preferred font */
+  line-height: 1.6;
+  background-color: #ffffff; /* Light background */
+  color: #333333; /* Darker text for better contrast */
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: #222222; /* Slightly darker headings for emphasis */
+  margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+  color: #1976d2; /* Blue link color */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  font-family: inherit;
+  color: #ffffff;
+  background-color: #1976d2; /* Primary button color */
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #155a9e;
+}
+
+/* Container Styling */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
