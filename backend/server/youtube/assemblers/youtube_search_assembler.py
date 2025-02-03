@@ -17,8 +17,8 @@ class YouTubeSearchAssembler(object):
         return YouTubeSearchDTO(
             kind=youtube_search.get("kind"),
             etag=youtube_search.get("etag"),
-            next_page_token=youtube_search.get("next_page_token"),
-            region_code=youtube_search.get("region_code"),
+            next_page_token=youtube_search.get("nextPageToken"),
+            region_code=youtube_search.get("regionCode"),
             page_info=page_info,
             items=items,
         )
