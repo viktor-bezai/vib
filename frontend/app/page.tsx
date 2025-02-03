@@ -24,7 +24,7 @@ export default function HomePage() {
 
       {/* Subheading */}
       <Typography variant="h5" gutterBottom >
-        Enjoy learning English by watching videos with words you chose.
+        Enjoy learning English by watching videos with the words of your choice.
       </Typography>
 
       {/* Message about LinkedIn */}
