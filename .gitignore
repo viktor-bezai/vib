@@ -67,3 +67,4 @@ Thumbs.db
 
 /deployment.txt
 /connection.txt
+/backend/staticfiles/

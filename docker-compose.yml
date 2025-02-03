@@ -38,7 +38,7 @@ services:
       db:
         condition: service_healthy
     entrypoint: ["/app/entrypoint.sh"]
-    command: ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+    command: ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi:application"]
 
   frontend:
     build:

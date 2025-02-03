@@ -44,6 +44,9 @@ cd learn-english-videos
 ```sh
 docker-compose up --build -d
 ```
+```sh
+docker-compose down
+```
 
 #### **3️⃣ Check Backend Logs (Optional for Debugging)**  
 ```sh
