@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, {useState} from "react";
+import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {
   Container,
@@ -17,25 +17,45 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
-const fetchVideos = async (word: string) => {
+interface Video {
+  id: number;
+  word: string;
+  language: string;
+  timestamped_url: string;
+  video: number;
+}
+
+const fetchVideos = async (word: string): Promise<Video[]> => {
   const response = await axios.get(`http://127.0.0.1:8000/api/v1/search/?word=${word}`);
   return response.data;
+};
+
+const convertToEmbedUrl = (url: string) => {
+  if (!url) return "";
+
+  const urlObj = new URL(url);
+  const videoId = urlObj.searchParams.get("v");
+  const timestamp = urlObj.searchParams.get("t");
+
+  if (!videoId) return url;
+
+  return `https://www.youtube.com/embed/${videoId}${timestamp ? `?start=${timestamp}` : ""}`;
 };
 
 export default function VideoPage() {
   const [searchWord, setSearchWord] = useState<string>("");
   const [word, setWord] = useState<string>("");
-  const [currentIndex, setCurrentIndex] = useState(0); // Track the current video index
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data, isLoading, isError } = useQuery({
+  const {data, isLoading, isError} = useQuery<Video[]>({
     queryKey: ["videos", word],
     queryFn: () => fetchVideos(word),
-    enabled: !!word, // Fetch only when `word` is not empty
+    enabled: !!word,
   });
 
   const handleSearch = () => {
     setWord(searchWord);
-    setCurrentIndex(0); // Reset to the first video when searching
+    setCurrentIndex(0);
   };
 
   const handleNext = () => {
@@ -51,12 +71,21 @@ export default function VideoPage() {
   };
 
   return (
-    <Container sx={{ marginTop: "2rem" }}>
+    <Container sx={{marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center"}}>
       {/* Search Bar */}
-      <Typography variant="h4" gutterBottom>
-        Search for Videos
-      </Typography>
-      <Grid container spacing={2} alignItems="center" sx={{ marginBottom: "2rem" }}>
+      <Grid
+        container
+        justifyContent="center"
+        spacing={2}
+        sx={{
+          marginBottom: "2rem",
+          width: "60%",
+          backgroundColor: "#f5f5f5",
+          padding: "10px",
+          borderRadius: "12px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        }}
+      >
         <Grid item xs={9}>
           <TextField
             fullWidth
@@ -64,6 +93,21 @@ export default function VideoPage() {
             variant="outlined"
             value={searchWord}
             onChange={(e) => setSearchWord(e.target.value)}
+            sx={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#ccc",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#888",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#1976d2",
+                },
+              },
+            }}
           />
         </Grid>
         <Grid item xs={3}>
@@ -73,11 +117,21 @@ export default function VideoPage() {
             fullWidth
             onClick={handleSearch}
             disabled={!searchWord}
+            sx={{
+              height: "100%",
+              borderRadius: "8px",
+              transition: "all 0.3s ease-in-out",
+              "&:hover": {
+                backgroundColor: "#1565c0",
+                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+              },
+            }}
           >
             Search
           </Button>
         </Grid>
       </Grid>
+
 
       {/* Loading/Error State */}
       {isLoading && <Typography>Loading...</Typography>}
@@ -85,54 +139,32 @@ export default function VideoPage() {
 
       {/* Show Selected Video */}
       {data && data.length > 0 && (
-        <Card sx={{ marginBottom: "2rem", padding: "1rem", textAlign: "center" }}>
-          <Typography variant="h5" sx={{ marginBottom: "1rem" }}>
+        <Card sx={{marginBottom: "2rem", padding: "1rem", textAlign: "center", width: "80%"}}>
+          <Typography variant="h5" sx={{marginBottom: "1rem"}}>
             Now Playing: {data[currentIndex]?.word}
           </Typography>
           <CardMedia
             component="iframe"
-            src={data[currentIndex]?.timestamped_url.replace("watch?v=", "embed/")}
+            src={convertToEmbedUrl(data[currentIndex]?.timestamped_url)}
             title={`Video ${data[currentIndex]?.id}`}
-            sx={{ height: 400, borderRadius: "8px" }}
+            sx={{height: 500, borderRadius: "8px"}} // Increased height
           />
           <CardContent>
             <Typography variant="h6">Language: {data[currentIndex]?.language}</Typography>
-            <Grid container justifyContent="space-between" alignItems="center" sx={{ marginTop: "1rem" }}>
+            <Grid container justifyContent="space-between" alignItems="center" sx={{marginTop: "1rem"}}>
               <IconButton onClick={handlePrevious} disabled={currentIndex === 0}>
-                <ArrowBackIcon />
+                <ArrowBackIcon/>
               </IconButton>
               <Typography variant="body2">
                 {currentIndex + 1} / {data.length}
               </Typography>
               <IconButton onClick={handleNext} disabled={currentIndex === data.length - 1}>
-                <ArrowForwardIcon />
+                <ArrowForwardIcon/>
               </IconButton>
             </Grid>
           </CardContent>
         </Card>
       )}
-
-      {/* Video Results in Grid */}
-      <Grid container spacing={3}>
-        {data?.map((video: any, index: number) => (
-          <Grid item xs={12} sm={6} md={4} key={video.id}>
-            <Card onClick={() => setCurrentIndex(index)} sx={{ cursor: "pointer", transition: "0.3s", "&:hover": { transform: "scale(1.05)" } }}>
-              <CardMedia
-                component="iframe"
-                src={video.timestamped_url.replace("watch?v=", "embed/")}
-                title={`Video ${video.id}`}
-                sx={{ height: 200 }}
-              />
-              <CardContent>
-                <Typography variant="h6">Language: {video.language}</Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Word: {video.word}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
     </Container>
   );
 }
