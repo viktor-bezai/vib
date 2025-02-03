@@ -21,7 +21,11 @@ body, html {
   line-height: 1.6;
   background-color: var(--background-color);
   color: var(--text-color);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
+
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
