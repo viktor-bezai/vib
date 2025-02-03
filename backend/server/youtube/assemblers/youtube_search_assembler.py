@@ -2,7 +2,7 @@ from server.youtube.assemblers.youtube_list_videos_assembler import YouTubeListV
 from server.youtube.dtos.youtube_search_dto import YouTubeSearchDTO, YouTubeSearchPageInfoDTO
 
 
-class YouTubeSearchAssembler(object):
+class YouTubeSearchAssembler:
     def __init__(self):
         self.youtube_list_videos_assembler = YouTubeListVideosAssembler()
 
@@ -11,8 +11,9 @@ class YouTubeSearchAssembler(object):
             total_results=youtube_search.get("pageInfo").get("totalResults"),
             results_per_page=youtube_search.get("pageInfo").get("resultsPerPage"),
         )
+        youtube_videos = youtube_search.get("items")
 
-        items = self.youtube_list_videos_assembler.assemble_response(youtube_videos=youtube_search.get("items"))
+        items = self.youtube_list_videos_assembler.assemble_response(youtube_videos=youtube_videos)
 
         return YouTubeSearchDTO(
             kind=youtube_search.get("kind"),

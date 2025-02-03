@@ -22,13 +22,13 @@ class YoutubeAddWordAction:
             youtube_search_dto = self.youtube_search_adapter.search(
                 youtube_word=youtube_word, next_page_token=next_page_token
             )
-            youtube_words_list.extend(
-                self._process_search_results(
+
+            youtube_words = self._process_search_results(
                     youtube_video_dto_list=youtube_search_dto.items,
                     youtube_word=youtube_word,
                     languages=languages
                 )
-            )
+            youtube_words_list.extend(youtube_words)
             next_page_token = youtube_search_dto.next_page_token
             if not next_page_token:
                 break
@@ -36,7 +36,10 @@ class YoutubeAddWordAction:
         return YoutubeWord.objects.bulk_create(youtube_words_list)
 
     def _process_search_results(
-            self, youtube_video_dto_list: List[YouTubeVideoDto], youtube_word: str, languages: List[str]
+            self,
+            youtube_video_dto_list: List[YouTubeVideoDto],
+            youtube_word: str,
+            languages: List[str]
     ) -> List[YoutubeWord]:
         """
         Process YouTube search results: filter, save, and prepare words.
@@ -57,20 +60,25 @@ class YoutubeAddWordAction:
         return [dto for dto in youtube_video_dto_list if dto.id.video_id not in existing_ids]
 
     def _save_youtube_videos(
-            self, youtube_videos_dto: List[YouTubeVideoDto], languages: List[str]
+            self,
+            youtube_videos_dto: List[YouTubeVideoDto],
+            languages: List[str]
     ) -> List[YoutubeVideo]:
         """
         Save new YouTube videos to the database.
         """
         youtube_videos = []
-        for dto in youtube_videos_dto:
+        for youtube_video_dto in youtube_videos_dto:
+            # if youtube_video_dto.snippet.defaultAudioLanguage != "en":
+            #     continue  # Skip non-English videos
+
             try:
-                transcript = YouTubeTranscriptApi.get_transcript(dto.id.video_id, languages=languages)
+                transcript = YouTubeTranscriptApi.get_transcript(youtube_video_dto.id.video_id, languages=languages)
                 youtube_videos.append(
                     YoutubeVideo(
-                        video_id=dto.id.video_id,
-                        title=dto.snippet.title,
-                        description=dto.snippet.description,
+                        video_id=youtube_video_dto.id.video_id,
+                        title=youtube_video_dto.snippet.title,
+                        description=youtube_video_dto.snippet.description,
                         transcript=transcript,
                     )
                 )
