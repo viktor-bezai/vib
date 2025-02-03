@@ -1,0 +1,25 @@
+# Virtual environments
+venv
+.env
+.env.*
+*.pyc
+*.pyo
+__pycache__/
+.mypy_cache
+.pytest_cache
+coverage/
+htmlcov/
+*.cover
+*.log
+*.sqlite3
+
+# Ignore IDE/editor settings
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Avoid copying compiled dependencies
+node_modules
+staticfiles/
+media/
