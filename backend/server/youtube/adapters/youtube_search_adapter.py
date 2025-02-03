@@ -9,8 +9,8 @@ class YouTubeSearchAdapter:
         self.youtube_search_assembler = YouTubeSearchAssembler()
 
     def search(self, youtube_word: str, next_page_token: str = None) -> YouTubeSearchDTO:
-        youtube_search = self.youtube_search_api.search(youtube_word=youtube_word, page_token=next_page_token)
-
-        youtube_search_dto = self.youtube_search_assembler.assemble_response(youtube_search=youtube_search)
-
-        return youtube_search_dto
+        """
+        Search YouTube using the API and assemble the response into a DTO.
+        """
+        response = self.youtube_search_api.search(youtube_word, page_token=next_page_token)
+        return self.youtube_search_assembler.assemble_response(response)
