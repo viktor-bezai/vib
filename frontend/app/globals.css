@@ -1,48 +1,144 @@
+/* Global CSS Variables */
+:root {
+  --primary-color: #82cfff; /* Soft blue for primary elements */
+  --secondary-color: #5db1ff; /* Medium blue for emphasis */
+  --hover-color: #cceeff; /* Light pastel blue for hover effects */
+  --text-color: #333333; /* Neutral dark gray for text */
+  --background-color: #f9f9f9; /* Very light gray for the background */
+  --button-text-color: #ffffff; /* White text on buttons */
+  --link-color: #5db1ff; /* Medium blue for links */
+  --link-hover-color: #82cfff; /* Softer blue for link hover */
+  --card-border-color: #d1e7ff; /* Light blue border for cards */
+  --shadow-color: rgba(0, 0, 0, 0.1); /* Subtle box shadow */
+}
+
 /* General Reset */
 body, html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Arial, sans-serif; /* Or your preferred font */
+  font-family: "Arial", sans-serif; /* Or your preferred font */
   line-height: 1.6;
-  background-color: #ffffff; /* Light background */
-  color: #333333; /* Darker text for better contrast */
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-  color: #222222; /* Slightly darker headings for emphasis */
+  color: var(--text-color);
   margin-bottom: 1rem;
 }
 
 /* Links */
 a {
-  color: #1976d2; /* Blue link color */
+  color: var(--link-color);
   text-decoration: none;
 }
 
 a:hover {
   text-decoration: underline;
+  color: var(--link-hover-color);
 }
 
 /* Buttons */
 button {
   font-family: inherit;
-  color: #ffffff;
-  background-color: #1976d2; /* Primary button color */
+  color: var(--button-text-color);
+  background-color: var(--primary-color);
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1.5rem;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background-color: #155a9e;
+  background-color: var(--secondary-color);
+  transform: scale(1.05);
 }
 
-/* Container Styling */
+/* Containers */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
+}
+
+/* Navbar */
+.navbar {
+  background-color: var(--primary-color);
+  color: var(--button-text-color);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.navbar a {
+  color: var(--button-text-color);
+  margin: 0 1rem;
+}
+
+.navbar a:hover {
+  color: var(--hover-color);
+}
+
+/* Footer */
+footer {
+  background-color: var(--secondary-color);
+  color: var(--button-text-color);
+  text-align: center;
+  padding: 1rem 0;
+  margin-top: 2rem;
+  border-top: 3px solid var(--primary-color);
+}
+
+/* Cards */
+.card {
+  background-color: var(--background-color);
+  border: 1px solid var(--card-border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  padding: 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px var(--shadow-color);
+}
+
+/* Form Inputs */
+input, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--card-border-color);
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 5px rgba(130, 207, 255, 0.5); /* Light blue focus */
+}
+
+/* Highlight Elements */
+.highlight {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navbar a {
+    margin: 0.5rem 0;
+  }
 }
