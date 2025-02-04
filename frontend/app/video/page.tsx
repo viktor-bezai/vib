@@ -18,6 +18,7 @@ export interface Video {
 
 const fetchVideos = async (word: string): Promise<Video[]> => {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
+
   const response = await axios.get(`${baseUrl}/youtube/?word=${word}`);
 
   // If fewer than 10 videos exist, trigger a post request to add more
