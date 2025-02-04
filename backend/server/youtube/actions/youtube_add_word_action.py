@@ -18,7 +18,7 @@ class YoutubeAddWordAction:
         next_page_token = None
         youtube_words_list = []
 
-        while len(youtube_words_list) < 10:
+        while len(youtube_words_list) < 5:
             youtube_search_dto = self.youtube_search_adapter.search(
                 youtube_word=youtube_word, next_page_token=next_page_token
             )

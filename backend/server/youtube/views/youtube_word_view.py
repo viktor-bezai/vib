@@ -29,11 +29,11 @@ class YoutubeWordView(APIView):
     @swagger_auto_schema(
         responses={200: YoutubeWordResponseSerializer()},
         operation_summary='Adding YoutubeWords to the Database',
-        query_serializer=YoutubeWordRequestSerializer(),
+        request_body=YoutubeWordRequestSerializer(),
     )
     def post(self, request):
         languages = ["en"]
-        request_serializer = YoutubeWordRequestSerializer(data=request.query_params)
+        request_serializer = YoutubeWordRequestSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
 
         word = request_serializer.validated_data["word"]

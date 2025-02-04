@@ -18,8 +18,22 @@ export interface Video {
 
 const fetchVideos = async (word: string): Promise<Video[]> => {
   const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/youtube/?word=${word}`);
+
+  // If fewer than 10 videos exist, trigger a post request to add more
+  if (response.data.length < 5) {
+    await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/youtube/`, { word });
+
+    // Wait a moment for the backend to process new videos (optional)
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Fetch videos again after adding new ones
+    const newResponse = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/youtube/?word=${word}`);
+    return newResponse.data;
+  }
+
   return response.data;
 };
+
 
 export default function VideoPage() {
   const [word, setWord] = useState<string>("");
