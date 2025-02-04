@@ -42,10 +42,10 @@ pipeline {
                         cat <<EOF > ${PROJECT_DIR}/.env
                         POSTGRES_NAME=${POSTGRES_NAME}
                         POSTGRES_USER=${POSTGRES_USER}
-                        POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+                        POSTGRES_PASSWORD=${POSTGRES_PASSWORD//$/$$}
                         POSTGRES_HOST=${POSTGRES_HOST}
                         POSTGRES_PORT=${POSTGRES_PORT}
-                        SECRET_KEY=${SECRET_KEY}
+                        SECRET_KEY=${SECRET_KEY//$/$$}
                         GOOGLE_API_KEY=${GOOGLE_API_KEY}
                         NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
                         EOF
