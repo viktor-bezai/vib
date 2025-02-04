@@ -39,14 +39,14 @@ pipeline {
                 ]) {
                     script {
                         sh """
-                        echo "POSTGRES_NAME=${POSTGRES_NAME}" > ${PROJECT_DIR}/.env
-                        echo "POSTGRES_USER=${POSTGRES_USER}" >> ${PROJECT_DIR}/.env
-                        echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> ${PROJECT_DIR}/.env
-                        echo "POSTGRES_HOST=${POSTGRES_HOST}" >> ${PROJECT_DIR}/.env
-                        echo "POSTGRES_PORT=${POSTGRES_PORT}" >> ${PROJECT_DIR}/.env
-                        echo "SECRET_KEY=${SECRET_KEY}" >> ${PROJECT_DIR}/.env
-                        echo "GOOGLE_API_KEY=${GOOGLE_API_KEY}" >> ${PROJECT_DIR}/.env
-                        echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}" >> ${PROJECT_DIR}/.env
+                        echo "POSTGRES_NAME='${POSTGRES_NAME//$/\\$}'" > ${PROJECT_DIR}/.env
+                        echo "POSTGRES_USER='${POSTGRES_USER//$/\\$}'" >> ${PROJECT_DIR}/.env
+                        echo "POSTGRES_PASSWORD='${POSTGRES_PASSWORD//$/\\$}'" >> ${PROJECT_DIR}/.env
+                        echo "POSTGRES_HOST='${POSTGRES_HOST//$/\\$}'" >> ${PROJECT_DIR}/.env
+                        echo "POSTGRES_PORT='${POSTGRES_PORT//$/\\$}'" >> ${PROJECT_DIR}/.env
+                        echo "SECRET_KEY='${SECRET_KEY//$/\\$}'" >> ${PROJECT_DIR}/.env
+                        echo "GOOGLE_API_KEY='${GOOGLE_API_KEY//$/\\$}'" >> ${PROJECT_DIR}/.env
+                        echo "NEXT_PUBLIC_API_BASE_URL='${NEXT_PUBLIC_API_BASE_URL//$/\\$}'" >> ${PROJECT_DIR}/.env
                         """
                     }
                 }
@@ -60,15 +60,6 @@ pipeline {
                 }
             }
         }
-
-//         stage('Run Tests') {
-//             steps {
-//                 script {
-//                     sh "cd ${PROJECT_DIR} && docker compose run --rm ${BACKEND_SERVICE} pytest"
-//                     sh "cd ${PROJECT_DIR} && docker compose run --rm ${FRONTEND_SERVICE} npm test"
-//                 }
-//             }
-//         }
 
         stage('Deploy Services') {
             steps {
