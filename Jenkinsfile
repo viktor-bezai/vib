@@ -2,55 +2,26 @@ pipeline {
     agent any
 
     environment {
+        DOCKER_COMPOSE_FILE = "docker-compose.yml"
+        BACKEND_SERVICE = "backend"
+        FRONTEND_SERVICE = "frontend"
         PROJECT_DIR = "/var/www/viktorbezai"
-        BRANCH = "master"
     }
 
     stages {
-        stage('Prepare Deployment Directory') {
+        stage('Pull Latest Code') {
             steps {
-                sh '''
-                if [ ! -d "$PROJECT_DIR" ]; then
-                    echo "Error: Directory $PROJECT_DIR does not exist!"
-                    exit 1
-                fi
-                sudo chown -R jenkins:jenkins $PROJECT_DIR
-                sudo chmod -R 755 $PROJECT_DIR
-
-                # Remove old code without affecting .git and hidden files
-                find $PROJECT_DIR -mindepth 1 ! -name '.git' -exec sudo rm -rf {} +
-                '''
-            }
-        }
-
-        stage('Checkout Code') {
-            steps {
-                sshagent(['github-ssh-key']) { // Ensure Jenkins has the correct SSH key
-                    sh '''
-                    cd $PROJECT_DIR
-                    if [ ! -d "$PROJECT_DIR/.git" ]; then
-                        git clone -b $BRANCH --depth 1 git@github.com:viktor-bezai/LearnEnglish.git .
+                script {
+                    sh """
+                    mkdir -p ${PROJECT_DIR}
+                    cd ${PROJECT_DIR}
+                    if [ -d .git ]; then
+                        git pull origin master
                     else
-                        git fetch --all
-                        git reset --hard origin/$BRANCH
+                        git clone git@github.com:viktor-bezai/LearnEnglish.git .
                     fi
-                    '''
+                    """
                 }
-            }
-        }
-
-        stage('Ensure Backend and Frontend Exist') {
-            steps {
-                sh '''
-                if [ ! -d "$PROJECT_DIR/backend" ]; then
-                    echo "Error: Backend directory not found after Git checkout!"
-                    exit 1
-                fi
-                if [ ! -d "$PROJECT_DIR/frontend" ]; then
-                    echo "Error: Frontend directory not found after Git checkout!"
-                    exit 1
-                fi
-                '''
             }
         }
 
@@ -66,64 +37,61 @@ pipeline {
                     string(credentialsId: 'VIKTORBEZAI_GOOGLE_API_KEY', variable: 'GOOGLE_API_KEY'),
                     string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL')
                 ]) {
-                    sh '''
-                    cd $PROJECT_DIR
-                    rm -f .env
-                    touch .env
-                    chmod 600 .env
-
-                    # Write environment variables to .env file
-                    echo "POSTGRES_NAME=$POSTGRES_NAME" > .env
-                    echo "POSTGRES_USER=$POSTGRES_USER" >> .env
-                    echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
-                    echo "POSTGRES_HOST=$POSTGRES_HOST" >> .env
-                    echo "POSTGRES_PORT=$POSTGRES_PORT" >> .env
-                    echo "SECRET_KEY=$SECRET_KEY" >> .env
-                    echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> .env
-                    echo "NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL" >> .env
-                    '''
+                    script {
+                        sh """
+                        echo "POSTGRES_NAME=${POSTGRES_NAME}" > ${PROJECT_DIR}/.env
+                        echo "POSTGRES_USER=${POSTGRES_USER}" >> ${PROJECT_DIR}/.env
+                        echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> ${PROJECT_DIR}/.env
+                        echo "POSTGRES_HOST=${POSTGRES_HOST}" >> ${PROJECT_DIR}/.env
+                        echo "POSTGRES_PORT=${POSTGRES_PORT}" >> ${PROJECT_DIR}/.env
+                        echo "SECRET_KEY=${SECRET_KEY}" >> ${PROJECT_DIR}/.env
+                        echo "GOOGLE_API_KEY=${GOOGLE_API_KEY}" >> ${PROJECT_DIR}/.env
+                        echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}" >> ${PROJECT_DIR}/.env
+                        """
+                    }
                 }
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Build Docker Images') {
             steps {
-                sh '''
-                sudo apt-get update -y
-                sudo apt-get install -y python3 python3-venv python3-pip
-                cd $PROJECT_DIR/backend
-                python3 -m venv .venv
-                source .venv/bin/activate
-                pip install -r requirements.txt
-                deactivate
-                '''
+                script {
+                    sh "cd ${PROJECT_DIR} && docker compose build"
+                }
             }
         }
 
-        stage('Build and Deploy') {
+        stage('Run Tests') {
             steps {
-                sh '''
-                cd $PROJECT_DIR
-                docker-compose down
-                docker-compose build --no-cache
-                docker-compose up -d
-                '''
+                script {
+                    sh "cd ${PROJECT_DIR} && docker compose run --rm ${BACKEND_SERVICE} pytest"
+                    sh "cd ${PROJECT_DIR} && docker compose run --rm ${FRONTEND_SERVICE} npm test"
+                }
             }
         }
 
-        stage('Restart Nginx') {
+        stage('Deploy Services') {
+            when {
+                branch 'main'  // Deploy only on main branch
+            }
             steps {
-                sh 'sudo systemctl reload nginx'
+                script {
+                    sh """
+                    cd ${PROJECT_DIR}
+                    docker compose down
+                    docker compose up -d --build
+                    """
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'Deployment Successful!'
+            echo "✅ Deployment successful!"
         }
         failure {
-            echo 'Build or deployment failed.'
+            echo "❌ Deployment failed!"
         }
     }
 }
