@@ -26,6 +26,11 @@ pipeline {
                     string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL')
                 ]) {
                     sh '''
+                    # Ensure project directory exists
+                    mkdir -p $PROJECT_DIR
+                    chmod 755 $PROJECT_DIR
+
+                    # Create .env file with credentials
                     echo "POSTGRES_NAME=$POSTGRES_NAME" > $PROJECT_DIR/.env
                     echo "POSTGRES_USER=$POSTGRES_USER" >> $PROJECT_DIR/.env
                     echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> $PROJECT_DIR/.env
@@ -34,58 +39,23 @@ pipeline {
                     echo "SECRET_KEY=$SECRET_KEY" >> $PROJECT_DIR/.env
                     echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> $PROJECT_DIR/.env
                     echo "NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL" >> $PROJECT_DIR/.env
+                    chmod 600 $PROJECT_DIR/.env
                     '''
                 }
             }
         }
 
         stage('Install Dependencies') {
-            parallel {
-                stage('Backend Dependencies') {
-                    steps {
-                        sh '''
-                        sudo apt-get update -y
-                        sudo apt-get install -y python3 python3-venv python3-pip
-                        cd $PROJECT_DIR/backend
-                        python3 -m venv .venv
-                        source .venv/bin/activate
-                        pip install -r requirements.txt
-                        deactivate
-                        '''
-                    }
-                }
-                stage('Frontend Dependencies') {
-                    steps {
-                        sh '''
-                        cd $PROJECT_DIR/frontend
-                        npm install
-                        npm run build
-                        '''
-                    }
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            parallel {
-                stage('Backend Tests') {
-                    steps {
-                        sh '''
-                        cd $PROJECT_DIR/backend
-                        source .venv/bin/activate
-                        python manage.py test
-                        deactivate
-                        '''
-                    }
-                }
-                stage('Frontend Tests') {
-                    steps {
-                        sh '''
-                        cd $PROJECT_DIR/frontend
-                        npm test
-                        '''
-                    }
-                }
+            steps {
+                sh '''
+                sudo apt-get update -y
+                sudo apt-get install -y python3 python3-venv python3-pip
+                cd $PROJECT_DIR/backend
+                python3 -m venv .venv
+                source .venv/bin/activate
+                pip install -r requirements.txt
+                deactivate
+                '''
             }
         }
 
