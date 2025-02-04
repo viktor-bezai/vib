@@ -1,5 +1,7 @@
 from django.urls import include, path
 
+app_name = 'api_v1'
+
 urlpatterns = [
-    path('search/', include('server.youtube.urls')),
+    path('youtube/', include('server.youtube.urls')),
 ]
