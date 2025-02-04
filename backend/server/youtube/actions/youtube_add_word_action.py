@@ -1,82 +1,104 @@
-from xml.etree.ElementTree import ParseError
-from typing import Optional, List
+from typing import List
 
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
 
 from server.youtube.adapters.youtube_search_adapter import YouTubeSearchAdapter
-from server.youtube.models import YoutubeVideo
-from server.youtube.models.youtube_word import YoutubeWord
+from server.youtube.dtos.youtube_video_dto import YouTubeVideoDto
+from server.youtube.models import YoutubeVideo, YoutubeWord
 
 
 class YoutubeAddWordAction:
     def __init__(self):
         self.youtube_search_adapter = YouTubeSearchAdapter()
 
-    def execute(self, youtube_word: str) -> None:
+    def execute(self, youtube_word: str, languages: List[str]) -> List[YoutubeWord]:
         """
-        Search YouTube for videos containing the given word and associate them with timestamped URLs.
+        Search YouTube for videos containing the given word, associate them with timestamped URLs, and save to the DB.
         """
         next_page_token = None
-        youtube_words = []
-        while True:
-            youtube_search_dto = self.youtube_search_adapter.search(youtube_word=youtube_word, next_page_token=next_page_token)
+        youtube_words_list = []
 
-            youtube_videos = self._filter_and_prepare_youtube_videos(items=youtube_search_dto.items)
-            YoutubeVideo.objects.bulk_create(youtube_videos)
-
-            youtube_words.extend(self._prepare_youtube_words(youtube_videos, youtube_word))
-
-            # Stop fetching additional pages if we have 5 or more words or no next page token
-            if len(youtube_words) >= 5 or not youtube_search_dto.next_page_token:
-                created_youtube_words = YoutubeWord.objects.bulk_create(youtube_words)
-                return created_youtube_words
-
-            next_page_token = youtube_search_dto.next_page_token
-
-    def _filter_and_prepare_youtube_videos(self, items) -> List[YoutubeVideo]:
-        """
-        Prepare YoutubeVideo instances for bulk creation, excluding already existing videos.
-        """
-        existing_video_ids = set(
-            YoutubeVideo.objects.filter(
-                video_id__in=[item.id.video_id for item in items]
-            ).values_list('video_id', flat=True)
-        )
-        return [
-            YoutubeVideo(
-                video_id=item.id.video_id,
-                title=item.snippet.title,
-                description=item.snippet.description,
+        while len(youtube_words_list) < 5:
+            youtube_search_dto = self.youtube_search_adapter.search(
+                youtube_word=youtube_word, next_page_token=next_page_token
             )
-            for item in items if item.id.video_id not in existing_video_ids
-        ]
+
+            youtube_words = self._process_search_results(
+                    youtube_video_dto_list=youtube_search_dto.items,
+                    youtube_word=youtube_word,
+                    languages=languages
+                )
+            youtube_words_list.extend(youtube_words)
+            next_page_token = youtube_search_dto.next_page_token
+            if not next_page_token:
+                break
+
+        return YoutubeWord.objects.bulk_create(youtube_words_list)
+
+    def _process_search_results(
+            self,
+            youtube_video_dto_list: List[YouTubeVideoDto],
+            youtube_word: str,
+            languages: List[str]
+    ) -> List[YoutubeWord]:
+        """
+        Process YouTube search results: filter, save, and prepare words.
+        """
+        filtered_videos_dto = self._filter_existing_videos(youtube_video_dto_list)
+        saved_videos = self._save_youtube_videos(filtered_videos_dto, languages)
+        return self._prepare_youtube_words(saved_videos, youtube_word)
+
+    def _filter_existing_videos(self, youtube_video_dto_list: List[YouTubeVideoDto]) -> List[YouTubeVideoDto]:
+        """
+        Exclude videos that already exist in the database.
+        """
+        existing_ids = set(
+            YoutubeVideo.objects.filter(
+                video_id__in=[dto.id.video_id for dto in youtube_video_dto_list]
+            ).values_list("video_id", flat=True)
+        )
+        return [dto for dto in youtube_video_dto_list if dto.id.video_id not in existing_ids]
+
+    def _save_youtube_videos(
+            self,
+            youtube_videos_dto: List[YouTubeVideoDto],
+            languages: List[str]
+    ) -> List[YoutubeVideo]:
+        """
+        Save new YouTube videos to the database.
+        """
+        youtube_videos = []
+        for youtube_video_dto in youtube_videos_dto:
+            # if youtube_video_dto.snippet.defaultAudioLanguage != "en":
+            #     continue  # Skip non-English videos
+
+            try:
+                transcript = YouTubeTranscriptApi.get_transcript(youtube_video_dto.id.video_id, languages=languages)
+                youtube_videos.append(
+                    YoutubeVideo(
+                        video_id=youtube_video_dto.id.video_id,
+                        title=youtube_video_dto.snippet.title,
+                        description=youtube_video_dto.snippet.description,
+                        transcript=transcript,
+                    )
+                )
+            except (NoTranscriptFound, TranscriptsDisabled):
+                continue
+        return YoutubeVideo.objects.bulk_create(youtube_videos)
 
     def _prepare_youtube_words(self, youtube_videos: List[YoutubeVideo], youtube_word: str) -> List[YoutubeWord]:
         """
-        Prepare YoutubeWord instances for bulk creation, linking to videos with timestamped URLs.
+        Prepare YouTubeWord objects from video transcripts.
         """
-        youtube_words = [
-            YoutubeWord(
-                word=youtube_word,
-                timestamped_url=timestamped_url,
-                video=youtube_video,
-            )
-            for youtube_video in youtube_videos
-            if (timestamped_url := self._get_timestamped_url(youtube_video.video_id, youtube_word))
-        ]
-        return youtube_words
-
-    @staticmethod
-    def _get_timestamped_url(youtube_video_id: str, youtube_word: str) -> Optional[str]:
-        """
-        Get a timestamped URL for a video containing the specified word.
-        """
-        try:
-            transcript = YouTubeTranscriptApi.get_transcript(youtube_video_id)
-            for entry in transcript:
+        youtube_words = []
+        for video in youtube_videos:
+            for entry in video.transcript or []:
                 if youtube_word.lower() in entry["text"].lower():
-                    timestamp = int(entry["start"])
-                    return f"https://www.youtube.com/watch?v={youtube_video_id}&t={timestamp}s"
-        except (NoTranscriptFound, TranscriptsDisabled, ParseError):
-            return None
-        return None
+                    youtube_words.append(
+                        YoutubeWord(
+                            word=youtube_word,
+                            timestamped_url=f"https://www.youtube.com/watch?v={video.video_id}&t={int(entry['start'])}s",
+                            video=video,
+                        )
+                    )
+        return youtube_words
