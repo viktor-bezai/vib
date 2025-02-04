@@ -17,8 +17,9 @@ class YoutubeAddWordAction:
         """
         next_page_token = None
         youtube_words_list = []
+        counter = 0
 
-        while len(youtube_words_list) < 5:
+        while len(youtube_words_list) < 5 or counter >= 10:
             youtube_search_dto = self.youtube_search_adapter.search(
                 youtube_word=youtube_word, next_page_token=next_page_token
             )
@@ -30,6 +31,7 @@ class YoutubeAddWordAction:
                 )
             youtube_words_list.extend(youtube_words)
             next_page_token = youtube_search_dto.next_page_token
+            counter += 1
             if not next_page_token:
                 break
 
