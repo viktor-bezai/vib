@@ -32,7 +32,7 @@ services:
       - PORT=3001
     depends_on:
       - backend
-    command: [ "npm", "run", "start" ]  # Run built app
+    command: [ "npm", "run", "start" ]
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:3001/ || exit 1" ]
       interval: 30s
