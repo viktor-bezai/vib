@@ -19,7 +19,7 @@ export default function HomePage() {
     >
       {/* Main Heading */}
       <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold", color: "var(--primary-color)" }}>
-        Welcome to Learn English App!
+        {"Welcome to Learn English App!"}
       </Typography>
 
       {/* Subheading */}
@@ -29,7 +29,7 @@ export default function HomePage() {
 
       {/* Message about LinkedIn */}
       <Typography variant="h6" gutterBottom sx={{ marginTop: "1rem" }}>
-        If you'd like to chat, feel free to connect with me on LinkedIn.
+        {"If you'd like to chat, feel free to connect with me on LinkedIn."}
       </Typography>
 
       {/* LinkedIn Button */}
@@ -42,7 +42,7 @@ export default function HomePage() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Message Me on LinkedIn
+          {"Message Me on LinkedIn"}
         </Button>
       </Box>
     </Container>
