@@ -72,7 +72,7 @@ pipeline {
 
         stage('Deploy Services') {
             when {
-                branch 'master'  // Deploy only on main branch
+                branch 'master'
             }
             steps {
                 script {
