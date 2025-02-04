@@ -5,13 +5,17 @@ from rest_framework.views import APIView
 
 from server.youtube.actions.youtube_add_word_action import YoutubeAddWordAction
 from server.youtube.models import YoutubeWord
+from server.youtube.serializers.bad_request_response_serializer import BadRequestResponseSerializer
 from server.youtube.serializers.youtube_word_request_serializer import YoutubeWordRequestSerializer
 from server.youtube.serializers.youtube_word_response_serializer import YoutubeWordResponseSerializer
 
 
 class YoutubeWordView(APIView):
     @swagger_auto_schema(
-        responses={200: YoutubeWordResponseSerializer()},
+        responses={
+            200: YoutubeWordResponseSerializer(),
+            400: BadRequestResponseSerializer(),
+        },
         operation_summary='Get list of YoutubeWord',
         query_serializer=YoutubeWordRequestSerializer()
     )
@@ -27,7 +31,10 @@ class YoutubeWordView(APIView):
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
-        responses={200: YoutubeWordResponseSerializer()},
+        responses={
+            200: YoutubeWordResponseSerializer(),
+            400: BadRequestResponseSerializer(),
+        },
         operation_summary='Adding YoutubeWords to the Database',
         request_body=YoutubeWordRequestSerializer(),
     )
