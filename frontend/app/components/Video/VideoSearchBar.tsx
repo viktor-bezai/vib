@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { Grid, TextField, Button, Typography } from "@mui/material";
+import React, {useState} from "react";
+import {Button, Grid, TextField} from "@mui/material";
 
 interface VideoSearchBarProps {
   onSearch: (word: string) => void;
 }
 
-const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
+const VideoSearchBar: React.FC<VideoSearchBarProps> = ({onSearch}) => {
   const [searchWord, setSearchWord] = useState("");
   const [error, setError] = useState("");
 
@@ -59,9 +59,9 @@ const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
             backgroundColor: "white",
             borderRadius: "8px",
             "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: error ? "red" : "#ccc" },
-              "&:hover fieldset": { borderColor: error ? "red" : "#888" },
-              "&.Mui-focused fieldset": { borderColor: error ? "red" : "#1976d2" },
+              "& fieldset": {borderColor: error ? "red" : "#ccc"},
+              "&:hover fieldset": {borderColor: error ? "red" : "#888"},
+              "&.Mui-focused fieldset": {borderColor: error ? "red" : "#1976d2"},
             },
           }}
         />
@@ -77,7 +77,7 @@ const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
             height: "100%",
             borderRadius: "8px",
             transition: "all 0.3s ease-in-out",
-            "&:hover": { backgroundColor: "#1565c0", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)" },
+            "&:hover": {backgroundColor: "#1565c0", boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)"},
           }}
         >
           Search
