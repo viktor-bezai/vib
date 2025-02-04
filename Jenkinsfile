@@ -4,12 +4,23 @@ pipeline {
     environment {
         PROJECT_DIR = "/var/www/viktorbezai"
         BRANCH = "master"
+        JENKINS_USER = "jenkins"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 git branch: BRANCH, url: 'git@github.com:viktor-bezai/LearnEnglish.git'
+            }
+        }
+
+        stage('Ensure Directory Exists & Set Permissions') {
+            steps {
+                sh '''
+                sudo mkdir -p $PROJECT_DIR
+                sudo chown -R $JENKINS_USER:$JENKINS_USER $PROJECT_DIR
+                sudo chmod 755 $PROJECT_DIR
+                '''
             }
         }
 
@@ -26,20 +37,19 @@ pipeline {
                     string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL')
                 ]) {
                     sh '''
-                    # Ensure project directory exists
-                    mkdir -p $PROJECT_DIR
-                    chmod 755 $PROJECT_DIR
+                    cd $PROJECT_DIR
+                    touch .env
+                    chmod 600 .env
 
-                    # Create .env file with credentials
-                    echo "POSTGRES_NAME=$POSTGRES_NAME" > $PROJECT_DIR/.env
-                    echo "POSTGRES_USER=$POSTGRES_USER" >> $PROJECT_DIR/.env
-                    echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> $PROJECT_DIR/.env
-                    echo "POSTGRES_HOST=$POSTGRES_HOST" >> $PROJECT_DIR/.env
-                    echo "POSTGRES_PORT=$POSTGRES_PORT" >> $PROJECT_DIR/.env
-                    echo "SECRET_KEY=$SECRET_KEY" >> $PROJECT_DIR/.env
-                    echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> $PROJECT_DIR/.env
-                    echo "NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL" >> $PROJECT_DIR/.env
-                    chmod 600 $PROJECT_DIR/.env
+                    # Write environment variables to .env file
+                    echo "POSTGRES_NAME=$POSTGRES_NAME" > .env
+                    echo "POSTGRES_USER=$POSTGRES_USER" >> .env
+                    echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
+                    echo "POSTGRES_HOST=$POSTGRES_HOST" >> .env
+                    echo "POSTGRES_PORT=$POSTGRES_PORT" >> .env
+                    echo "SECRET_KEY=$SECRET_KEY" >> .env
+                    echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> .env
+                    echo "NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL" >> .env
                     '''
                 }
             }
