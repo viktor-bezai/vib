@@ -12,7 +12,7 @@ pipeline {
         stage('Pull Latest Code') {
             steps {
                 script {
-                    sh """
+                    sh '''
                     mkdir -p ${PROJECT_DIR}
                     cd ${PROJECT_DIR}
                     if [ -d .git ]; then
@@ -20,7 +20,7 @@ pipeline {
                     else
                         git clone git@github.com:viktor-bezai/LearnEnglish.git .
                     fi
-                    """
+                    '''
                 }
             }
         }
@@ -38,18 +38,18 @@ pipeline {
                     string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL')
                 ]) {
                     script {
-                        sh """
-                        cat <<EOF > ${PROJECT_DIR}/.env
+                        sh '''
+                        cat << 'EOF' > ${PROJECT_DIR}/.env
                         POSTGRES_NAME=${POSTGRES_NAME}
                         POSTGRES_USER=${POSTGRES_USER}
-                        POSTGRES_PASSWORD=${POSTGRES_PASSWORD//$/$$}
+                        POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
                         POSTGRES_HOST=${POSTGRES_HOST}
                         POSTGRES_PORT=${POSTGRES_PORT}
-                        SECRET_KEY=${SECRET_KEY//$/$$}
+                        SECRET_KEY=${SECRET_KEY}
                         GOOGLE_API_KEY=${GOOGLE_API_KEY}
                         NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
                         EOF
-                        """
+                        '''
                     }
                 }
             }
@@ -58,7 +58,10 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    sh "cd ${PROJECT_DIR} && docker compose build"
+                    sh '''
+                    cd ${PROJECT_DIR}
+                    docker compose build
+                    '''
                 }
             }
         }
@@ -66,11 +69,11 @@ pipeline {
         stage('Deploy Services') {
             steps {
                 script {
-                    sh """
+                    sh '''
                     cd ${PROJECT_DIR}
                     docker compose down
                     docker compose up -d --build
-                    """
+                    '''
                 }
             }
         }
