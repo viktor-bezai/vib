@@ -1,18 +1,21 @@
-# Use Node.js base image
-FROM node:18
+# Use official Node.js image
+FROM node:18-alpine AS base
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json /app/
-RUN npm install
+# Copy package.json and install dependencies (cache optimization)
+COPY package*.json ./
+RUN npm ci --frozen-lockfile
 
-# Copy project files
-COPY . /app
+# Copy application source code
+COPY . .
+
+# Build the Next.js application
+RUN npm run build
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3001
 
-# Run Next.js app
-CMD ["npm", "run", "dev"]
+# Start the production build
+CMD ["npm", "run", "start"]

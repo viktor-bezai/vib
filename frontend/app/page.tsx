@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-import { Container, Typography, Button, Box } from "@mui/material";
-import Link from "next/link";
+import {Box, Button, Container, Typography} from "@mui/material";
 
 export default function HomePage() {
   return (
@@ -18,22 +17,22 @@ export default function HomePage() {
       }}
     >
       {/* Main Heading */}
-      <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold", color: "var(--primary-color)" }}>
-        Welcome to Learn English App!
+      <Typography variant="h3" gutterBottom sx={{fontWeight: "bold", color: "var(--primary-color)"}}>
+        {"Welcome to Learn English App!"}
       </Typography>
 
       {/* Subheading */}
-      <Typography variant="h5" gutterBottom >
-        Enjoy learning English by watching videos with the words of your choice.
+      <Typography variant="h5" gutterBottom>
+        {"Enjoy learning English by watching videos with the words of your choice."}
       </Typography>
 
       {/* Message about LinkedIn */}
-      <Typography variant="h6" gutterBottom sx={{ marginTop: "1rem" }}>
-        If you'd like to chat, feel free to connect with me on LinkedIn.
+      <Typography variant="h6" gutterBottom sx={{marginTop: "1rem"}}>
+        {"If you'd like to chat, feel free to connect with me on LinkedIn."}
       </Typography>
 
       {/* LinkedIn Button */}
-      <Box sx={{ marginTop: "1.5rem" }}>
+      <Box sx={{marginTop: "1.5rem"}}>
         <Button
           variant="contained"
           color="primary"
@@ -42,7 +41,7 @@ export default function HomePage() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Message Me on LinkedIn
+          {"Message Me on LinkedIn"}
         </Button>
       </Box>
     </Container>
