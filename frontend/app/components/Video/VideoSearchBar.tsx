@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Grid, TextField, Button } from "@mui/material";
+import { Grid, TextField, Button, Typography } from "@mui/material";
 
 interface VideoSearchBarProps {
   onSearch: (word: string) => void;
@@ -9,9 +9,25 @@ interface VideoSearchBarProps {
 
 const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
   const [searchWord, setSearchWord] = useState("");
+  const [error, setError] = useState("");
+
+  const validateInput = (value: string) => {
+    const words = value.trim().split(/\s+/);
+    if (words.length > 2) {
+      setError("Please enter a maximum of two words.");
+    } else {
+      setError("");
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchWord(value);
+    validateInput(value);
+  };
 
   const handleSearch = () => {
-    if (searchWord.trim()) {
+    if (!error && searchWord.trim()) {
       onSearch(searchWord);
     }
   };
@@ -36,14 +52,16 @@ const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
           label="Enter a word"
           variant="outlined"
           value={searchWord}
-          onChange={(e) => setSearchWord(e.target.value)}
+          onChange={handleChange}
+          error={!!error}
+          helperText={error}
           sx={{
             backgroundColor: "white",
             borderRadius: "8px",
             "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: "#ccc" },
-              "&:hover fieldset": { borderColor: "#888" },
-              "&.Mui-focused fieldset": { borderColor: "#1976d2" },
+              "& fieldset": { borderColor: error ? "red" : "#ccc" },
+              "&:hover fieldset": { borderColor: error ? "red" : "#888" },
+              "&.Mui-focused fieldset": { borderColor: error ? "red" : "#1976d2" },
             },
           }}
         />
@@ -54,7 +72,7 @@ const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
           color="primary"
           fullWidth
           onClick={handleSearch}
-          disabled={!searchWord}
+          disabled={!searchWord.trim() || !!error}
           sx={{
             height: "100%",
             borderRadius: "8px",
