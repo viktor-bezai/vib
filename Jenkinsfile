@@ -21,6 +21,7 @@ pipeline {
                     exit 1
                 fi
                 sudo chown -R jenkins:jenkins $PROJECT_DIR
+                sudo chmod -R 755 $PROJECT_DIR
                 '''
             }
         }
@@ -39,6 +40,7 @@ pipeline {
                 ]) {
                     sh '''
                     cd $PROJECT_DIR
+                    rm -f .env
                     touch .env
                     chmod 600 .env
 
