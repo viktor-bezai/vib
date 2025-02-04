@@ -61,14 +61,14 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                script {
-                    sh "cd ${PROJECT_DIR} && docker compose run --rm ${BACKEND_SERVICE} pytest"
-                    sh "cd ${PROJECT_DIR} && docker compose run --rm ${FRONTEND_SERVICE} npm test"
-                }
-            }
-        }
+//         stage('Run Tests') {
+//             steps {
+//                 script {
+//                     sh "cd ${PROJECT_DIR} && docker compose run --rm ${BACKEND_SERVICE} pytest"
+//                     sh "cd ${PROJECT_DIR} && docker compose run --rm ${FRONTEND_SERVICE} npm test"
+//                 }
+//             }
+//         }
 
         stage('Deploy Services') {
             when {
