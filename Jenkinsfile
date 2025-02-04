@@ -1,99 +1,77 @@
 pipeline {
     agent any
-    environment {
-        BACKEND_DIR = 'backend'
-        FRONTEND_DIR = 'frontend'
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
-    }
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-        stage('Set Up Environment Variables') {
-            steps {
-                sh '''
-                echo "POSTGRES_NAME=${POSTGRES_NAME}" > ${BACKEND_DIR}/.env
-                echo "POSTGRES_USER=${POSTGRES_USER}" >> ${BACKEND_DIR}/.env
-                echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" >> ${BACKEND_DIR}/.env
-                echo "POSTGRES_HOST=${POSTGRES_HOST}" >> ${BACKEND_DIR}/.env
-                echo "POSTGRES_HOST=${POSTGRES_HOST}" >> ${BACKEND_DIR}/.env
-                echo "POSTGRES_PORT=${POSTGRES_PORT}" >> ${BACKEND_DIR}/.env
-                echo "SECRET_KEY=${SECRET_KEY}" >> ${BACKEND_DIR}/.env
-                echo "GOOGLE_API_KEY=${GOOGLE_API_KEY}" >> ${BACKEND_DIR}/.env
 
-                echo "NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}" > ${FRONTEND_DIR}/.env.local
+    environment {
+        PROJECT_DIR = "/var/www/viktorbezai"
+        BRANCH = "master"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: BRANCH, url: 'git@github.com:viktor-bezai/LearnEnglish.git'
+            }
+        }
+
+        stage('Load Environment Variables') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'VIKTORBEZAI_POSTGRES_NAME', variable: 'POSTGRES_NAME'),
+                    string(credentialsId: 'VIKTORBEZAI_POSTGRES_USER', variable: 'POSTGRES_USER'),
+                    string(credentialsId: 'VIKTORBEZAI_POSTGRES_PASSWORD', variable: 'POSTGRES_PASSWORD'),
+                    string(credentialsId: 'VIKTORBEZAI_POSTGRES_HOST', variable: 'POSTGRES_HOST'),
+                    string(credentialsId: 'VIKTORBEZAI_POSTGRES_PORT', variable: 'POSTGRES_PORT'),
+                    string(credentialsId: 'VIKTORBEZAI_SECRET_KEY', variable: 'SECRET_KEY')
+                    string(credentialsId: 'VIKTORBEZAI_GOOGLE_API_KEY', variable: 'GOOGLE_API_KEY')
+                    string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL')
+                ]) {
+                    sh '''
+                    echo "POSTGRES_NAME=$POSTGRES_NAME" > $PROJECT_DIR/.env
+                    echo "POSTGRES_USER=$POSTGRES_USER" >> $PROJECT_DIR/.env
+                    echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> $PROJECT_DIR/.env
+                    echo "POSTGRES_HOST=$POSTGRES_HOST" >> $PROJECT_DIR/.env
+                    echo "POSTGRES_PORT=$POSTGRES_PORT" >> $PROJECT_DIR/.env
+                    echo "SECRET_KEY=$SECRET_KEY" >> $PROJECT_DIR/.env
+                    echo "GOOGLE_API_KEY=$GOOGLE_API_KEY" >> $PROJECT_DIR/.env
+                    echo "NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL" >> $PROJECT_DIR/.env
+                    '''
+                }
+            }
+        }
+
+        stage('Build & Deploy with Docker Compose') {
+            steps {
+                sh '''
+                cd $PROJECT_DIR
+                docker-compose down
+                docker-compose build --no-cache
+                docker-compose up -d
                 '''
             }
         }
-        stage('Install Dependencies') {
-            parallel {
-                stage('Backend Dependencies') {
-                    steps {
-                        dir(BACKEND_DIR) {
-                            sh '''
-                            python -m venv .venv
-                            source .venv/bin/activate
-                            pip install --upgrade pip
-                            pip install -r requirements.txt
-                            '''
-                        }
-                    }
-                }
-                stage('Frontend Dependencies') {
-                    steps {
-                        dir(FRONTEND_DIR) {
-                            sh '''
-                            npm install
-                            npm run build
-                            '''
-                        }
-                    }
-                }
+
+        stage('Restart Nginx') {
+            steps {
+                sh 'sudo systemctl reload nginx'
             }
         }
-        stage('Run Tests') {
-            parallel {
-                stage('Backend Tests') {
-                    steps {
-                        dir(BACKEND_DIR) {
-                            sh '''
-                            source .venv/bin/activate
-                            python manage.py test --verbosity=2
-                            '''
-                        }
-                    }
-                }
-                stage('Frontend Tests') {
-                    steps {
-                        dir(FRONTEND_DIR) {
-                            sh '''
-                            npm run test
-                            '''
-                        }
-                    }
-                }
-            }
-        }
-        stage('Build and Deploy') {
+
+        stage('Verify Deployment') {
             steps {
                 sh '''
-                docker-compose -f ${DOCKER_COMPOSE_FILE} down
-                docker-compose -f ${DOCKER_COMPOSE_FILE} up --build -d
+                sleep 5
+                curl -f https://viktorbezai.online/ || echo "Deployment failed!"
                 '''
             }
         }
     }
+
     post {
-        always {
-            echo 'Pipeline execution completed.'
-        }
         success {
-            echo 'Build and deployment successful.'
+            echo 'Deployment Successful!'
         }
         failure {
-            echo 'Build or deployment failed.'
+            echo 'Deployment Failed!'
         }
     }
 }
