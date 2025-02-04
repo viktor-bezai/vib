@@ -78,6 +78,7 @@ pipeline {
                 script {
                     sh """
                     cd ${PROJECT_DIR}
+                    chmod +x backend/entrypoint.sh
                     docker compose down
                     docker compose up -d --build
                     """
