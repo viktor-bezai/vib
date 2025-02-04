@@ -18,17 +18,17 @@ export default function HomePage() {
       }}
     >
       {/* Main Heading */}
-      <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold", color: "#1976d2" }}>
+      <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold", color: "var(--primary-color)" }}>
         Welcome to Learn English App!
       </Typography>
 
       {/* Subheading */}
       <Typography variant="h5" gutterBottom >
-        Enjoy learning English by watching videos with words you chose.
+        Enjoy learning English by <Link href={"/video"}>watching videos</Link> with the words of your choice.
       </Typography>
 
       {/* Message about LinkedIn */}
-      <Typography variant="body1" gutterBottom sx={{ marginTop: "1rem" }}>
+      <Typography variant="h6" gutterBottom sx={{ marginTop: "1rem" }}>
         If you'd like to chat, feel free to connect with me on LinkedIn.
       </Typography>
 

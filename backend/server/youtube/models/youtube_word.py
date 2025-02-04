@@ -16,5 +16,6 @@ class YoutubeWord(models.Model):
 
     def __str__(self):
         return self.word
+
     class Meta:
         db_table = 'youtube_word'
