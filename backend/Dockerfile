@@ -30,6 +30,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application source code
 COPY . .
+RUN chmod +x /app/entrypoint.sh
 
 # Change ownership of the application directory
 RUN chown -R appuser:appgroup /app
