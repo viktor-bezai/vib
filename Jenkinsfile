@@ -4,7 +4,6 @@ pipeline {
     environment {
         PROJECT_DIR = "/var/www/viktorbezai"
         BRANCH = "master"
-        JENKINS_USER = "jenkins"
     }
 
     stages {
@@ -14,12 +13,14 @@ pipeline {
             }
         }
 
-        stage('Ensure Directory Exists & Set Permissions') {
+        stage('Ensure Jenkins Can Write to the Directory') {
             steps {
                 sh '''
-                sudo mkdir -p $PROJECT_DIR
-                sudo chown -R $JENKINS_USER:$JENKINS_USER $PROJECT_DIR
-                sudo chmod 755 $PROJECT_DIR
+                if [ ! -d "$PROJECT_DIR" ]; then
+                    echo "Error: Directory $PROJECT_DIR does not exist!"
+                    exit 1
+                fi
+                sudo chown -R jenkins:jenkins $PROJECT_DIR
                 '''
             }
         }
