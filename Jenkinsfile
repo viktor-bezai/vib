@@ -39,14 +39,16 @@ pipeline {
                 ]) {
                     script {
                         sh """
-                        echo "POSTGRES_NAME=\"${POSTGRES_NAME//$/\\$}\"" > ${PROJECT_DIR}/.env
-                        echo "POSTGRES_USER=\"${POSTGRES_USER//$/\\$}\"" >> ${PROJECT_DIR}/.env
-                        echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD//$/\\$}\"" >> ${PROJECT_DIR}/.env
-                        echo "POSTGRES_HOST=\"${POSTGRES_HOST//$/\\$}\"" >> ${PROJECT_DIR}/.env
-                        echo "POSTGRES_PORT=\"${POSTGRES_PORT//$/\\$}\"" >> ${PROJECT_DIR}/.env
-                        echo "SECRET_KEY=\"${SECRET_KEY//$/\\$}\"" >> ${PROJECT_DIR}/.env
-                        echo "GOOGLE_API_KEY=\"${GOOGLE_API_KEY//$/\\$}\"" >> ${PROJECT_DIR}/.env
-                        echo "NEXT_PUBLIC_API_BASE_URL=\"${NEXT_PUBLIC_API_BASE_URL//$/\\$}\"" >> ${PROJECT_DIR}/.env
+                        cat <<EOF > ${PROJECT_DIR}/.env
+                        POSTGRES_NAME=${POSTGRES_NAME}
+                        POSTGRES_USER=${POSTGRES_USER}
+                        POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+                        POSTGRES_HOST=${POSTGRES_HOST}
+                        POSTGRES_PORT=${POSTGRES_PORT}
+                        SECRET_KEY=${SECRET_KEY}
+                        GOOGLE_API_KEY=${GOOGLE_API_KEY}
+                        NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+                        EOF
                         """
                     }
                 }
