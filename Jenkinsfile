@@ -3,13 +3,11 @@ pipeline {
 
     environment {
         PROJECT_DIR = "/var/www/viktorbezai"
-        BACKEND_DIR = "/var/www/viktorbezai/backend"
-        FRONTEND_DIR = "/var/www/viktorbezai/frontend"
         BRANCH = "master"
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Prepare Deployment Directory') {
             steps {
                 sh '''
                 if [ ! -d "$PROJECT_DIR" ]; then
@@ -18,19 +16,30 @@ pipeline {
                 fi
                 sudo chown -R jenkins:jenkins $PROJECT_DIR
                 sudo chmod -R 755 $PROJECT_DIR
+
+                # Remove old code to ensure a clean checkout
+                sudo rm -rf $PROJECT_DIR/*
                 '''
-                git branch: BRANCH, url: 'git@github.com:viktor-bezai/LearnEnglish.git', changelog: false, poll: false
+            }
+        }
+
+        stage('Checkout Code') {
+            steps {
+                sh '''
+                cd $PROJECT_DIR
+                git clone -b $BRANCH --depth 1 git@github.com:viktor-bezai/LearnEnglish.git .
+                '''
             }
         }
 
         stage('Ensure Backend and Frontend Exist') {
             steps {
                 sh '''
-                if [ ! -d "$BACKEND_DIR" ]; then
+                if [ ! -d "$PROJECT_DIR/backend" ]; then
                     echo "Error: Backend directory not found after Git checkout!"
                     exit 1
                 fi
-                if [ ! -d "$FRONTEND_DIR" ]; then
+                if [ ! -d "$PROJECT_DIR/frontend" ]; then
                     echo "Error: Frontend directory not found after Git checkout!"
                     exit 1
                 fi
@@ -75,7 +84,7 @@ pipeline {
                 sh '''
                 sudo apt-get update -y
                 sudo apt-get install -y python3 python3-venv python3-pip
-                cd $BACKEND_DIR
+                cd $PROJECT_DIR/backend
                 python3 -m venv .venv
                 source .venv/bin/activate
                 pip install -r requirements.txt
