@@ -17,18 +17,25 @@ pipeline {
                 sudo chown -R jenkins:jenkins $PROJECT_DIR
                 sudo chmod -R 755 $PROJECT_DIR
 
-                # Remove old code to ensure a clean checkout
-                sudo rm -rf $PROJECT_DIR/*
+                # Remove old code without affecting .git and hidden files
+                find $PROJECT_DIR -mindepth 1 ! -name '.git' -exec sudo rm -rf {} +
                 '''
             }
         }
 
         stage('Checkout Code') {
             steps {
-                sh '''
-                cd $PROJECT_DIR
-                git clone -b $BRANCH --depth 1 git@github.com:viktor-bezai/LearnEnglish.git .
-                '''
+                sshagent(['github-ssh-key']) { // Ensure Jenkins has the correct SSH key
+                    sh '''
+                    cd $PROJECT_DIR
+                    if [ ! -d "$PROJECT_DIR/.git" ]; then
+                        git clone -b $BRANCH --depth 1 git@github.com:viktor-bezai/LearnEnglish.git .
+                    else
+                        git fetch --all
+                        git reset --hard origin/$BRANCH
+                    fi
+                    '''
+                }
             }
         }
 
