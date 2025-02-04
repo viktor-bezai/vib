@@ -1,5 +1,7 @@
 # Virtual environments
 venv
+.env
+.env.*
 *.pyc
 *.pyo
 __pycache__/
