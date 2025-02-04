@@ -71,9 +71,6 @@ pipeline {
 //         }
 
         stage('Deploy Services') {
-            when {
-                branch 'master'
-            }
             steps {
                 script {
                     sh """
