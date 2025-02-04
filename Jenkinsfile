@@ -3,17 +3,13 @@ pipeline {
 
     environment {
         PROJECT_DIR = "/var/www/viktorbezai"
+        BACKEND_DIR = "/var/www/viktorbezai/backend"
+        FRONTEND_DIR = "/var/www/viktorbezai/frontend"
         BRANCH = "master"
     }
 
     stages {
         stage('Checkout Code') {
-            steps {
-                git branch: BRANCH, url: 'git@github.com:viktor-bezai/LearnEnglish.git'
-            }
-        }
-
-        stage('Ensure Jenkins Can Write to the Directory') {
             steps {
                 sh '''
                 if [ ! -d "$PROJECT_DIR" ]; then
@@ -22,6 +18,22 @@ pipeline {
                 fi
                 sudo chown -R jenkins:jenkins $PROJECT_DIR
                 sudo chmod -R 755 $PROJECT_DIR
+                '''
+                git branch: BRANCH, url: 'git@github.com:viktor-bezai/LearnEnglish.git', changelog: false, poll: false
+            }
+        }
+
+        stage('Ensure Backend and Frontend Exist') {
+            steps {
+                sh '''
+                if [ ! -d "$BACKEND_DIR" ]; then
+                    echo "Error: Backend directory not found after Git checkout!"
+                    exit 1
+                fi
+                if [ ! -d "$FRONTEND_DIR" ]; then
+                    echo "Error: Frontend directory not found after Git checkout!"
+                    exit 1
+                fi
                 '''
             }
         }
@@ -63,7 +75,7 @@ pipeline {
                 sh '''
                 sudo apt-get update -y
                 sudo apt-get install -y python3 python3-venv python3-pip
-                cd $PROJECT_DIR/backend
+                cd $BACKEND_DIR
                 python3 -m venv .venv
                 source .venv/bin/activate
                 pip install -r requirements.txt
