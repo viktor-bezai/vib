@@ -61,19 +61,13 @@ class YoutubeAddWordAction:
         )
         return [dto for dto in youtube_video_dto_list if dto.id.video_id not in existing_ids]
 
-    def _save_youtube_videos(
-            self,
-            youtube_videos_dto: List[YouTubeVideoDto],
-            languages: List[str]
-    ) -> List[YoutubeVideo]:
+    def _save_youtube_videos(self, youtube_videos_dto: List[YouTubeVideoDto], languages: List[str]) -> List[
+        YoutubeVideo]:
         """
         Save new YouTube videos to the database.
         """
         youtube_videos = []
         for youtube_video_dto in youtube_videos_dto:
-            # if youtube_video_dto.snippet.defaultAudioLanguage != "en":
-            #     continue  # Skip non-English videos
-
             try:
                 transcript = YouTubeTranscriptApi.get_transcript(youtube_video_dto.id.video_id, languages=languages)
                 youtube_videos.append(
@@ -84,7 +78,14 @@ class YoutubeAddWordAction:
                         transcript=transcript,
                     )
                 )
-            except (NoTranscriptFound, TranscriptsDisabled):
+            except NoTranscriptFound:
+                print(f"⚠️ No transcript found for video: {youtube_video_dto.id.video_id}")
+                continue
+            except TranscriptsDisabled:
+                print(f"❌ Transcripts are disabled for video: {youtube_video_dto.id.video_id}")
+                continue
+            except Exception as e:
+                print(f"🔥 Unexpected error fetching transcript for {youtube_video_dto.id.video_id}: {e}")
                 continue
         return YoutubeVideo.objects.bulk_create(youtube_videos)
 
