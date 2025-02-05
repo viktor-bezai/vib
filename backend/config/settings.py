@@ -27,7 +27,13 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-o)*+f2f!fwwr-^_fvab3qd9_x4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+USE_X_FORWARDED_HOST = True
+ALLOWED_HOSTS = [
+    "viktorbezai.online",
+    "www.viktorbezai.online",
+    "127.0.0.1",
+    "localhost"
+]
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -56,6 +62,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "django.middleware.http.ConditionalGetMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
