@@ -2,6 +2,11 @@
 
 import React from "react";
 import { Container, Typography, Button, Box, Link } from "@mui/material";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import WebIcon from "@mui/icons-material/Public";
+import DescriptionIcon from "@mui/icons-material/Description";
+import ApiIcon from "@mui/icons-material/Api";
 
 export default function AboutPage() {
   return (
@@ -19,7 +24,7 @@ export default function AboutPage() {
       {/* Profile Image */}
       <Box
         component="img"
-        src="/images/profile.jpeg" // Ensure the image is placed in the public/images folder
+        src="/images/profile.jpeg"
         alt="Viktor Bezai"
         sx={{
           width: 150,
@@ -32,7 +37,15 @@ export default function AboutPage() {
       />
 
       {/* About Heading */}
-      <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold", color: "#1976d2" }}>
+      <Typography
+        variant="h3"
+        gutterBottom
+        sx={{
+          fontWeight: "bold",
+          color: "#1976d2",
+          fontSize: { xs: "1.8rem", sm: "2.2rem", md: "3rem" },
+        }}
+      >
         About Me
       </Typography>
 
@@ -43,30 +56,70 @@ export default function AboutPage() {
         and delivering impactful solutions through clean architecture and automation.
       </Typography>
 
-      {/* LinkedIn */}
-      <Typography variant="body1" gutterBottom sx={{ marginTop: "1rem", color: "#555" }}>
-        Feel free to connect with me on <Link href="https://www.linkedin.com/in/viktor-bezai/" target="_blank">LinkedIn</Link>.
-        I’d be happy to chat and collaborate!
-      </Typography>
+      {/* External Links - Centered & Less Wide */}
+      <Box sx={{ marginTop: "2rem", textAlign: "center" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<LinkedInIcon />}
+            href="https://www.linkedin.com/in/viktor-bezai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ maxWidth: "350px", width: "100%" }} // Less wide & centered
+          >
+            Connect on LinkedIn
+          </Button>
 
-      {/* Resume Download */}
-      <Box sx={{ marginTop: "2rem" }}>
-        <Link
-          href="/resume/Viktor_Bezai_Software_Developer.pdf"
-          target="_blank"
-          rel="noopener noreferrer"
-          underline="none"
-        >
-          <Button variant="contained" color="primary" size="large">
+          <Button
+            variant="contained"
+            color="inherit"
+            startIcon={<GitHubIcon />}
+            href="https://github.com/viktor-bezai"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ maxWidth: "350px", width: "100%" }}
+          >
+            View My GitHub
+          </Button>
+
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<DescriptionIcon />}
+            href="/resume/Viktor_Bezai_Software_Developer.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ maxWidth: "350px", width: "100%" }}
+          >
             Download My Resume
           </Button>
-        </Link>
-      </Box>
 
-      {/* Swagger Link */}
-      <Typography variant="body1" gutterBottom sx={{ marginTop: "2rem", color: "#555" }}>
-        Want to explore the API? Check out the <Link href="/swagger">Swagger documentation</Link> for this website.
-      </Typography>
+          <Button
+            variant="contained"
+            color="info"
+            startIcon={<ApiIcon />}
+            href="/swagger"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ maxWidth: "350px", width: "100%" }}
+          >
+            API Documentation
+          </Button>
+
+          <Button
+            variant="contained"
+            color="success"
+            startIcon={<WebIcon />}
+            href="https://mystical-egypt-travels.online/"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ maxWidth: "350px", width: "100%" }}
+          >
+            Mystical Egypt Travels 🌍
+          </Button>
+        </Box>
+      </Box>
     </Container>
   );
 }

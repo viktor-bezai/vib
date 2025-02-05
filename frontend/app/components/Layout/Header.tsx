@@ -33,7 +33,7 @@ export default function Header() {
                 fontFamily: "'Roboto', sans-serif",
               }}
             >
-              Learn English App
+              Viktor Bezai
             </Typography>
           </Link>
         </Box>
