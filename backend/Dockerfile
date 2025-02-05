@@ -32,14 +32,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application source code
 COPY . .
 
-# ✅ Ensure appuser owns the relevant directories
-RUN chown -R appuser:appgroup /app/staticfiles /app/media /app
+# ✅ Ensure `staticfiles` and `media` directories exist before changing ownership
+RUN mkdir -p /app/staticfiles /app/media
 
-# ✅ Set correct permissions before switching users
+# ✅ Fix permissions before switching users
+RUN chown -R appuser:appgroup /app/staticfiles /app/media /app
 RUN chmod -R 755 /app
 RUN chmod -R 777 /app/staticfiles /app/media
 
-# ✅ Set the non-root user
+# ✅ Switch to non-root user
 USER appuser
 
 # Expose application port
