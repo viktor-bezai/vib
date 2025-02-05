@@ -71,8 +71,10 @@ pipeline {
                 script {
                     sh '''
                     cd ${PROJECT_DIR}
-                    docker compose down
-                    docker compose up -d --build
+                    docker compose down --rmi all --volumes --remove-orphans
+                    docker system prune -a --volumes -f
+                    docker compose build --no-cache
+                    docker compose up -d --force-recreate --build
                     '''
                 }
             }
