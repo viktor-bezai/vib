@@ -3,6 +3,9 @@ version: '3.8'
 networks:
   app_network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
 
 services:
   backend:
@@ -13,7 +16,8 @@ services:
     ports:
       - "8001:8001"
     networks:
-      - app_network
+      app_network:
+        ipv4_address: 192.168.100.10
     env_file:
       - .env
     entrypoint: ["/app/entrypoint.sh"]
@@ -27,7 +31,8 @@ services:
     ports:
       - "3001:3001"
     networks:
-      - app_network
+      app_network:
+        ipv4_address: 192.168.100.20
     env_file:
       - .env
     environment:

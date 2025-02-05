@@ -50,7 +50,8 @@ docker-compose down
 
 #### **3️⃣ Check Backend Logs (Optional for Debugging)**  
 ```sh
-docker-compose logs -f backend
+docker logs -f django_backend
+docker logs -f nextjs_frontend
 ```
 
 #### **4️⃣ Create a Superuser for Django Admin Panel**  
