@@ -47,7 +47,7 @@ export default function HomePage() {
             marginBottom: "1.5rem",
           }}
         >
-          Hi, I'm Viktor Bezai. <br />
+          {"Hi, I'm Viktor Bezai."} <br />
           Learning English by{" "}
           <Link href={"/video"} style={{ textDecoration: "none", color: "#1976d2", fontWeight: "bold" }}>
             watching videos
