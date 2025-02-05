@@ -63,6 +63,11 @@ EOF
                 script {
                     sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
+
+                    # Ensure correct permissions for entrypoint.sh before building
+                    chmod +x ${PROJECT_DIR}/backend/entrypoint.sh
+                    chown www-data:www-data ${PROJECT_DIR}/backend/entrypoint.sh
+
                     docker compose build --no-cache
                     '''
                 }
