@@ -59,6 +59,7 @@ pipeline {
                     script {
                         sh '''#!/bin/bash
                         cat > ${PROJECT_DIR}/.env <<EOF
+ENVIRONMENT=prod
 POSTGRES_NAME=${POSTGRES_NAME}
 POSTGRES_USER=${POSTGRES_USER}
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD//$/\\$}
