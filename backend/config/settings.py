@@ -27,6 +27,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-o)*+f2f!fwwr-^_fvab3qd9_x4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+USE_X_FORWARDED_HOST = True
 ALLOWED_HOSTS = [
     "viktorbezai.online",
     "www.viktorbezai.online",
@@ -61,6 +62,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "django.middleware.http.ConditionalGetMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
