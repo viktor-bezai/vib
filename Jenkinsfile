@@ -30,6 +30,17 @@ pipeline {
             }
         }
 
+        stage('Fix Permissions') {
+            steps {
+                script {
+                    sh '''#!/bin/bash
+                    chmod +x ${PROJECT_DIR}/backend/entrypoint.sh
+                    chmod -R 755 ${PROJECT_DIR}/backend
+                    '''
+                }
+            }
+        }
+
         stage('Load Environment Variables') {
             steps {
                 withCredentials([
