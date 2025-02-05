@@ -32,11 +32,6 @@ class YoutubeWordView(APIView):
             word = request_serializer.validated_data["word"]
 
             youtube_words = YoutubeWord.objects.filter(word=word, language=language)
-            if not youtube_words.exists():
-                return Response(
-                    {"error": "No matching records found."},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
 
             response_serializer = YoutubeWordResponseSerializer(youtube_words, many=True)
             return Response(response_serializer.data, status=status.HTTP_200_OK)

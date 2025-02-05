@@ -22,25 +22,46 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-o)*+f2f!fwwr-^_fvab3qd9_x4u+^#h22&(%^*+)#h_1fjn9)%")
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+ENVIRONMENT = os.getenv('ENVIRONMENT')
+IS_LOCAL = ENVIRONMENT == 'local'
+IS_PROD = ENVIRONMENT != 'local'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = True if IS_LOCAL else False
 DEBUG = True
 
-USE_X_FORWARDED_HOST = True
 ALLOWED_HOSTS = [
     "viktorbezai.online",
     "www.viktorbezai.online",
-    "127.0.0.1",
-    "localhost"
 ]
-CORS_ALLOW_ALL_ORIGINS = True
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://localhost:8000",
-    "http://localhost:8001",
+    "https://viktorbezai.online",
+    "https://www.viktorbezai.online",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://viktorbezai.online",
+    "https://www.viktorbezai.online"
+]
+if IS_LOCAL:
+    ALLOWED_HOSTS.append('localhost')
+    ALLOWED_HOSTS.append('127.0.0.1')
+    CORS_ALLOWED_ORIGINS.append("http://localhost:3000")
+    CORS_ALLOWED_ORIGINS.append("http://localhost:3001")
+    CSRF_TRUSTED_ORIGINS.append('http://localhost:8000/')
+    CSRF_TRUSTED_ORIGINS.append('http://localhost:8001/')
+if IS_PROD:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SWAGGER_SETTINGS = {
+        'USE_SESSION_AUTH': False,
+        'DEFAULT_API_URL': 'https://viktorbezai.online',
+    }
 
 # Application definition
 
