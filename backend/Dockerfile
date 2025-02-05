@@ -32,13 +32,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application source code
 COPY . .
 
-# ✅ Ensure `staticfiles` and `media` directories exist before changing ownership
+# ✅ Ensure `staticfiles` and `media` directories exist **before switching users**
 RUN mkdir -p /app/staticfiles /app/media
 
-# ✅ Fix permissions before switching users
-RUN chown -R appuser:appgroup /app/staticfiles /app/media /app
+# ✅ Set correct permissions while still as root
+RUN chown -R appuser:appgroup /app
 RUN chmod -R 755 /app
-RUN chmod -R 777 /app/staticfiles /app/media
+RUN chmod -R 777 /app/staticfiles
+RUN chmod -R 777 /app/media
 
 # ✅ Switch to non-root user
 USER appuser
