@@ -13,6 +13,7 @@ pipeline {
             steps {
                 script {
                     sh '''
+                    #!/bin/bash
                     mkdir -p ${PROJECT_DIR}
                     cd ${PROJECT_DIR}
                     if [ -d .git ]; then
@@ -39,6 +40,7 @@ pipeline {
                 ]) {
                     script {
                         sh '''
+                        #!/bin/bash
                         cat > ${PROJECT_DIR}/.env << EOF
                         POSTGRES_NAME=${POSTGRES_NAME}
                         POSTGRES_USER=${POSTGRES_USER}
