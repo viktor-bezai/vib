@@ -39,7 +39,7 @@ pipeline {
                 ]) {
                     script {
                         sh '''
-                        cat << 'EOF' > ${PROJECT_DIR}/.env
+                        cat > ${PROJECT_DIR}/.env << EOF
                         POSTGRES_NAME=${POSTGRES_NAME}
                         POSTGRES_USER=${POSTGRES_USER}
                         POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
