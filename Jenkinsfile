@@ -88,6 +88,11 @@ EOF
                     chmod -R 777 ${PROJECT_DIR}/backend/staticfiles
                     chown -R www-data:www-data ${PROJECT_DIR}/backend/staticfiles
 
+                    # Ensure correct permissions for media files
+                    mkdir -p ${PROJECT_DIR}/backend/media
+                    chmod -R 777 ${PROJECT_DIR}/backend/media
+                    chown -R www-data:www-data ${PROJECT_DIR}/backend/media
+
                     # Build images without cache for fresh updates
                     docker compose build --no-cache
                     '''
