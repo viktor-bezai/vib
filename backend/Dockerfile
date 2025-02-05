@@ -31,15 +31,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application source code
 COPY . .
-RUN chmod +x /app/entrypoint.sh
 
-# Change ownership of the application directory
-RUN chown -R appuser:appgroup /app
+# ✅ Ensure appuser owns the relevant directories
+RUN chown -R appuser:appgroup /app/staticfiles /app/media /app
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# ✅ Set correct permissions before switching users
+RUN chmod -R 755 /app
+RUN chmod -R 777 /app/staticfiles /app/media
 
-# Set the non-root user
+# ✅ Set the non-root user
 USER appuser
 
 # Expose application port
