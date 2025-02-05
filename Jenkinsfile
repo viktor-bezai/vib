@@ -64,9 +64,10 @@ EOF
                     sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
 
-                    # Ensure correct permissions for entrypoint.sh before building
-                    chmod +x ${PROJECT_DIR}/backend/entrypoint.sh
-                    chown www-data:www-data ${PROJECT_DIR}/backend/entrypoint.sh
+                    # Ensure correct permissions for static files
+                    mkdir -p ${PROJECT_DIR}/backend/staticfiles
+                    chmod -R 777 ${PROJECT_DIR}/backend/staticfiles
+                    chown -R www-data:www-data ${PROJECT_DIR}/backend/staticfiles
 
                     docker compose build --no-cache
                     '''
@@ -79,8 +80,17 @@ EOF
                 script {
                     sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
+
+                    # Stop and remove old containers
                     docker compose down --rmi all --volumes --remove-orphans
                     docker system prune -a --volumes -f
+
+                    # Ensure correct permissions for static and media files before deployment
+                    mkdir -p ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
+                    chmod -R 777 ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
+                    chown -R www-data:www-data ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
+
+                    # Build and start new containers
                     docker compose build --no-cache
                     docker compose up -d --force-recreate --build
                     '''
