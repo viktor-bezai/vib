@@ -12,8 +12,7 @@ pipeline {
         stage('Pull Latest Code') {
             steps {
                 script {
-                    sh '''
-                    #!/bin/bash
+                    sh '''#!/bin/bash
                     mkdir -p ${PROJECT_DIR}
                     cd ${PROJECT_DIR}
                     if [ -d .git ]; then
@@ -39,8 +38,7 @@ pipeline {
                     string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL')
                 ]) {
                     script {
-                        sh '''
-                        #!/bin/bash
+                        sh '''#!/bin/bash
                         cat > ${PROJECT_DIR}/.env << EOF
                         POSTGRES_NAME=${POSTGRES_NAME}
                         POSTGRES_USER=${POSTGRES_USER}
@@ -51,6 +49,7 @@ pipeline {
                         GOOGLE_API_KEY=${GOOGLE_API_KEY}
                         NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
                         EOF
+                        chmod 600 ${PROJECT_DIR}/.env
                         '''
                     }
                 }
@@ -60,9 +59,9 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
-                    sh '''
+                    sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
-                    docker compose build
+                    docker compose build --no-cache
                     '''
                 }
             }
@@ -71,11 +70,10 @@ pipeline {
         stage('Deploy Services') {
             steps {
                 script {
-                    sh '''
+                    sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
                     docker compose down --rmi all --volumes --remove-orphans
                     docker system prune -a --volumes -f
-                    docker compose build --no-cache
                     docker compose --env-file .env up -d --force-recreate --build
                     '''
                 }
