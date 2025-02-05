@@ -35,6 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "viktorbezai.online",
     "www.viktorbezai.online",
+    "64.227.119.29",
 ]
 
 CORS_ALLOWED_ORIGINS = [
