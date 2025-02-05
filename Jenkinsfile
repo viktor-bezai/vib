@@ -15,7 +15,12 @@ pipeline {
                     sh '''#!/bin/bash
                     mkdir -p ${PROJECT_DIR}
                     cd ${PROJECT_DIR}
+
+                    # Reset any local changes to avoid conflicts
                     if [ -d .git ]; then
+                        echo "⚠️ Resetting local changes..."
+                        git reset --hard HEAD
+                        git clean -fd  # Remove untracked files and directories
                         git pull origin master
                     else
                         git clone git@github.com:viktor-bezai/LearnEnglish.git .
