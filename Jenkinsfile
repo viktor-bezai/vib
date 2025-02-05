@@ -77,7 +77,7 @@ EOF
                     docker compose down --rmi all --volumes --remove-orphans
                     docker system prune -a --volumes -f
                     docker compose build --no-cache
-                    docker compose --env-file .env up -d --force-recreate --build
+                    docker compose up -d --force-recreate --build
                     '''
                 }
             }
