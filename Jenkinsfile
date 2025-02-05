@@ -73,8 +73,8 @@ pipeline {
                     cd ${PROJECT_DIR}
                     docker compose down --rmi all --volumes --remove-orphans
                     docker system prune -a --volumes -f
-                    docker compose build --no-cache
-                    docker compose up -d --force-recreate --build
+                    docker compose build --env-file .env --no-cache
+                    docker compose up -d --env-file .env --force-recreate --build
                     '''
                 }
             }
