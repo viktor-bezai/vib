@@ -1,15 +1,26 @@
 #!/bin/sh
 
-# Wait for PostgreSQL to be ready using a loop
-echo "Waiting for database..."
-until python -c "import psycopg2; psycopg2.connect(dbname='$POSTGRES_NAME', user='$POSTGRES_USER', password='$POSTGRES_PASSWORD', host='$POSTGRES_HOST', port='$POSTGRES_PORT')" 2>/dev/null; do
+# Ensure we exit on error
+set -e
+
+echo "Waiting for PostgreSQL..."
+timeout=30
+count=0
+
+while ! pg_isready -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER"; do
+  echo "Database not ready. Retrying..."
   sleep 1
+  count=$((count+1))
+  if [ $count -ge $timeout ]; then
+    echo "⛔ ERROR: PostgreSQL is not ready after $timeout seconds. Exiting."
+    exit 1
+  fi
 done
-echo "Database is ready."
+
+echo "✅ PostgreSQL is ready!"
 
 # Apply database migrations
 echo "Applying database migrations..."
-python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 
 # Collect static files
