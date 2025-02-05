@@ -19,12 +19,6 @@ done
 
 echo "✅ PostgreSQL is ready!"
 
-# Ensure correct permissions for static and media directories
-echo "Setting correct permissions..."
-mkdir -p /app/staticfiles /app/media
-chmod -R 777 /app/staticfiles /app/media
-chown -R www-data:www-data /app/staticfiles /app/media
-
 # Apply database migrations
 echo "Applying database migrations..."
 python manage.py migrate --noinput
