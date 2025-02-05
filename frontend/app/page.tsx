@@ -29,7 +29,7 @@ export default function HomePage() {
 
       {/* Message about LinkedIn */}
       <Typography variant="h6" gutterBottom sx={{ marginTop: "1rem" }}>
-        {"If you'd like to chat, feel free to connect with me on LinkedIn."}
+        {"If you&apos;d like to chat, feel free to connect with me on LinkedIn."}
       </Typography>
 
       {/* LinkedIn Button */}
