@@ -16,12 +16,13 @@ pipeline {
                     mkdir -p ${PROJECT_DIR}
                     cd ${PROJECT_DIR}
 
-                    # Reset any local changes to avoid conflicts
+                    # Ensure clean state
                     if [ -d .git ]; then
                         echo "⚠️ Resetting local changes..."
-                        git reset --hard HEAD
-                        git clean -fd  # Remove untracked files and directories
-                        git pull origin master
+                        git fetch --all
+                        git reset --hard origin/master
+                        git clean -fd
+                        git pull --ff-only origin master
                     else
                         git clone git@github.com:viktor-bezai/LearnEnglish.git .
                     fi
@@ -34,8 +35,10 @@ pipeline {
             steps {
                 script {
                     sh '''#!/bin/bash
-                    chmod +x ${PROJECT_DIR}/backend/entrypoint.sh
-                    chmod -R 755 ${PROJECT_DIR}/backend
+                    # Ensure correct permissions for static/media files before deployment
+                    sudo chown -R 1000:1000 ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
+                    sudo chmod -R 777 ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
+                    sudo chmod +x ${PROJECT_DIR}/backend/entrypoint.sh
                     '''
                 }
             }
@@ -66,7 +69,7 @@ GOOGLE_API_KEY=${GOOGLE_API_KEY}
 NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
 EOF
 
-                        # Ensure the .env file has correct permissions
+                        # Ensure the .env file has secure permissions
                         chmod 600 ${PROJECT_DIR}/.env
                         '''
                     }
@@ -85,6 +88,7 @@ EOF
                     chmod -R 777 ${PROJECT_DIR}/backend/staticfiles
                     chown -R www-data:www-data ${PROJECT_DIR}/backend/staticfiles
 
+                    # Build images without cache for fresh updates
                     docker compose build --no-cache
                     '''
                 }
@@ -97,16 +101,11 @@ EOF
                     sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
 
-                    # Stop and remove old containers
+                    # Stop and remove old containers before deploying
                     docker compose down --rmi all --volumes --remove-orphans
                     docker system prune -a --volumes -f
 
-                    # Ensure correct permissions for static and media files before deployment
-                    mkdir -p ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
-                    chmod -R 777 ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
-                    chown -R www-data:www-data ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
-
-                    # Build and start new containers
+                    # Build fresh images & run containers
                     docker compose build --no-cache
                     docker compose up -d --force-recreate --build
                     '''
