@@ -1,69 +1,102 @@
 "use client";
 
 import React from "react";
-import { Container, Typography, Button, Box } from "@mui/material";
+import { Container, Typography, Button, Box, Paper } from "@mui/material";
 import Link from "next/link";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 export default function HomePage() {
   return (
     <Container
       maxWidth="md"
       sx={{
-        textAlign: "center",
         marginTop: "3rem",
-        padding: "2rem",
-        backgroundColor: "#f5f5f5",
-        borderRadius: "12px",
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+        padding: { xs: "1.5rem", sm: "2rem", md: "3rem" },
       }}
     >
-      {/* Main Heading */}
-      <Typography
+      <Paper
+        elevation={3}
+        sx={{
+          padding: { xs: "1.5rem", sm: "2rem", md: "3rem" },
+          textAlign: "center",
+          backgroundColor: "#ffffff",
+          borderRadius: "12px",
+          boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
+        }}
+      >
+        {/* Main Heading */}
+        <Typography
           variant="h3"
           gutterBottom
           sx={{
             fontWeight: "bold",
-            color: "var(--primary-color)",
-            fontSize: { xs: "1.8rem", sm: "2.2rem", md: "2.8rem" }, // Responsive font size
+            color: "#1976d2",
+            fontSize: { xs: "1.2rem", sm: "1.6rem", md: "2rem" },
+            marginBottom: "15px"
           }}
         >
-          {"Welcome to my personal Web App!"}
-      </Typography>
+          Welcome to My Personal Web App!
+        </Typography>
 
-      {/* Subheading */}
-      <Typography
-      variant="h5"
-      gutterBottom
-      sx={{
-            fontSize: { xs: "1.2rem", sm: "1.5rem", md: "2rem" },
+        {/* Subheading */}
+        <Typography
+          variant="body1"
+          gutterBottom
+          sx={{
+            fontSize: { xs: "1rem", sm: "1rem", md: "1.4rem" },
+            marginBottom: "1.5rem",
           }}
-      >
-        {"Hi, I'm Viktor Bezai. "} <br />
-          {"Learning English by "}
-          <Link href={"/video"}>
+        >
+          Hi, I'm Viktor Bezai. <br />
+          Learning English by{" "}
+          <Link href={"/video"} style={{ textDecoration: "none", color: "#1976d2", fontWeight: "bold" }}>
             watching videos
           </Link>{" "}
-          {"is in development and will be available soon."} <br />
-          {"You can download my resume on the "}
-          <Link href={"/about"}>
+          is in development and will be available soon.
+          <br />
+          You can download my resume on the{" "}
+          <Link href={"/about"} style={{ textDecoration: "none", color: "#1976d2", fontWeight: "bold" }}>
             About page
-          </Link>
-          {" or connect with me on LinkedIn."}
-      </Typography>
+          </Link>{" "}
+          or connect with me on LinkedIn.
+        </Typography>
 
-      {/* LinkedIn Button */}
-      <Box sx={{ marginTop: "1.5rem" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          href="https://www.linkedin.com/in/viktor-bezai/"
-          target="_blank"
-          rel="noopener noreferrer"
+        {/* Tech Stack Section */}
+        <Box
+          sx={{
+            marginTop: "2rem",
+            padding: "1rem",
+            backgroundColor: "#f9f9f9",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.08)",
+          }}
         >
-          {"Message Me on LinkedIn"}
-        </Button>
-      </Box>
+          <Typography variant="h6" sx={{ fontWeight: "bold", color: "#333" }}>
+            🔧 Built With:
+          </Typography>
+          <Typography variant="body1" sx={{ color: "#555" }}>
+            This web application is developed using{" "}
+            <strong>Django</strong> (Backend), <strong>Next.js</strong> (Frontend),{" "}
+            <strong>Docker</strong> (Containerization), and <strong>Jenkins</strong> (CI/CD), and it is deployed on a{" "}
+            <strong>VPS</strong>.
+          </Typography>
+        </Box>
+
+        {/* LinkedIn Button */}
+        <Box sx={{ marginTop: "2rem" }}>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<LinkedInIcon />}
+            href="https://www.linkedin.com/in/viktor-bezai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{ maxWidth: "350px", width: "100%" }} // Less wide & centered
+          >
+            Connect on LinkedIn
+          </Button>
+        </Box>
+      </Paper>
     </Container>
   );
 }
