@@ -72,8 +72,7 @@ const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
           color="primary"
           fullWidth
           onClick={handleSearch}
-//           disabled={!searchWord.trim() || !!error}
-          disabled={true}
+          disabled={!searchWord.trim() || !!error}
           sx={{
             height: "100%",
             borderRadius: "8px",

@@ -1,3 +1,5 @@
+import random
+import time
 from typing import List
 
 from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
@@ -19,7 +21,7 @@ class YoutubeAddWordAction:
         youtube_words_list = []
         counter = 0
 
-        while len(youtube_words_list) < 5 or counter >= 10:
+        while len(youtube_words_list) < 3 or counter >= 3:
             youtube_search_dto = self.youtube_search_adapter.search(
                 youtube_word=youtube_word, next_page_token=next_page_token
             )
@@ -69,6 +71,8 @@ class YoutubeAddWordAction:
         youtube_videos = []
         for youtube_video_dto in youtube_videos_dto:
             try:
+                sleep_time = random.uniform(0.5, 2.0)
+                time.sleep(sleep_time)
                 transcript = YouTubeTranscriptApi.get_transcript(youtube_video_dto.id.video_id, languages=languages)
                 youtube_videos.append(
                     YoutubeVideo(
@@ -104,4 +108,5 @@ class YoutubeAddWordAction:
                             video=video,
                         )
                     )
+                    break
         return youtube_words
