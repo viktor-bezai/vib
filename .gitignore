@@ -68,3 +68,5 @@ Thumbs.db
 /deployment.txt
 /connection.txt
 /backend/staticfiles/
+/backend/credentials/
+/backend/token.json
