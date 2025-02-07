@@ -1,10 +1,12 @@
 import re
+from typing import List
+
 from django.db import transaction
 from server.youtube.models import YoutubeVideo, YoutubeWord
 
 
 class YouTubeAddWordAction:
-    def execute(self, youtube_word: str):
+    def execute(self, youtube_word: str) -> List[YoutubeWord]:
         """
         Search for the given youtube_word in video transcripts and create YoutubeWord entries
         only if they do not already exist in the database.
