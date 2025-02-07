@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Container, Typography, Button, Box } from "@mui/material";
+import {Box, Button, Container, Typography} from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import WebIcon from "@mui/icons-material/Public";
@@ -43,30 +43,43 @@ export default function AboutPage() {
         sx={{
           fontWeight: "bold",
           color: "#1976d2",
-          fontSize: { xs: "1.8rem", sm: "2.2rem", md: "3rem" },
+          fontSize: {xs: "1.8rem", sm: "2.2rem", md: "3rem"},
         }}
       >
         About Me
       </Typography>
 
       {/* Short Description */}
-      <Typography variant="body1" gutterBottom sx={{ marginTop: "1rem", color: "#555" }}>
-        Hello! I’m Viktor Bezai, a passionate Full-Stack Software Developer specializing in building scalable web
-        applications with Python (Django/FastAPI) and JavaScript (React/Next.js). I thrive on solving complex challenges
-        and delivering impactful solutions through clean architecture and automation.
+      <Typography
+        variant="body1"
+        gutterBottom
+        sx={{
+          marginTop: "1rem",
+          color: "#555",
+          width: "80%",
+          margin: "0 auto",
+          textAlign: "left",
+        }}
+      >
+        {`Hello! I’m Viktor Bezai, a passionate Full-Stack Software Developer specializing in building scalable web
+          applications with Python (Django/FastAPI) and JavaScript (React/Next.js).`}
+        <br/>
+        {`I thrive on solving complex challenges and delivering impactful solutions 
+        through clean architecture and automation.`}
       </Typography>
 
+
       {/* External Links - Centered & Less Wide */}
-      <Box sx={{ marginTop: "2rem", textAlign: "center" }}>
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+      <Box sx={{marginTop: "2rem", textAlign: "center"}}>
+        <Box sx={{display: "flex", flexDirection: "column", alignItems: "center", gap: 2}}>
           <Button
             variant="contained"
             color="primary"
-            startIcon={<LinkedInIcon />}
+            startIcon={<LinkedInIcon/>}
             href="https://www.linkedin.com/in/viktor-bezai/"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ maxWidth: "350px", width: "100%" }} // Less wide & centered
+            sx={{maxWidth: "350px", width: "100%"}} // Less wide & centered
           >
             Connect on LinkedIn
           </Button>
@@ -74,11 +87,11 @@ export default function AboutPage() {
           <Button
             variant="contained"
             color="inherit"
-            startIcon={<GitHubIcon />}
+            startIcon={<GitHubIcon/>}
             href="https://github.com/viktor-bezai"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ maxWidth: "350px", width: "100%" }}
+            sx={{maxWidth: "350px", width: "100%"}}
           >
             View My GitHub
           </Button>
@@ -86,11 +99,11 @@ export default function AboutPage() {
           <Button
             variant="contained"
             color="secondary"
-            startIcon={<DescriptionIcon />}
+            startIcon={<DescriptionIcon/>}
             href="/resume/Viktor_Bezai_Software_Developer.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ maxWidth: "350px", width: "100%" }}
+            sx={{maxWidth: "350px", width: "100%"}}
           >
             Download My Resume
           </Button>
@@ -98,11 +111,11 @@ export default function AboutPage() {
           <Button
             variant="contained"
             color="info"
-            startIcon={<ApiIcon />}
+            startIcon={<ApiIcon/>}
             href="/swagger"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ maxWidth: "350px", width: "100%" }}
+            sx={{maxWidth: "350px", width: "100%"}}
           >
             API Documentation
           </Button>
@@ -110,11 +123,11 @@ export default function AboutPage() {
           <Button
             variant="contained"
             color="success"
-            startIcon={<WebIcon />}
+            startIcon={<WebIcon/>}
             href="https://mystical-egypt-travels.online/"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{ maxWidth: "350px", width: "100%" }}
+            sx={{maxWidth: "350px", width: "100%"}}
           >
             Mystical Egypt Travels 🌍
           </Button>

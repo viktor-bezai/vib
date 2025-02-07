@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, {useState} from "react";
+import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
-import { Container, Typography } from "@mui/material";
+import {Container, Typography} from "@mui/material";
 import VideoSearchBar from "../components/Video/VideoSearchBar";
 import VideoPlayer from "../components/Video/VideoPlayer";
 
 
-export interface Video {
+export interface VideoInterface {
   id: number;
   word: string;
   language: string;
@@ -16,13 +16,13 @@ export interface Video {
   video: number;
 }
 
-const fetchVideos = async (word: string): Promise<Video[]> => {
+const fetchVideos = async (word: string): Promise<VideoInterface[]> => {
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
   const response = await axios.get(`${baseUrl}/youtube/?word=${word}`);
 
   // If fewer than 10 videos exist, trigger a post request to add more
   if (response.data.length < 5) {
-    await axios.post(`${baseUrl}/youtube/`, { word });
+    await axios.post(`${baseUrl}/youtube/`, {word});
 
     // Wait a moment for the backend to process new videos (optional)
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -40,7 +40,7 @@ export default function VideoPage() {
   const [word, setWord] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data, isLoading, isError } = useQuery<Video[]>({
+  const {data, isLoading, isError} = useQuery<VideoInterface[]>({
     queryKey: ["videos", word],
     queryFn: () => fetchVideos(word),
     enabled: !!word,
@@ -60,8 +60,8 @@ export default function VideoPage() {
   };
 
   return (
-    <Container sx={{ marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <VideoSearchBar onSearch={handleSearch} />
+    <Container sx={{marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center"}}>
+      <VideoSearchBar onSearch={handleSearch}/>
 
       {isLoading && <Typography>Loading...</Typography>}
       {isError && <Typography color="error">Failed to fetch videos.</Typography>}
