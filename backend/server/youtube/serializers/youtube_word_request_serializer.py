@@ -9,6 +9,7 @@ class YoutubeWordRequestSerializer(serializers.Serializer):
     def validate_word(self, value):
         # Trim spaces from left and right
         value = value.strip()
+        value = value.lower()
 
         # Ensure only English letters, spaces, and hyphens are allowed
         if not re.match(r'^[A-Za-z\s\-]+$', value):
