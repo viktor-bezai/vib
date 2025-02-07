@@ -1,112 +1,44 @@
-import random
-import time
+import re
 from typing import List
 
-from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
-
-from server.youtube.adapters.youtube_search_adapter import YouTubeSearchAdapter
-from server.youtube.dtos.youtube_video_dto import YouTubeVideoDto
+from django.db import transaction
 from server.youtube.models import YoutubeVideo, YoutubeWord
 
 
-class YoutubeAddWordAction:
-    def __init__(self):
-        self.youtube_search_adapter = YouTubeSearchAdapter()
-
-    def execute(self, youtube_word: str, languages: List[str]) -> List[YoutubeWord]:
+class YouTubeAddWordAction:
+    def execute(self, youtube_word: str) -> List[YoutubeWord]:
         """
-        Search YouTube for videos containing the given word, associate them with timestamped URLs, and save to the DB.
+        Search for the given youtube_word in video transcripts and create YoutubeWord entries
+        only if they do not already exist in the database.
         """
-        next_page_token = None
-        youtube_words_list = []
-        counter = 0
+        youtube_videos = YoutubeVideo.search_videos_by_transcript(youtube_word=youtube_word)
 
-        while len(youtube_words_list) < 3 or counter >= 3:
-            youtube_search_dto = self.youtube_search_adapter.search(
-                youtube_word=youtube_word, next_page_token=next_page_token
-            )
-
-            youtube_words = self._process_search_results(
-                    youtube_video_dto_list=youtube_search_dto.items,
-                    youtube_word=youtube_word,
-                    languages=languages
-                )
-            youtube_words_list.extend(youtube_words)
-            next_page_token = youtube_search_dto.next_page_token
-            counter += 1
-            if not next_page_token:
-                break
-
-        return YoutubeWord.objects.bulk_create(youtube_words_list)
-
-    def _process_search_results(
-            self,
-            youtube_video_dto_list: List[YouTubeVideoDto],
-            youtube_word: str,
-            languages: List[str]
-    ) -> List[YoutubeWord]:
-        """
-        Process YouTube search results: filter, save, and prepare words.
-        """
-        filtered_videos_dto = self._filter_existing_videos(youtube_video_dto_list)
-        saved_videos = self._save_youtube_videos(filtered_videos_dto, languages)
-        return self._prepare_youtube_words(saved_videos, youtube_word)
-
-    def _filter_existing_videos(self, youtube_video_dto_list: List[YouTubeVideoDto]) -> List[YouTubeVideoDto]:
-        """
-        Exclude videos that already exist in the database.
-        """
-        existing_ids = set(
-            YoutubeVideo.objects.filter(
-                video_id__in=[dto.id.video_id for dto in youtube_video_dto_list]
-            ).values_list("video_id", flat=True)
+        # Store existing YoutubeWord records to avoid duplicates
+        existing_words = set(
+            YoutubeWord.objects.filter(word=youtube_word).values_list("word", "timestamped_url", "video_id")
         )
-        return [dto for dto in youtube_video_dto_list if dto.id.video_id not in existing_ids]
 
-    def _save_youtube_videos(self, youtube_videos_dto: List[YouTubeVideoDto], languages: List[str]) -> List[
-        YoutubeVideo]:
-        """
-        Save new YouTube videos to the database.
-        """
-        youtube_videos = []
-        for youtube_video_dto in youtube_videos_dto:
-            try:
-                sleep_time = random.uniform(0.5, 2.0)
-                time.sleep(sleep_time)
-                transcript = YouTubeTranscriptApi.get_transcript(youtube_video_dto.id.video_id, languages=languages)
-                youtube_videos.append(
-                    YoutubeVideo(
-                        video_id=youtube_video_dto.id.video_id,
-                        title=youtube_video_dto.snippet.title,
-                        description=youtube_video_dto.snippet.description,
-                        transcript=transcript,
-                    )
-                )
-            except NoTranscriptFound:
-                print(f"⚠️ No transcript found for video: {youtube_video_dto.id.video_id}")
-                continue
-            except TranscriptsDisabled:
-                print(f"❌ Transcripts are disabled for video: {youtube_video_dto.id.video_id}")
-                continue
-            except Exception as e:
-                print(f"🔥 Unexpected error fetching transcript for {youtube_video_dto.id.video_id}: {e}")
-                continue
-        return YoutubeVideo.objects.bulk_create(youtube_videos)
+        # Use the same regex pattern for whole word matching
+        regex_pattern = re.compile(rf'\b{re.escape(youtube_word)}\b', re.IGNORECASE)
 
-    def _prepare_youtube_words(self, youtube_videos: List[YoutubeVideo], youtube_word: str) -> List[YoutubeWord]:
-        """
-        Prepare YouTubeWord objects from video transcripts.
-        """
-        youtube_words = []
-        for video in youtube_videos:
-            for entry in video.transcript or []:
-                if youtube_word.lower() in entry["text"].lower():
-                    youtube_words.append(
-                        YoutubeWord(
-                            word=youtube_word,
-                            timestamped_url=f"https://www.youtube.com/watch?v={video.video_id}&t={int(entry['start'])}s",
-                            video=video,
+        new_words = []
+        for youtube_video in youtube_videos:
+            for entry in youtube_video.transcript or []:
+                if regex_pattern.search(entry["text"]):
+                    timestamped_url = f"https://www.youtube.com/watch?v={youtube_video.video_id}&t={int(entry['start'])}s"
+
+                    # Ensure uniqueness before inserting
+                    key = (youtube_word, timestamped_url, youtube_video.id)
+                    if key not in existing_words:
+                        new_words.append(
+                            YoutubeWord(
+                                word=youtube_word,
+                                timestamped_url=timestamped_url,
+                                video=youtube_video
+                            )
                         )
-                    )
-                    break
-        return youtube_words
+                        existing_words.add(key)  # Update cache to prevent duplicates
+
+        # Bulk insert only new records
+        with transaction.atomic():
+            return YoutubeWord.objects.bulk_create(new_words, ignore_conflicts=True)
