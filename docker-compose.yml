@@ -23,7 +23,7 @@ services:
     volumes:
       - /var/www/viktorbezai/backend:/app
     entrypoint: ["/app/entrypoint.sh"]
-    command: ["gunicorn", "--bind", "0.0.0.0:8001", "config.wsgi:application"]
+    command: ["gunicorn", "--bind", "0.0.0.0:8001", "--timeout", "120", "config.wsgi:application"]
 
   frontend:
     build:

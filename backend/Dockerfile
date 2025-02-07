@@ -49,4 +49,4 @@ EXPOSE 8001
 
 # Set the default command to start Gunicorn
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8001", "config.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8001", "--timeout", "120", "config.wsgi:application"]

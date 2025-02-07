@@ -41,8 +41,10 @@ class YoutubeAddVideosAction:
                         proxies=proxies
                     )
                 except NoTranscriptFound as e:
+                    print("Transcripts are disabled for this video")
                     transcript = None
                 except Exception as e:
+                    print(f"Error fetching transcript: {e}")
                     transcript = None
 
                 new_youtube_videos_to_create.append(
