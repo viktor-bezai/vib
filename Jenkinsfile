@@ -54,7 +54,10 @@ pipeline {
                     string(credentialsId: 'VIKTORBEZAI_POSTGRES_PORT', variable: 'POSTGRES_PORT'),
                     string(credentialsId: 'VIKTORBEZAI_SECRET_KEY', variable: 'SECRET_KEY'),
                     string(credentialsId: 'VIKTORBEZAI_GOOGLE_API_KEY', variable: 'GOOGLE_API_KEY'),
-                    string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL')
+                    string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL'),
+                    string(credentialsId: 'VIKTORBEZAI_PROXY_USERNAME', variable: 'PROXY_USERNAME'),
+                    string(credentialsId: 'VIKTORBEZAI_PROXY_PASS', variable: 'PROXY_PASS'),
+                    string(credentialsId: 'VIKTORBEZAI_PROXY_HOST', variable: 'PROXY_HOST')
                 ]) {
                     script {
                         sh '''#!/bin/bash
@@ -68,6 +71,9 @@ POSTGRES_PORT=${POSTGRES_PORT}
 SECRET_KEY=${SECRET_KEY//$/\\$}
 GOOGLE_API_KEY=${GOOGLE_API_KEY}
 NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+NEXT_PUBLIC_API_BASE_URL=${PROXY_USERNAME}
+NEXT_PUBLIC_API_BASE_URL=${PROXY_PASS}
+NEXT_PUBLIC_API_BASE_URL=${PROXY_HOST}
 EOF
 
                         # Ensure the .env file has secure permissions
