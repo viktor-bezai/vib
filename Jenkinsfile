@@ -57,7 +57,7 @@ pipeline {
                     string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL'),
                     string(credentialsId: 'VIKTORBEZAI_PROXY_USERNAME', variable: 'PROXY_USERNAME'),
                     string(credentialsId: 'VIKTORBEZAI_PROXY_PASS', variable: 'PROXY_PASS'),
-                    string(credentialsId: 'VIKTORBEZAI_PROXY_HOST', variable: 'PROXY_HOST'),
+                    string(credentialsId: 'VIKTORBEZAI_PROXY_HOST', variable: 'PROXY_HOST')
                 ]) {
                     script {
                         sh '''#!/bin/bash
