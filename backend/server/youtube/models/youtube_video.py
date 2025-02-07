@@ -1,3 +1,4 @@
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
 from django.db.models import JSONField
 
@@ -13,6 +14,9 @@ class YoutubeVideo(models.Model):
 
     class Meta:
         db_table = 'youtube_video'
+        indexes = [
+            GinIndex(fields=['transcript']),
+        ]
 
     @classmethod
     def search_videos_by_transcript(cls, youtube_word: str):
