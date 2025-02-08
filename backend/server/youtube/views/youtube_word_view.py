@@ -55,9 +55,20 @@ class YoutubeWordView(APIView):
         request_serializer.is_valid(raise_exception=True)
         youtube_word = request_serializer.validated_data["word"]
 
-        youtube_add_word_service = YouTubeAddWordService()
-        youtube_words = youtube_add_word_service.add_word(youtube_word=youtube_word)
+        try:
+            youtube_add_word_service = YouTubeAddWordService()
+            youtube_words = youtube_add_word_service.add_word(youtube_word=youtube_word)
+        except HttpError:
+            error_message = (
+                "Oops! Looks like we've reached the word limit for today. "
+                "But don't worry! You can try a different word, "
+                "and if it's already in the searched videos, "
+                "it'll still work for you. Give it a shot!"
+            )
+            return Response({"error": error_message}, status=status.HTTP_403_FORBIDDEN)
+        except Exception as e:
+            error_message = "Uh-oh! We couldn't fetch the videos this time. Please try again in a bit!"
+            return Response({"error": error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         response_serializer = YoutubeWordResponseSerializer(youtube_words, many=True)
         return Response(response_serializer.data, status=status.HTTP_200_OK)
-

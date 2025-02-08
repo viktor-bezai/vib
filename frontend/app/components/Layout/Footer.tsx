@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { AppBar, Toolbar, Typography, Box, Container } from "@mui/material";
+import {AppBar, Box, Container, Toolbar, Typography} from "@mui/material";
 import Link from "next/link";
 
 export default function Footer() {
+
   return (
     <AppBar
       position="static"
@@ -16,11 +17,13 @@ export default function Footer() {
       }}
     >
       <Container>
-        <Toolbar sx={{ flexDirection: "column", alignItems: "center" }}>
-          <Box sx={{ display: "flex", gap: "1rem", marginBottom: "0.5rem" }}>
-            <Link href="https://www.linkedin.com/in/viktor-bezai/" style={{ textDecoration: "none", color: "var(--button-text-color)" }}>
+        <Toolbar sx={{flexDirection: "column", alignItems: "center"}}>
+          <Box sx={{display: "flex", gap: "1rem", marginBottom: "0.5rem"}}>
+            <Link href="https://www.linkedin.com/in/viktor-bezai/"
+                  style={{textDecoration: "none", color: "var(--button-text-color)"}}>
               <Typography
                 variant="body1"
+                color={"var(--button-text-color)"}
                 sx={{
                   transition: "0.3s",
                   "&:hover": {
@@ -31,10 +34,12 @@ export default function Footer() {
                 LinkedIn
               </Typography>
             </Link>
-            <Typography variant="body1" sx={{ color: "var(--button-text-color)" }}>|</Typography>
-            <Link href="https://www.facebook.com/viktorbezai" style={{ textDecoration: "none", color: "var(--button-text-color)" }}>
+            <Typography variant="body1" sx={{color: "var(--button-text-color)"}}>|</Typography>
+            <Link href="https://www.facebook.com/viktorbezai"
+                  style={{textDecoration: "none", color: "var(--button-text-color)"}}>
               <Typography
                 variant="body1"
+                color={"var(--button-text-color)"}
                 sx={{
                   transition: "0.3s",
                   "&:hover": {
@@ -47,7 +52,7 @@ export default function Footer() {
             </Link>
           </Box>
           <Typography variant="body2" color="var(--button-text-color)">
-            © {new Date().getFullYear()} Learn English App. All rights reserved.
+            © {new Date().getFullYear()} Viktor Bezai web application.
           </Typography>
         </Toolbar>
       </Container>
