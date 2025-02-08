@@ -1,12 +1,13 @@
 "use client";
 
-import React, {useState} from "react";
-import {useQuery} from "@tanstack/react-query";
-import axios from "axios";
-import {Container, Typography} from "@mui/material";
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Container } from "@mui/material";
+import { fetchVideos } from "@/lib/api/youtube";
 import VideoSearchBar from "../components/Video/VideoSearchBar";
 import VideoPlayer from "../components/Video/VideoPlayer";
-
+import LoadingMessage from "@/app/components/Video/LoadingMessage";
+import ErrorMessage from "@/app/components/Video/ErrorMessage";
 
 export interface VideoInterface {
   id: number;
@@ -16,39 +17,23 @@ export interface VideoInterface {
   video: number;
 }
 
-const fetchVideos = async (word: string): Promise<VideoInterface[]> => {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL
-  const response = await axios.get(`${baseUrl}/youtube/?word=${word}`);
-
-  // If fewer than 10 videos exist, trigger a post request to add more
-  if (response.data.length < 5) {
-    await axios.post(`${baseUrl}/youtube/`, {word});
-
-    // Wait a moment for the backend to process new videos (optional)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Fetch videos again after adding new ones
-    const newResponse = await axios.get(`${baseUrl}/youtube/?word=${word}`);
-    return newResponse.data;
-  }
-
-  return response.data;
-};
-
 
 export default function VideoPage() {
   const [word, setWord] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const {data, isLoading, isError} = useQuery<VideoInterface[]>({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["videos", word],
     queryFn: () => fetchVideos(word),
-    enabled: !!word,
+    enabled: word.trim().length > 0,
+    retry: false,
   });
 
   const handleSearch = (newWord: string) => {
+    if (!newWord.trim()) return;
     setWord(newWord);
     setCurrentIndex(0);
+    refetch();
   };
 
   const handleNext = () => {
@@ -60,11 +45,11 @@ export default function VideoPage() {
   };
 
   return (
-    <Container sx={{marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center"}}>
-      <VideoSearchBar onSearch={handleSearch}/>
+    <Container sx={{ marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <VideoSearchBar onSearch={handleSearch} />
 
-      {isLoading && <Typography>Loading...</Typography>}
-      {isError && <Typography color="error">Failed to fetch videos.</Typography>}
+      {isLoading && <LoadingMessage />}
+      {error && <ErrorMessage message={error.message} />}
 
       {data && data.length > 0 && (
         <VideoPlayer

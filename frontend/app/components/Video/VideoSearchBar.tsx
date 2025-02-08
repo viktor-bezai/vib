@@ -7,29 +7,27 @@ interface VideoSearchBarProps {
   onSearch: (word: string) => void;
 }
 
-const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
-  const [searchWord, setSearchWord] = useState("");
-  const [error, setError] = useState("");
+const VideoSearchBar = ({ onSearch }: VideoSearchBarProps) => {
+  const [searchWord, setSearchWord] = useState<string>("");
+  const [inputError, setInputError] = useState<string>("");
 
   const validateInput = (value: string) => {
     const words = value.trim().split(/\s+/);
-    if (words.length > 2) {
-      setError("Please enter a maximum of two words.");
+    const isValidCharacters = /^[A-Za-z\s-]+$/.test(value);
+
+    if (!isValidCharacters) {
+      setInputError("Only English letters, spaces, or hyphens are allowed.");
+    } else if (words.length > 2) {
+      setInputError("Please enter a maximum of two words.");
     } else {
-      setError("");
+      setInputError("");
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchWord(value);
-    validateInput(value);
-  };
-
-  const handleSearch = () => {
-    if (!error && searchWord.trim()) {
-      onSearch(searchWord);
-    }
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const inputWord = event.target.value;
+    setSearchWord(inputWord);
+    validateInput(inputWord);
   };
 
   return (
@@ -39,7 +37,7 @@ const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
       spacing={2}
       sx={{
         marginBottom: "2rem",
-        width: {xs: "100%", md:"60%"},
+        width: { xs: "100%", md: "60%" },
         backgroundColor: "#f5f5f5",
         padding: "10px",
         borderRadius: "12px",
@@ -52,16 +50,18 @@ const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
           label="Enter a word"
           variant="outlined"
           value={searchWord}
-          onChange={handleChange}
-          error={!!error}
-          helperText={error}
+          onChange={handleOnChange}
+          error={!!inputError}
+          helperText={inputError}
           sx={{
             backgroundColor: "white",
             borderRadius: "8px",
             "& .MuiOutlinedInput-root": {
-              "& fieldset": { borderColor: error ? "red" : "#ccc" },
-              "&:hover fieldset": { borderColor: error ? "red" : "#888" },
-              "&.Mui-focused fieldset": { borderColor: error ? "red" : "#1976d2" },
+              "& fieldset": { borderColor: inputError ? "red" : "#ccc" },
+              "&:hover fieldset": { borderColor: inputError ? "red" : "#888" },
+              "&.Mui-focused fieldset": {
+                borderColor: inputError ? "red" : "#1976d2",
+              },
             },
           }}
         />
@@ -71,8 +71,8 @@ const VideoSearchBar: React.FC<VideoSearchBarProps> = ({ onSearch }) => {
           variant="contained"
           color="primary"
           fullWidth
-          onClick={handleSearch}
-          disabled={!searchWord.trim() || !!error}
+          onClick={() => onSearch(searchWord)}
+          disabled={!searchWord.trim() || !!inputError}
           sx={{
             height: "100%",
             borderRadius: "8px",

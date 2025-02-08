@@ -36,8 +36,8 @@ Ensure you have the following installed on your system before proceeding:
 
 #### **1️⃣ Clone the Repository**  
 ```sh
-git clone https://github.com/your-username/learn-english-videos.git
-cd learn-english-videos
+git clone https://github.com/viktor-bezai/LearnEnglish.git
+cd LearnEnglish
 ```
 
 #### **2️⃣ Build and Start the Containers**  
@@ -56,7 +56,7 @@ docker logs -f nextjs_frontend
 
 #### **4️⃣ Create a Superuser for Django Admin Panel**  
 ```sh
-docker-compose exec backend python manage.py createsuperuser
+docker exec django_backend python manage.py createsuperuser
 ```
 
 ---

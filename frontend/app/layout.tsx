@@ -1,7 +1,4 @@
-import "./globals.css";
-import Header from "./components/Layout/Header";
-import Providers from "@/app/providers";
-import Footer from "@/app/components/Layout/Footer";
+import ClientLayout from "./ClientLayout"; // ✅ Import the client layout
 
 export const metadata = {
   title: "Viktor Bezai",
@@ -9,22 +6,15 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#82cfff",
+  themeColor: "#5db1ff",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-    <head>
-      <meta name="theme-color" content="#007FFF" />
-    </head>
-    <body>
-      <Providers>
-        <Header />
-        {children}
-        <Footer />
-      </Providers>
-    </body>
+      <body>
+        <ClientLayout>{children}</ClientLayout>
+      </body>
     </html>
   );
 }
