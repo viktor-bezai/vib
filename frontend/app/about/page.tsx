@@ -14,7 +14,8 @@ export default function AboutPage() {
       maxWidth="md"
       sx={{
         textAlign: "center",
-        marginTop: "3rem",
+        marginTop: "2rem",
+        marginBottom: "2rem",
         padding: "2rem",
         backgroundColor: "#f9f9f9",
         borderRadius: "12px",
@@ -38,12 +39,12 @@ export default function AboutPage() {
 
       {/* About Heading */}
       <Typography
-        variant="h3"
+        variant="h4"
         gutterBottom
         sx={{
           fontWeight: "bold",
           color: "#1976d2",
-          fontSize: {xs: "1.8rem", sm: "2.2rem", md: "3rem"},
+          fontSize: {xs: "1.8rem", sm: "2rem", md: "2.5rem"},
         }}
       >
         About Me
@@ -56,9 +57,8 @@ export default function AboutPage() {
         sx={{
           marginTop: "1rem",
           color: "#555",
-          width: "80%",
+          width: {xs: "100%", sm: "80%"},
           margin: "0 auto",
-          textAlign: "left",
         }}
       >
         {`Hello! I’m Viktor Bezai, a passionate Full-Stack Software Developer specializing in building scalable web
