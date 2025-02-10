@@ -146,3 +146,23 @@ input:focus, textarea:focus {
     margin: 0.5rem 0;
   }
 }
+
+/* Customize scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px; /* Scrollbar width */
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-color); /* Track background */
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary-color); /* Scrollbar color */
+  border-radius: 4px; /* Rounded corners */
+  transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-color); /* Color on hover */
+}
+
