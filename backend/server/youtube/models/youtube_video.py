@@ -5,8 +5,8 @@ from django.db.models import JSONField
 
 class YoutubeVideo(models.Model):
     video_id = models.CharField(max_length=300, db_index=True, unique=True)
-    title = models.CharField(max_length=300)
-    description = models.TextField()
+    title = models.CharField(max_length=1000, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     transcript = JSONField(blank=True, null=True)
 
     def __str__(self):

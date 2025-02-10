@@ -29,8 +29,7 @@ IS_LOCAL = ENVIRONMENT == 'local'
 IS_PROD = ENVIRONMENT != 'local'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True if IS_LOCAL else False
-DEBUG = True
+DEBUG = True if IS_LOCAL else False
 
 ALLOWED_HOSTS = [
     "viktorbezai.online",

@@ -5,9 +5,10 @@ import { Button, Grid, TextField } from "@mui/material";
 
 interface VideoSearchBarProps {
   onSearch: (word: string) => void;
+  isLoading: boolean;
 }
 
-const VideoSearchBar = ({ onSearch }: VideoSearchBarProps) => {
+const VideoSearchBar = ({ onSearch, isLoading }: VideoSearchBarProps) => {
   const [searchWord, setSearchWord] = useState<string>("");
   const [inputError, setInputError] = useState<string>("");
 
@@ -72,7 +73,7 @@ const VideoSearchBar = ({ onSearch }: VideoSearchBarProps) => {
           color="primary"
           fullWidth
           onClick={() => onSearch(searchWord)}
-          disabled={!searchWord.trim() || !!inputError}
+          disabled={!searchWord.trim() || !!inputError || isLoading}
           sx={{
             height: "100%",
             borderRadius: "8px",
