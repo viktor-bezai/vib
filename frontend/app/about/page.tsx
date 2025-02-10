@@ -16,7 +16,7 @@ export default function AboutPage() {
         textAlign: "center",
         marginTop: "2rem",
         marginBottom: "2rem",
-        padding: "2rem",
+        padding: {xs: "0 2rem", sm: "2rem 2rem"},
         backgroundColor: "#f9f9f9",
         borderRadius: "12px",
         boxShadow: "0 8px 20px rgba(0, 0, 0, 0.1)",
@@ -32,7 +32,8 @@ export default function AboutPage() {
           height: 150,
           borderRadius: "50%",
           objectFit: "cover",
-          margin: "0 auto 1.5rem",
+          margin: "0 auto",
+          marginBottom: {xs: "0", sm: "1.5rem"},
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15)",
         }}
       />
