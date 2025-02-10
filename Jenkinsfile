@@ -102,7 +102,7 @@ EOF
             }
         }
 
-        stage('Zero-Downtime Deployment') {
+        stage('Deploy Services') {
             steps {
                 script {
                     sh '''#!/bin/bash
