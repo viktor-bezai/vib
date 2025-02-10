@@ -17,7 +17,13 @@ interface VideoPlayerInterface {
 
 const VideoPlayer: React.FC<VideoPlayerInterface> = ({video, currentIndex, total, onPrevious, onNext}) => {
   return (
-    <Card sx={{marginBottom: "2rem", padding: "1rem", textAlign: "center", width: "90%", maxWidth: "900px"}}>
+    <Card sx={{
+      marginBottom: "2rem",
+      padding: {xs: "0", sm: "1rem"},
+      textAlign: "center",
+      width: {xs: "100%", sm: "90%"},
+      maxWidth: "900px"
+    }}>
       {/* Responsive Video Container */}
       <Box sx={{position: "relative", width: "100%", paddingTop: "56.25%"}}>
         {/* 16:9 Aspect Ratio (Height = Width * 9 / 16) */}
