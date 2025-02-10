@@ -95,9 +95,6 @@ EOF
                     chmod -R 777 ${PROJECT_DIR}/backend/media
                     chown -R www-data:www-data ${PROJECT_DIR}/backend/media
 
-                    echo "⚠️ Pulling latest Docker images..."
-                    docker compose pull || true
-
                     echo "⚠️ Building updated Docker images..."
                     docker compose build
                     '''
