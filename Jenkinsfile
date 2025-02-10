@@ -16,7 +16,6 @@ pipeline {
                     mkdir -p ${PROJECT_DIR}
                     cd ${PROJECT_DIR}
 
-                    # Ensure clean state
                     if [ -d .git ]; then
                         echo "⚠️ Resetting local changes..."
                         git fetch --all
@@ -35,7 +34,6 @@ pipeline {
             steps {
                 script {
                     sh '''#!/bin/bash
-                    # Ensure correct permissions for static/media files before deployment
                     sudo chown -R 1000:1000 ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
                     sudo chmod -R 777 ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
                     sudo chmod +x ${PROJECT_DIR}/backend/entrypoint.sh
@@ -76,7 +74,6 @@ PROXY_PASS=${PROXY_PASS}
 PROXY_HOST=${PROXY_HOST}
 EOF
 
-                        # Ensure the .env file has secure permissions
                         chmod 600 ${PROJECT_DIR}/.env
                         '''
                     }
@@ -84,24 +81,22 @@ EOF
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Build & Optimize Docker Images') {
             steps {
                 script {
                     sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
 
-                    # Ensure correct permissions for static files
                     mkdir -p ${PROJECT_DIR}/backend/staticfiles
                     chmod -R 777 ${PROJECT_DIR}/backend/staticfiles
                     chown -R www-data:www-data ${PROJECT_DIR}/backend/staticfiles
 
-                    # Ensure correct permissions for media files
                     mkdir -p ${PROJECT_DIR}/backend/media
                     chmod -R 777 ${PROJECT_DIR}/backend/media
                     chown -R www-data:www-data ${PROJECT_DIR}/backend/media
 
-                    # Build images without cache for fresh updates
-                    docker compose build --no-cache
+                    echo "⚠️ Building updated Docker images..."
+                    docker compose build
                     '''
                 }
             }
@@ -113,13 +108,25 @@ EOF
                     sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
 
-                    # Stop and remove old containers before deploying
-                    docker compose down --rmi all --volumes --remove-orphans
-                    docker system prune -a --volumes -f
+                    echo "⚠️ Starting new containers before stopping old ones..."
+                    docker compose up -d --no-deps --build ${BACKEND_SERVICE} ${FRONTEND_SERVICE}
 
-                    # Build fresh images & run containers
-                    docker compose build --no-cache
-                    docker compose up -d --force-recreate --build
+                    echo "⚠️ Removing old containers safely..."
+                    docker compose restart ${BACKEND_SERVICE} ${FRONTEND_SERVICE}
+                    '''
+                }
+            }
+        }
+
+        stage('Cleanup Unused Docker Resources') {
+            steps {
+                script {
+                    sh '''#!/bin/bash
+                    echo "⚠️ Removing only unused Docker resources..."
+                    docker image prune -af
+                    docker volume prune -f
+                    docker network prune -f
+                    echo "✅ Cleanup complete!"
                     '''
                 }
             }
