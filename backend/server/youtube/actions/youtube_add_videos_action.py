@@ -22,6 +22,11 @@ class YoutubeAddVideosAction:
         next_page_token = None
         counter = 0
 
+        proxy_connection = {
+            "https": f"https://{settings.PROXY_USERNAME}:{settings.PROXY_PASS}@{settings.PROXY_HOST}"
+        }
+        proxies = None if settings.IS_LOCAL else proxy_connection
+
         while len(new_youtube_videos_to_create) < 5 or counter >= 3:
             youtube_search_dto = self.youtube_search_adapter.search(
                 youtube_word=youtube_word, next_page_token=next_page_token
@@ -29,32 +34,28 @@ class YoutubeAddVideosAction:
             new_youtube_videos_dto = self._exclude_existing_videos(youtube_search_dto=youtube_search_dto)
 
             for youtube_video_dto in new_youtube_videos_dto:
-                proxy_connection = {
-                    "https": f"https://{settings.PROXY_USERNAME}:{settings.PROXY_PASS}@{settings.PROXY_HOST}"
-                }
-                proxies = None if settings.IS_LOCAL else proxy_connection
+                if youtube_video_dto.id.video_id:
+                    try:
+                        transcript = YouTubeTranscriptApi.get_transcript(
+                            video_id=youtube_video_dto.id.video_id,
+                            languages=['en'],
+                            proxies=proxies
+                        )
+                    except NoTranscriptFound as e:
+                        print("Transcripts are disabled for this video")
+                        transcript = None
+                    except Exception as e:
+                        print(f"Error fetching transcript: {e}")
+                        transcript = None
 
-                try:
-                    transcript = YouTubeTranscriptApi.get_transcript(
-                        video_id=youtube_video_dto.id.video_id,
-                        languages=['en'],
-                        proxies=proxies
+                    new_youtube_videos_to_create.append(
+                        YoutubeVideo(
+                            video_id=youtube_video_dto.id.video_id,
+                            title=youtube_video_dto.snippet.title,
+                            description=youtube_video_dto.snippet.description,
+                            transcript=transcript,
+                        )
                     )
-                except NoTranscriptFound as e:
-                    print("Transcripts are disabled for this video")
-                    transcript = None
-                except Exception as e:
-                    print(f"Error fetching transcript: {e}")
-                    transcript = None
-
-                new_youtube_videos_to_create.append(
-                    YoutubeVideo(
-                        video_id=youtube_video_dto.id.video_id,
-                        title=youtube_video_dto.snippet.title,
-                        description=youtube_video_dto.snippet.description,
-                        transcript=transcript,
-                    )
-                )
 
             next_page_token = youtube_search_dto.next_page_token
             counter += 1

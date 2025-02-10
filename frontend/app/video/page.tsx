@@ -46,7 +46,7 @@ export default function VideoPage() {
 
   return (
     <Container sx={{ marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <VideoSearchBar onSearch={handleSearch} />
+      <VideoSearchBar onSearch={handleSearch} isLoading={isLoading}/>
 
       {isLoading && <LoadingMessage />}
       {error && <ErrorMessage message={error.message} />}
