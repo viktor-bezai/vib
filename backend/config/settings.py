@@ -38,29 +38,26 @@ ALLOWED_HOSTS = [
     "209.38.181.37",
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    "https://viktorbezai.online",
-    "https://www.viktorbezai.online",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://viktorbezai.online",
-    "https://www.viktorbezai.online"
-]
 if IS_LOCAL:
     ALLOWED_HOSTS.append('localhost')
     ALLOWED_HOSTS.append('127.0.0.1')
-    CORS_ALLOWED_ORIGINS.append("http://localhost:3000")
-    CORS_ALLOWED_ORIGINS.append("http://localhost:3001")
-    CSRF_TRUSTED_ORIGINS.append('http://localhost:8000/')
-    CSRF_TRUSTED_ORIGINS.append('http://localhost:8001/')
+
 if IS_PROD:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True  # Secure CSRF cookies
+
+    # Allow requests from your domain
+    CORS_ALLOW_ALL_ORIGINS = True  # Allow requests from anywhere
+    CSRF_TRUSTED_ORIGINS = [
+        "https://viktorbezai.online",
+        "https://www.viktorbezai.online",
+    ]
+
+    # Allow unauthenticated access in Swagger
     SWAGGER_SETTINGS = {
-        'USE_SESSION_AUTH': False,
+        'USE_SESSION_AUTH': False,  # Remove login requirement in Swagger
         'DEFAULT_API_URL': 'https://viktorbezai.online',
     }
 
