@@ -31,6 +31,12 @@ const VideoSearchBar = ({ onSearch, isLoading }: VideoSearchBarProps) => {
     validateInput(inputWord);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && !inputError && searchWord.trim() && !isLoading) {
+      onSearch(searchWord);
+    }
+  };
+
   return (
     <Grid
       container
@@ -52,6 +58,7 @@ const VideoSearchBar = ({ onSearch, isLoading }: VideoSearchBarProps) => {
           variant="outlined"
           value={searchWord}
           onChange={handleOnChange}
+          onKeyDown={handleKeyDown}
           error={!!inputError}
           helperText={inputError}
           sx={{
