@@ -65,8 +65,10 @@ if IS_PROD:
         "https://www.viktorbezai.online",
         "http://64.227.119.29",
         "http://209.38.181.37",
+        "http://192.168.100.20",
         "https://64.227.119.29",
         "https://209.38.181.37",
+        "https://192.168.100.20",
     ]
 
     # Allow unauthenticated access in Swagger
