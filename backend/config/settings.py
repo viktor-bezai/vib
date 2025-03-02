@@ -43,18 +43,11 @@ if IS_LOCAL:
     ALLOWED_HOSTS.append('127.0.0.1')
 
 if IS_PROD:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True  # Ensure cookies are secure
-    CSRF_COOKIE_SECURE = True  # Ensure CSRF cookie is sent over HTTPS
-
-    # Allow API requests without CSRF validation
-    CSRF_USE_SESSIONS = False  # Don't tie CSRF token to session
-    CSRF_COOKIE_HTTPONLY = False  # Allow frontend JavaScript to access CSRF token
-    CSRF_COOKIE_SAMESITE = 'None'  # Fix issues with cross-site requests
-
-    # Allow requests from your domain
-    CORS_ALLOW_ALL_ORIGINS = True  # Allow open API requests
+    CORS_ALLOWED_ORIGINS = [
+        "https://viktorbezai.online",
+        "https://www.viktorbezai.online",
+    ]
+    CORS_ALLOW_CREDENTIALS = True
     CSRF_TRUSTED_ORIGINS = [
         "https://viktorbezai.online",
         "https://www.viktorbezai.online",
@@ -62,7 +55,6 @@ if IS_PROD:
 
     # Allow unauthenticated access in Swagger
     SWAGGER_SETTINGS = {
-        'USE_SESSION_AUTH': False,  # Remove login requirement in Swagger
         'DEFAULT_API_URL': 'https://viktorbezai.online',
     }
 
@@ -179,6 +171,11 @@ PROXY_PASS = os.getenv('PROXY_PASS')
 PROXY_HOST = os.getenv('PROXY_HOST')
 
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ),
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
