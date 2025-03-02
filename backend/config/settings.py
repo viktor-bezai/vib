@@ -49,23 +49,12 @@ if IS_PROD:
     ALLOWED_HOSTS = [
         "viktorbezai.online",
         "www.viktorbezai.online",
-        "64.227.119.29",
-        "209.38.181.37",
     ]
     CORS_ALLOWED_ORIGINS = [
         "https://viktorbezai.online",
         "https://www.viktorbezai.online",
-        "http://64.227.119.29",
-        "http://209.38.181.37",
-        "https://64.227.119.29",
-        "https://209.38.181.37",
     ]
     CORS_ALLOW_CREDENTIALS = True
-    # CSRF_TRUSTED_ORIGINS = [
-    #     "https://viktorbezai.online",
-    #     "https://www.viktorbezai.online",
-    # ]
-    CSRF_TRUSTED_ORIGINS = ["*"]
 
     # Allow unauthenticated access in Swagger
     SWAGGER_SETTINGS = {
