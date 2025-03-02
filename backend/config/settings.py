@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,20 +30,28 @@ IS_LOCAL = ENVIRONMENT == 'local'
 IS_PROD = ENVIRONMENT != 'local'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if IS_LOCAL else False
-
-ALLOWED_HOSTS = [
-    "viktorbezai.online",
-    "www.viktorbezai.online",
-    "64.227.119.29",
-    "209.38.181.37",
-]
+# DEBUG = True if IS_LOCAL else False
+DEBUG = True
 
 if IS_LOCAL:
-    ALLOWED_HOSTS.append('localhost')
-    ALLOWED_HOSTS.append('127.0.0.1')
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1'
+    ]
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:8000",
+        "http://localhost:8001",
+    ]
 
 if IS_PROD:
+    ALLOWED_HOSTS = [
+        "viktorbezai.online",
+        "www.viktorbezai.online",
+        "64.227.119.29",
+        "209.38.181.37",
+    ]
     CORS_ALLOWED_ORIGINS = [
         "https://viktorbezai.online",
         "https://www.viktorbezai.online",
