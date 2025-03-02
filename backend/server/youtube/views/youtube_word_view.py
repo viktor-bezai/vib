@@ -60,14 +60,14 @@ class YoutubeWordView(APIView):
             youtube_words = youtube_add_word_service.add_word(youtube_word=youtube_word)
         except HttpError:
             error_message = (
-                "Oops! Looks like we've reached the word limit for today. "
+                "Looks like we've reached the word limit in YouTube for today. "
                 "But don't worry! You can try a different word, "
                 "and if it's already in the searched videos, "
                 "it'll still work for you. Give it a shot!"
             )
             return Response({"error": error_message}, status=status.HTTP_403_FORBIDDEN)
         except Exception as e:
-            error_message = "Uh-oh! We couldn't fetch the videos this time. Please try again in a bit!"
+            error_message = "We couldn't fetch the videos this time. Please try again in a bit!"
             print(e)
             return Response({"error": error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

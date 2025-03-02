@@ -21,13 +21,18 @@ const getCSRFToken = (): string | null => {
  * Fetches data from the given endpoint.
  */
 const fetchData = async <T>(url: string, options: RequestInit = {}): Promise<T> => {
-  const response = await fetch(url, { ...options, credentials: "include" });
+  const response = await fetch(url, {...options, credentials: "include"});
 
   if (!response.ok) {
     if (response.status === 403) {
-      throw new Error("Oops! CSRF verification failed. Please refresh the page and try again.");
+      throw new Error(
+        "Looks like we've reached the word limit in YouTube for today. " +
+        "But don't worry! You can try a different word, and if it's already in the searched videos, " +
+        "it'll still work for you. Give it a shot!"
+    )
+      ;
     }
-    throw new Error(`Request failed with status ${response.status}: ${response.statusText}`);
+    throw new Error("We couldn't fetch the videos this time. Please try again in a bit!");
   }
 
   return response.json();
