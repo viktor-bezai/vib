@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import React from "react";
 import {Box, Button, Container, Typography} from "@mui/material";
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -23,17 +23,14 @@ export default function AboutPage() {
       }}
     >
       {/* Profile Image */}
-      <Box
-        component="img"
+      <Image
         src="/images/profile.jpeg"
         alt="Viktor Bezai"
-        sx={{
-          width: 150,
-          height: 150,
+        width={150}
+        height={150}
+        style={{
           borderRadius: "50%",
           objectFit: "cover",
-          margin: "0 auto",
-          marginBottom: {xs: "0", sm: "1.5rem"},
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.15)",
         }}
       />
