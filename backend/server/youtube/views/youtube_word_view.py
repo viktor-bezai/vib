@@ -1,5 +1,3 @@
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from drf_yasg.utils import swagger_auto_schema
 from googleapiclient.errors import HttpError
 from rest_framework import status
@@ -14,7 +12,6 @@ from server.youtube.serializers.youtube_word_response_serializer import YoutubeW
 from server.youtube.services.youtube_add_word_service import YouTubeAddWordService
 
 
-@method_decorator(csrf_exempt, name='dispatch')
 class YoutubeWordView(APIView):
     @swagger_auto_schema(
         responses={
