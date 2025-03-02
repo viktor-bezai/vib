@@ -30,7 +30,8 @@ IS_LOCAL = ENVIRONMENT == 'local'
 IS_PROD = ENVIRONMENT != 'local'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True if IS_LOCAL else False
+# DEBUG = True if IS_LOCAL else False
+DEBUG = True
 
 if IS_LOCAL:
     ALLOWED_HOSTS = [
@@ -60,18 +61,11 @@ if IS_PROD:
         "https://209.38.181.37",
     ]
     CORS_ALLOW_CREDENTIALS = True
-    CSRF_TRUSTED_ORIGINS = [
-        "https://viktorbezai.online",
-        "https://www.viktorbezai.online",
-        "http://64.227.119.29",
-        "http://209.38.181.37",
-        "http://192.168.100.20",
-        "http://localhost:3001",
-        "https://64.227.119.29",
-        "https://209.38.181.37",
-        "https://192.168.100.20",
-        "https://localhost:3001",
-    ]
+    # CSRF_TRUSTED_ORIGINS = [
+    #     "https://viktorbezai.online",
+    #     "https://www.viktorbezai.online",
+    # ]
+    CSRF_TRUSTED_ORIGINS = ["*"]
 
     # Allow unauthenticated access in Swagger
     SWAGGER_SETTINGS = {
