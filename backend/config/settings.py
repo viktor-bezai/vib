@@ -45,11 +45,16 @@ if IS_LOCAL:
 if IS_PROD:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True  # Secure CSRF cookies
+    SESSION_COOKIE_SECURE = True  # Ensure cookies are secure
+    CSRF_COOKIE_SECURE = True  # Ensure CSRF cookie is sent over HTTPS
+
+    # Allow API requests without CSRF validation
+    CSRF_USE_SESSIONS = False  # Don't tie CSRF token to session
+    CSRF_COOKIE_HTTPONLY = False  # Allow frontend JavaScript to access CSRF token
+    CSRF_COOKIE_SAMESITE = 'None'  # Fix issues with cross-site requests
 
     # Allow requests from your domain
-    CORS_ALLOW_ALL_ORIGINS = True  # Allow requests from anywhere
+    CORS_ALLOW_ALL_ORIGINS = True  # Allow open API requests
     CSRF_TRUSTED_ORIGINS = [
         "https://viktorbezai.online",
         "https://www.viktorbezai.online",
