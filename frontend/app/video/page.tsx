@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Container } from "@mui/material";
-import { fetchVideos } from "@/lib/api/youtube";
+import React, {useState} from "react";
+import {useQuery} from "@tanstack/react-query";
+import {Container} from "@mui/material";
+import {fetchVideos} from "@/lib/api/youtube";
 import VideoSearchBar from "../components/Video/VideoSearchBar";
 import VideoPlayer from "../components/Video/VideoPlayer";
 import LoadingMessage from "@/app/components/Video/LoadingMessage";
@@ -22,7 +22,7 @@ export default function VideoPage() {
   const [word, setWord] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const {data, isLoading, error, refetch} = useQuery<VideoInterface[]>({
     queryKey: ["videos", word],
     queryFn: () => fetchVideos(word),
     enabled: word.trim().length > 0,
@@ -37,19 +37,23 @@ export default function VideoPage() {
   };
 
   const handleNext = () => {
-    if (data && currentIndex < data.length - 1) setCurrentIndex((prev) => prev + 1);
+    if (data && Array.isArray(data) && currentIndex < data.length - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
   };
 
   const handlePrevious = () => {
-    if (currentIndex > 0) setCurrentIndex((prev) => prev - 1);
+    if (data && Array.isArray(data) && currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
   };
 
   return (
-    <Container sx={{ marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+    <Container sx={{marginTop: "2rem", display: "flex", flexDirection: "column", alignItems: "center"}}>
       <VideoSearchBar onSearch={handleSearch} isLoading={isLoading}/>
 
-      {isLoading && <LoadingMessage />}
-      {error && <ErrorMessage message={error.message} />}
+      {isLoading && <LoadingMessage/>}
+      {error && <ErrorMessage message={error.message}/>}
 
       {data && data.length > 0 && (
         <VideoPlayer
