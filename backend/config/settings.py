@@ -44,6 +44,7 @@ if IS_LOCAL:
         "http://localhost:8000",
         "http://localhost:8001",
     ]
+    CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 if IS_PROD:
     ALLOWED_HOSTS = [
@@ -54,16 +55,18 @@ if IS_PROD:
         "https://viktorbezai.online",
         "https://www.viktorbezai.online",
     ]
-    CORS_ALLOW_CREDENTIALS = True
-    CSRF_TRUSTED_ORIGINS = [
-        "https://viktorbezai.online",
-        "https://www.viktorbezai.online",
-    ]
-
+    CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
     # Allow unauthenticated access in Swagger
     SWAGGER_SETTINGS = {
         'DEFAULT_API_URL': 'https://viktorbezai.online',
     }
+
+CORS_ALLOW_CREDENTIALS = True  # Ensures cookies (CSRF token, sessionid) are sent
+
+# CSRF settings (works for both local & prod)
+CSRF_COOKIE_SECURE = IS_PROD  # Secure only in production
+CSRF_COOKIE_HTTPONLY = False  # Allow frontend access
+CSRF_COOKIE_SAMESITE = "Lax"  # Helps CSRF protection
 
 # Application definition
 
