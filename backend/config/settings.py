@@ -55,6 +55,10 @@ if IS_PROD:
         "https://www.viktorbezai.online",
     ]
     CORS_ALLOW_CREDENTIALS = True
+    CSRF_TRUSTED_ORIGINS = [
+        "https://viktorbezai.online",
+        "https://www.viktorbezai.online",
+    ]
 
     # Allow unauthenticated access in Swagger
     SWAGGER_SETTINGS = {

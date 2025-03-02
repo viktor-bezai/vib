@@ -68,6 +68,7 @@ class YoutubeWordView(APIView):
             return Response({"error": error_message}, status=status.HTTP_403_FORBIDDEN)
         except Exception as e:
             error_message = "Uh-oh! We couldn't fetch the videos this time. Please try again in a bit!"
+            print(e)
             return Response({"error": error_message}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         response_serializer = YoutubeWordResponseSerializer(youtube_words, many=True)
