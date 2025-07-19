@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_COMPOSE_FILE = "docker-compose.yml"
-        BACKEND_SERVICE = "backend"
-        FRONTEND_SERVICE = "frontend"
+        DOCKER_COMPOSE_FILE = "docker-compose.prod.yml"
+        BACKEND_SERVICE = "vib-backend"
+        FRONTEND_SERVICE = "vib-frontend"
         PROJECT_DIR = "/var/www/viktorbezai"
     }
 
@@ -23,7 +23,7 @@ pipeline {
                         git clean -fd
                         git pull --ff-only origin master
                     else
-                        git clone git@github.com:viktor-bezai/LearnEnglish.git .
+                        git clone git@github.com:viktor-bezai/vib.git .
                     fi
                     '''
                 }
@@ -34,8 +34,14 @@ pipeline {
             steps {
                 script {
                     sh '''#!/bin/bash
+                    # Create directories if they don't exist
+                    sudo mkdir -p ${PROJECT_DIR}/backend/staticfiles
+                    sudo mkdir -p ${PROJECT_DIR}/backend/media
+                    
+                    # Set proper permissions
                     sudo chown -R 1000:1000 ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
-                    sudo chmod -R 777 ${PROJECT_DIR}/backend/staticfiles ${PROJECT_DIR}/backend/media
+                    sudo chmod -R 755 ${PROJECT_DIR}/backend/staticfiles
+                    sudo chmod -R 755 ${PROJECT_DIR}/backend/media
                     sudo chmod +x ${PROJECT_DIR}/backend/entrypoint.sh
                     '''
                 }
@@ -51,11 +57,7 @@ pipeline {
                     string(credentialsId: 'VIKTORBEZAI_POSTGRES_HOST', variable: 'POSTGRES_HOST'),
                     string(credentialsId: 'VIKTORBEZAI_POSTGRES_PORT', variable: 'POSTGRES_PORT'),
                     string(credentialsId: 'VIKTORBEZAI_SECRET_KEY', variable: 'SECRET_KEY'),
-                    string(credentialsId: 'VIKTORBEZAI_GOOGLE_API_KEY', variable: 'GOOGLE_API_KEY'),
-                    string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL'),
-                    string(credentialsId: 'VIKTORBEZAI_PROXY_USERNAME', variable: 'PROXY_USERNAME'),
-                    string(credentialsId: 'VIKTORBEZAI_PROXY_PASS', variable: 'PROXY_PASS'),
-                    string(credentialsId: 'VIKTORBEZAI_PROXY_HOST', variable: 'PROXY_HOST')
+                    string(credentialsId: 'VIKTORBEZAI_NEXT_PUBLIC_API_BASE_URL', variable: 'NEXT_PUBLIC_API_BASE_URL')
                 ]) {
                     script {
                         sh '''#!/bin/bash
@@ -67,11 +69,7 @@ POSTGRES_PASSWORD=${POSTGRES_PASSWORD//$/\\$}
 POSTGRES_HOST=${POSTGRES_HOST}
 POSTGRES_PORT=${POSTGRES_PORT}
 SECRET_KEY=${SECRET_KEY//$/\\$}
-GOOGLE_API_KEY=${GOOGLE_API_KEY}
 NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
-PROXY_USERNAME=${PROXY_USERNAME}
-PROXY_PASS=${PROXY_PASS}
-PROXY_HOST=${PROXY_HOST}
 EOF
 
                         chmod 600 ${PROJECT_DIR}/.env
@@ -81,22 +79,14 @@ EOF
             }
         }
 
-        stage('Build & Optimize Docker Images') {
+        stage('Build Docker Images') {
             steps {
                 script {
                     sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
 
-                    mkdir -p ${PROJECT_DIR}/backend/staticfiles
-                    chmod -R 777 ${PROJECT_DIR}/backend/staticfiles
-                    chown -R www-data:www-data ${PROJECT_DIR}/backend/staticfiles
-
-                    mkdir -p ${PROJECT_DIR}/backend/media
-                    chmod -R 777 ${PROJECT_DIR}/backend/media
-                    chown -R www-data:www-data ${PROJECT_DIR}/backend/media
-
-                    echo "⚠️ Building updated Docker images..."
-                    docker compose build
+                    echo "⚠️ Building Docker images..."
+                    docker compose -f ${DOCKER_COMPOSE_FILE} build --no-cache
                     '''
                 }
             }
@@ -108,11 +98,38 @@ EOF
                     sh '''#!/bin/bash
                     cd ${PROJECT_DIR}
 
-                    echo "⚠️ Starting new containers before stopping old ones..."
-                    docker compose up -d --no-deps --build ${BACKEND_SERVICE} ${FRONTEND_SERVICE}
+                    echo "⚠️ Stopping existing containers..."
+                    docker compose -f ${DOCKER_COMPOSE_FILE} down
 
-                    echo "⚠️ Removing old containers safely..."
-                    docker compose restart ${BACKEND_SERVICE} ${FRONTEND_SERVICE}
+                    echo "⚠️ Starting new containers..."
+                    docker compose -f ${DOCKER_COMPOSE_FILE} up -d
+
+                    echo "⚠️ Waiting for services to be healthy..."
+                    sleep 10
+
+                    echo "⚠️ Running Django migrations..."
+                    docker compose -f ${DOCKER_COMPOSE_FILE} exec -T ${BACKEND_SERVICE} python manage.py migrate
+
+                    echo "⚠️ Collecting static files..."
+                    docker compose -f ${DOCKER_COMPOSE_FILE} exec -T ${BACKEND_SERVICE} python manage.py collectstatic --noinput
+                    '''
+                }
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                script {
+                    sh '''#!/bin/bash
+                    cd ${PROJECT_DIR}
+
+                    echo "⚠️ Checking backend health..."
+                    curl -f http://localhost:8001/api/schema/ || exit 1
+
+                    echo "⚠️ Checking frontend health..."
+                    curl -f http://localhost:3001/ || exit 1
+
+                    echo "✅ All services are healthy!"
                     '''
                 }
             }
@@ -139,6 +156,13 @@ EOF
         }
         failure {
             echo "❌ Deployment failed!"
+            script {
+                sh '''#!/bin/bash
+                cd ${PROJECT_DIR}
+                echo "⚠️ Showing container logs..."
+                docker compose -f ${DOCKER_COMPOSE_FILE} logs --tail=50
+                '''
+            }
         }
     }
 }

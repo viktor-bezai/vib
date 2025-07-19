@@ -1,0 +1,49 @@
+version: '3.8'
+
+networks:
+  app_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24
+
+services:
+  vib-backend:
+    build:
+      context: ./backend
+    container_name: vib_backend
+    restart: always
+    ports:
+      - "8001:8001"
+    networks:
+      app_network:
+        ipv4_address: 192.168.100.10
+    env_file:
+      - .env
+    volumes:
+      - /var/www/viktorbezai/backend:/app
+    entrypoint: ["/app/entrypoint.sh"]
+    command: ["gunicorn", "--bind", "0.0.0.0:8001", "--timeout", "120", "config.wsgi:application"]
+
+  vib-frontend:
+    build:
+      context: ./frontend
+    container_name: vib_frontend
+    restart: always
+    ports:
+      - "3001:3001"
+    networks:
+      app_network:
+        ipv4_address: 192.168.100.20
+    env_file:
+      - .env
+    environment:
+      - NODE_PATH=./
+      - PORT=3001
+    depends_on:
+      - vib-backend
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:3001/ || exit 1" ]
+      interval: 30s
+      retries: 3
+      timeout: 10s
