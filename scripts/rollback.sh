@@ -31,6 +31,6 @@ sleep 10
 
 # Run migrations (in case of rollback)
 echo "🗄️ Running migrations..."
-docker-compose -f $COMPOSE_FILE exec -T backend python manage.py migrate
+docker-compose -f $COMPOSE_FILE exec -T vib-backend python manage.py migrate
 
 echo "✅ Rollback completed!"
