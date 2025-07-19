@@ -1,0 +1,1057 @@
+/* Main Layout */
+.main {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Navigation */
+.navigation {
+  padding: 2rem 0;
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  color: #0070f3;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.backLink:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.backIcon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Hero Section */
+.hero {
+  padding: 4rem 0;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.heroContent {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.profileImage {
+  flex-shrink: 0;
+}
+
+.imageGradient {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #0070f3 0%, #00a8ff 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.initials {
+  font-size: 3rem;
+  font-weight: 700;
+  color: white;
+}
+
+.profileInfo {
+  flex: 1;
+}
+
+.name {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+  background: linear-gradient(135deg, #0070f3 0%, #00a8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.role {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0 0 0.75rem 0;
+  font-weight: 500;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.locationIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.summary {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border-left: 4px solid #0070f3;
+}
+
+.summary p {
+  font-size: 1.15rem;
+  line-height: 1.8;
+  color: #555;
+  margin: 0;
+}
+
+/* Stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 2rem;
+}
+
+.statCard {
+  text-align: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+}
+
+.statCard h3 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #0070f3;
+  margin: 0 0 0.5rem 0;
+}
+
+.statCard p {
+  color: #666;
+  margin: 0;
+}
+
+/* Experience Section */
+.experienceSection {
+  padding: 6rem 0;
+  animation: fadeIn 1s ease-out 0.2s both;
+}
+
+.sectionTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 4rem;
+  color: #333;
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(to right, #0070f3, #00a8ff);
+  border-radius: 2px;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding-left: 50px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e9ecef;
+}
+
+.timelineItem {
+  position: relative;
+  margin-bottom: 3rem;
+  animation: slideInLeft 0.6s ease-out both;
+}
+
+.timelineItem:nth-child(1) { animation-delay: 0.1s; }
+.timelineItem:nth-child(2) { animation-delay: 0.2s; }
+.timelineItem:nth-child(3) { animation-delay: 0.3s; }
+
+.timelineMarker {
+  position: absolute;
+  left: -35px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  background: #0070f3;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 0 3px #e9ecef;
+}
+
+.experienceCard {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.experienceCard:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transform: translateX(5px);
+}
+
+.experienceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.jobTitle {
+  font-size: 1.5rem;
+  color: #0070f3;
+  margin: 0 0 0.25rem 0;
+}
+
+.company {
+  font-size: 1.2rem;
+  color: #333;
+  margin: 0;
+  font-weight: 500;
+}
+
+.experienceMeta {
+  text-align: right;
+}
+
+.period {
+  display: block;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.location {
+  display: block;
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.highlights {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.highlights li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 0.75rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.highlights li::before {
+  content: '▸';
+  position: absolute;
+  left: 0.5rem;
+  color: #0070f3;
+  font-weight: bold;
+}
+
+/* Skills Section */
+.skillsSection {
+  padding: 6rem 0;
+  background: white;
+  animation: fadeIn 1s ease-out 0.4s both;
+}
+
+.skillsContainer {
+  display: grid;
+  gap: 2rem;
+}
+
+.skillGroup {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.skillGroup:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.skillCategory {
+  font-size: 1.3rem;
+  color: #0070f3;
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+}
+
+.skillTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.skillTag {
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  color: #555;
+  transition: all 0.3s ease;
+}
+
+.skillTag:hover {
+  background: #0070f3;
+  color: white;
+  border-color: #0070f3;
+  transform: translateY(-2px);
+}
+
+/* Competencies Section */
+.competenciesSection {
+  padding: 6rem 0;
+  animation: fadeIn 1s ease-out 0.6s both;
+}
+
+.competencyGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.competencyCard {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.competencyCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.competencyIcon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0070f3 0%, #00a8ff 100%);
+  border-radius: 12px;
+}
+
+.competencyIcon svg {
+  width: 30px;
+  height: 30px;
+  stroke: white;
+  stroke-width: 2;
+}
+
+.competencyCard h3 {
+  font-size: 1.4rem;
+  margin: 0 0 1rem 0;
+  color: #333;
+}
+
+.competencyCard p {
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* CTA Section */
+.ctaSection {
+  padding: 6rem 0;
+  text-align: center;
+  background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+  border-radius: 16px;
+  margin-bottom: 4rem;
+  animation: fadeIn 1s ease-out 0.8s both;
+}
+
+.ctaText {
+  font-size: 1.3rem;
+  color: #666;
+  margin-bottom: 3rem;
+}
+
+.ctaButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.primaryCta,
+.secondaryCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.primaryCta {
+  background: linear-gradient(135deg, #0070f3 0%, #00a8ff 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 112, 243, 0.3);
+}
+
+.primaryCta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 112, 243, 0.4);
+}
+
+.secondaryCta {
+  background: white;
+  color: #0070f3;
+  border: 2px solid #0070f3;
+}
+
+.secondaryCta:hover {
+  background: #0070f3;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.ctaIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.socialLinks {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.socialLink {
+  width: 50px;
+  height: 50px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.socialLink:hover {
+  background: #0070f3;
+  border-color: #0070f3;
+  transform: translateY(-3px);
+}
+
+.socialLink svg {
+  width: 24px;
+  height: 24px;
+  fill: #333;
+  transition: fill 0.3s ease;
+}
+
+.socialLink:hover svg {
+  fill: white;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 112, 243, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 20px rgba(0, 112, 243, 0);
+  }
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  .main {
+    background: linear-gradient(to bottom, #0a0a0a, #111);
+  }
+  
+  .backLink {
+    background: #1a1a1a;
+    color: #58a6ff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .backLink:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .heroContent {
+    background: #1a1a1a;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .name {
+    background: linear-gradient(135deg, #58a6ff 0%, #00a8ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .role {
+    color: #f5f5f5;
+  }
+  
+  .location {
+    color: #ccc;
+  }
+  
+  .summary {
+    background: #252525;
+    border-left-color: #58a6ff;
+  }
+  
+  .summary p {
+    color: #ccc;
+  }
+  
+  .statCard {
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+  }
+  
+  .statCard h3 {
+    color: #58a6ff;
+  }
+  
+  .statCard p {
+    color: #ccc;
+  }
+  
+  .sectionTitle {
+    color: #f5f5f5;
+  }
+  
+  .timeline::before {
+    background: #333;
+  }
+  
+  .timelineMarker {
+    background: #58a6ff;
+    box-shadow: 0 0 0 3px #333;
+  }
+  
+  .experienceCard {
+    background: #1a1a1a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .experienceCard:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .jobTitle {
+    color: #58a6ff;
+  }
+  
+  .company {
+    color: #f5f5f5;
+  }
+  
+  .period {
+    color: #ccc;
+  }
+  
+  .location {
+    color: #999;
+  }
+  
+  .highlights li {
+    color: #ccc;
+  }
+  
+  .highlights li::before {
+    color: #58a6ff;
+  }
+  
+  .skillsSection {
+    background: #111;
+  }
+  
+  .skillGroup {
+    background: #1a1a1a;
+  }
+  
+  .skillGroup:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .skillCategory {
+    color: #58a6ff;
+  }
+  
+  .skillTag {
+    background: #252525;
+    border-color: #333;
+    color: #ccc;
+  }
+  
+  .skillTag:hover {
+    background: #58a6ff;
+    color: white;
+    border-color: #58a6ff;
+  }
+  
+  .competencyCard {
+    background: #1a1a1a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .competencyCard:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+  
+  .competencyCard h3 {
+    color: #f5f5f5;
+  }
+  
+  .competencyCard p {
+    color: #ccc;
+  }
+  
+  .ctaSection {
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+  }
+  
+  .ctaText {
+    color: #ccc;
+  }
+  
+  .secondaryCta {
+    background: #1a1a1a;
+    color: #58a6ff;
+    border-color: #58a6ff;
+  }
+  
+  .secondaryCta:hover {
+    background: #58a6ff;
+    color: white;
+  }
+  
+  .socialLink {
+    background: #1a1a1a;
+    border-color: #333;
+  }
+  
+  .socialLink:hover {
+    background: #58a6ff;
+    border-color: #58a6ff;
+  }
+  
+  .socialLink svg {
+    fill: #ccc;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  
+  .navigation {
+    padding: 1.5rem 0;
+  }
+  
+  .backLink {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .backIcon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .hero {
+    padding: 2rem 0;
+  }
+  
+  .heroContent {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+  
+  .profileSection {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .imageGradient {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .initials {
+    font-size: 2rem;
+  }
+  
+  .name {
+    font-size: 1.75rem;
+    text-align: center;
+  }
+  
+  .role {
+    font-size: 1.1rem;
+    text-align: center;
+  }
+  
+  .location {
+    font-size: 1rem;
+    justify-content: center;
+  }
+  
+  .locationIcon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .summary {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .summary p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  
+  .stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .statCard {
+    padding: 1rem 0.5rem;
+  }
+  
+  .statCard h3 {
+    font-size: 1.75rem;
+  }
+  
+  .statCard p {
+    font-size: 0.75rem;
+  }
+  
+  /* Experience Section */
+  .experienceSection,
+  .skillsSection,
+  .competenciesSection {
+    padding: 3rem 0;
+  }
+  
+  .sectionTitle {
+    font-size: 1.75rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .timeline {
+    padding-left: 25px;
+  }
+  
+  .timeline::before {
+    left: 8px;
+  }
+  
+  .timelineMarker {
+    left: -17px;
+    width: 10px;
+    height: 10px;
+    border-width: 2px;
+  }
+  
+  .experienceCard {
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .experienceHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .experienceMeta {
+    text-align: left;
+  }
+  
+  .jobTitle {
+    font-size: 1.2rem;
+  }
+  
+  .company {
+    font-size: 1rem;
+  }
+  
+  .period {
+    font-size: 0.9rem;
+  }
+  
+  .location {
+    font-size: 0.85rem;
+  }
+  
+  .highlights {
+    margin-top: 1rem;
+  }
+  
+  .highlights li {
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  /* Skills Section */
+  .skillGroup {
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .skillCategory {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .skillTags {
+    gap: 0.5rem;
+  }
+  
+  .skillTag {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Competencies */
+  .competencyGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .competencyCard {
+    padding: 2rem;
+  }
+  
+  .competencyIcon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .competencyIcon svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .competencyCard h3 {
+    font-size: 1.2rem;
+  }
+  
+  .competencyCard p {
+    font-size: 0.95rem;
+  }
+  
+  /* CTA Section */
+  .ctaSection {
+    padding: 3rem 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .ctaText {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .ctaButtons {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .primaryCta,
+  .secondaryCta {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .ctaIcon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .socialLinks {
+    gap: 1rem;
+  }
+  
+  .socialLink {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .socialLink svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .name {
+    font-size: 1.5rem;
+  }
+  
+  .role {
+    font-size: 1rem;
+  }
+  
+  .stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .statCard {
+    padding: 0.75rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+  
+  .jobTitle {
+    font-size: 1.1rem;
+  }
+  
+  .company {
+    font-size: 0.95rem;
+  }
+  
+  .highlights li {
+    font-size: 0.85rem;
+  }
+  
+  .skillTag {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  
+  .competencyCard {
+    padding: 1.5rem;
+  }
+  
+  .competencyCard h3 {
+    font-size: 1.1rem;
+  }
+  
+  .competencyCard p {
+    font-size: 0.9rem;
+  }
+  
+  .primaryCta,
+  .secondaryCta {
+    font-size: 0.95rem;
+  }
+}

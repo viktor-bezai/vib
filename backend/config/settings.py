@@ -14,10 +14,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env from the project root (two levels up from settings.py)
+PROJECT_ROOT = BASE_DIR.parent
+env_path = PROJECT_ROOT / '.env'
+load_dotenv(env_path)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -36,7 +39,9 @@ DEBUG = True
 if IS_LOCAL:
     ALLOWED_HOSTS = [
         'localhost',
-        '127.0.0.1'
+        '127.0.0.1',
+        'vib-backend',
+        'vib-backend:8000'
     ]
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
@@ -79,8 +84,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'drf_yasg',
-    'server',
+    'drf_spectacular',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -173,6 +178,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Custom User Model
+AUTH_USER_MODEL = 'accounts.VIBUser'
+
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 SCRAPER_API_KEY = os.getenv('SCRAPER_API_KEY')
@@ -193,5 +201,16 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '5/second',
         'user': '50/second',
-    }
+    },
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'VIB API',
+    'DESCRIPTION': 'Viktor Bezai Personal Web Application API',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_SETTINGS': {
+        'persistAuthorization': True,
+    },
 }
