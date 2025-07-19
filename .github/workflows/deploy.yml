@@ -45,14 +45,16 @@ jobs:
             # Run migrations
             docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py migrate
             
-            # Fix permissions and collect static files
-            docker-compose -f docker-compose.prod.yml exec -T vib-backend bash -c "
+            # Fix permissions as root user
+            docker-compose -f docker-compose.prod.yml exec -T -u root vib-backend bash -c "
                 rm -rf /app/staticfiles/*
                 mkdir -p /app/staticfiles /app/media
                 chown -R appuser:appgroup /app/staticfiles /app/media
                 chmod -R 755 /app/staticfiles /app/media
-                python manage.py collectstatic --noinput --clear
             "
+            
+            # Collect static files as appuser
+            docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py collectstatic --noinput
             
             # Build and deploy frontend
             docker-compose -f docker-compose.prod.yml build vib-frontend
