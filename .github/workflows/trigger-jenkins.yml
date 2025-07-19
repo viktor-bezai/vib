@@ -1,0 +1,30 @@
+name: Trigger Jenkins Deployment
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+jobs:
+  trigger-jenkins:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Trigger Jenkins Build
+      env:
+        JENKINS_URL: ${{ secrets.JENKINS_URL }}
+        JENKINS_USER: ${{ secrets.JENKINS_USER }}
+        JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+        JENKINS_JOB: ${{ secrets.JENKINS_JOB }}
+      run: |
+        echo "Triggering Jenkins deployment..."
+        curl -X POST \
+          -u "${JENKINS_USER}:${JENKINS_TOKEN}" \
+          "${JENKINS_URL}/job/${JENKINS_JOB}/buildWithParameters?BRANCH_NAME=${GITHUB_REF#refs/heads/}"
+        
+    - name: Wait for Jenkins Build
+      run: |
+        echo "Build triggered. Check Jenkins for status."
+        # Optionally, you can poll Jenkins API for build status
