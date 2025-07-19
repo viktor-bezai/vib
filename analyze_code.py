@@ -9,20 +9,36 @@ client = OpenAI(
 
 def review_code_changes(diff):
     # Prompt for the AI
-    prompt = f"""You are a code reviewer for a Django and Next.js project. Analyze the following code changes 
-    and describe what was modified in this pull request:
+    prompt = f"""You are an experienced code reviewer for a Django and Next.js project. Review this diff and provide ONLY important, actionable feedback.
+
+    FOCUS ON:
+    - Security vulnerabilities (exposed secrets, SQL injection, XSS, etc.)
+    - Critical bugs that would break functionality
+    - Performance issues that would significantly impact users
+    - Major architectural problems
+    
+    IGNORE:
+    - Minor style issues (use linters for this)
+    - Personal preferences
+    - Documentation unless it's misleading
+    - Small optimizations that don't matter
+    - Naming conventions unless they're seriously confusing
+    
+    If the code looks good, just say "LGTM" (Looks Good To Me).
+    
+    Keep feedback concise and actionable. Each issue should be 1-2 sentences max.
+    
+    Diff to review:
     ```
     {diff}
-    ```
-    Provide detailed feedback for clarity, correctness, and best practices. Highlight areas that need 
-    improvement or correction."""
+    ```"""
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
             {
                 "role": "system",
-                "content": "You are a highly skilled Django and Next.js code reviewer."
+                "content": "You are a pragmatic senior developer reviewing code. Be direct, focus only on real issues that matter. Skip the fluff."
             },
             {
                 "role": "user",
@@ -37,4 +53,10 @@ with open('changes.diff', 'r') as f:
     diff_content = f.read()
 
 review_feedback = review_code_changes(diff_content)
-print("Review Feedback:\n", review_feedback)
+
+# Format output for better readability
+print("=" * 60)
+print("PR REVIEW")
+print("=" * 60)
+print(review_feedback)
+print("=" * 60)
