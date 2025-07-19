@@ -3,6 +3,10 @@
 # Ensure we exit on error
 set -e
 
+# Install/upgrade requirements
+echo "Installing requirements..."
+pip install --no-cache-dir -r requirements.txt
+
 echo "Waiting for PostgreSQL..."
 timeout=30
 count=0

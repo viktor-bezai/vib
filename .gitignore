@@ -8,6 +8,7 @@
 *.sqlite3
 *.env
 *.env.*
+docs/
 
 # Python
 __pycache__/
