@@ -39,11 +39,20 @@ jobs:
             docker-compose -f docker-compose.prod.yml build vib-backend
             docker-compose -f docker-compose.prod.yml up -d vib-backend
             
+            # Wait for backend to be ready
+            sleep 10
+            
             # Run migrations
             docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py migrate
             
-            # Collect static files
-            docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py collectstatic --noinput
+            # Fix permissions and collect static files
+            docker-compose -f docker-compose.prod.yml exec -T vib-backend bash -c "
+                rm -rf /app/staticfiles/*
+                mkdir -p /app/staticfiles /app/media
+                chown -R appuser:appgroup /app/staticfiles /app/media
+                chmod -R 755 /app/staticfiles /app/media
+                python manage.py collectstatic --noinput --clear
+            "
             
             # Build and deploy frontend
             docker-compose -f docker-compose.prod.yml build vib-frontend
