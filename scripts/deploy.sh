@@ -9,6 +9,9 @@ echo "🚀 Starting deployment..."
 PROJECT_DIR="/var/www/viktorbezai"
 COMPOSE_FILE="docker-compose.prod.yml"
 
+# Fix git safe directory
+git config --global --add safe.directory $PROJECT_DIR
+
 # Navigate to project directory
 cd $PROJECT_DIR
 
@@ -38,11 +41,11 @@ sleep 10
 
 # Run migrations
 echo "🗄️ Running database migrations..."
-docker-compose -f $COMPOSE_FILE exec -T backend python manage.py migrate
+docker-compose -f $COMPOSE_FILE exec -T vib-backend python manage.py migrate
 
 # Collect static files
 echo "📦 Collecting static files..."
-docker-compose -f $COMPOSE_FILE exec -T backend python manage.py collectstatic --noinput
+docker-compose -f $COMPOSE_FILE exec -T vib-backend python manage.py collectstatic --noinput
 
 # Health check
 echo "🏥 Running health checks..."
