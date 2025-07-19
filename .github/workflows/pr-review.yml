@@ -3,6 +3,8 @@ name: Review Pull Request
 on:
   pull_request:
     types: [opened, synchronize]
+    branches:
+      - preview  # Only run when PR targets the preview branch
 
 permissions:
   contents: write
@@ -11,6 +13,8 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
+    # Only run if the target branch is preview
+    if: github.event.pull_request.base.ref == 'preview'
 
     steps:
     - name: Checkout code
@@ -62,3 +66,19 @@ jobs:
 
     - name: Cleanup Feedback File
       run: rm feedback.txt
+
+  skip-review:
+    runs-on: ubuntu-latest
+    # Only run if the target branch is NOT preview
+    if: github.event.pull_request.base.ref != 'preview'
+    
+    steps:
+    - name: Post Skip Message
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        curl -X POST \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d '{"body": "ℹ️ Automated code review is only enabled for pull requests targeting the `preview` branch."}' \
+          "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"

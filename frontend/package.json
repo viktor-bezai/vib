@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:env": "node -r dotenv/config next build dotenv_config_path=../.env",
     "start": "next start",
     "lint": "next lint"
   },
