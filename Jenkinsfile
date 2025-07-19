@@ -1,11 +1,19 @@
 pipeline {
     agent any
 
+    triggers {
+        // Poll SCM every minute (optional backup)
+        pollSCM('H/5 * * * *')
+        // GitHub webhook trigger
+        githubPush()
+    }
+
     environment {
         DOCKER_COMPOSE_FILE = "docker-compose.prod.yml"
         BACKEND_SERVICE = "vib-backend"
         FRONTEND_SERVICE = "vib-frontend"
         PROJECT_DIR = "/var/www/viktorbezai"
+        BRANCH_NAME = "${env.BRANCH_NAME ?: 'master'}"
     }
 
     stages {
@@ -19,12 +27,16 @@ pipeline {
                     if [ -d .git ]; then
                         echo "⚠️ Resetting local changes..."
                         git fetch --all
-                        git reset --hard origin/master
+                        git reset --hard origin/${BRANCH_NAME}
                         git clean -fd
-                        git pull --ff-only origin master
+                        git pull --ff-only origin ${BRANCH_NAME}
                     else
                         git clone git@github.com:viktor-bezai/vib.git .
+                        git checkout ${BRANCH_NAME}
                     fi
+                    
+                    echo "✅ Current branch: $(git branch --show-current)"
+                    echo "✅ Latest commit: $(git log -1 --oneline)"
                     '''
                 }
             }
