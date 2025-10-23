@@ -43,24 +43,36 @@ jobs:
             
             # Copy production environment file if exists
             [ -f .env.production ] && cp .env.production .env
-            
+
+            # Aggressive cleanup for small droplet
+            echo "Cleaning up disk space..."
+            docker system prune -af --volumes --filter "until=1h" || true
+            docker builder prune -af --filter "until=1h" || true
+
+            # Remove stopped containers and old images
+            docker container prune -f || true
+            docker image prune -af || true
+
             # Stop existing containers
-            docker-compose -f docker-compose.prod.yml down
+            echo "Stopping containers..."
+            docker-compose -f docker-compose.prod.yml down --remove-orphans
 
-            # Remove old images to free space
-            docker image prune -af --filter "until=24h"
-
-            # Build backend with no cache
-            echo "Building backend..."
+            # Build and start backend (one at a time to save space)
+            echo "Building and starting backend..."
             docker-compose -f docker-compose.prod.yml build --no-cache vib-backend
+            docker-compose -f docker-compose.prod.yml up -d vib-backend
 
-            # Build frontend with no cache
-            echo "Building frontend..."
+            # Clean up after backend build
+            docker builder prune -af --filter "until=1m" || true
+
+            # Build and start frontend
+            echo "Building and starting frontend..."
             docker-compose -f docker-compose.prod.yml build --no-cache vib-frontend
+            docker-compose -f docker-compose.prod.yml up -d vib-frontend
 
-            # Start both services
-            echo "Starting services..."
-            docker-compose -f docker-compose.prod.yml up -d
+            # Final cleanup
+            docker builder prune -af || true
+            docker image prune -af || true
 
             # Wait for backend to be ready
             echo "Waiting for backend to start..."

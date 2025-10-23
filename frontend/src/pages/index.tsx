@@ -10,7 +10,7 @@ export default function Home() {
         <title>Viktor Bezai - Software Developer</title>
         <meta
           name="description"
-          content="Full-Stack Software Developer specializing in Python, Django, React, and modern web technologies"
+          content="Software Developer specializing in Python, Django, React, and modern web technologies"
         />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -22,7 +22,7 @@ export default function Home() {
             <div className={styles.heroContent}>
               <h1 className={styles.greeting}>{"Hello, I'm"}</h1>
               <h2 className={styles.name}>Viktor Bezai</h2>
-              <p className={styles.tagline}>Full-Stack Software Developer</p>
+              <p className={styles.tagline}>Software Developer</p>
               <p className={styles.description}>
                 Building scalable web applications with modern technologies.
                 Specializing in Python, Django, React, and cloud infrastructure.
