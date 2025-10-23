@@ -44,35 +44,49 @@ jobs:
             # Copy production environment file if exists
             [ -f .env.production ] && cp .env.production .env
 
+            # Pre-build cleanup to free disk space
+            echo "🧹 Pre-build cleanup to free disk space..."
+
+            # Show initial disk usage
+            echo "💾 Initial disk usage:"
+            df -h /
+            docker system df || true
+
+            # Stop services to free up resources
+            docker-compose -f docker-compose.prod.yml down || true
+
             # Aggressive cleanup for small droplet
-            echo "Cleaning up disk space..."
-            docker system prune -af --volumes --filter "until=1h" || true
-            docker builder prune -af --filter "until=1h" || true
+            docker system prune -a -f --volumes || true
 
-            # Remove stopped containers and old images
-            docker container prune -f || true
-            docker image prune -af || true
+            # Clean build cache
+            docker builder prune -a -f || true
 
-            # Stop existing containers
-            echo "Stopping containers..."
-            docker-compose -f docker-compose.prod.yml down --remove-orphans
+            # Clear container logs to free space
+            find /var/lib/docker/containers -name '*-json.log' -exec truncate -s 0 {} \; || true
 
-            # Build and start backend (one at a time to save space)
-            echo "Building and starting backend..."
-            docker-compose -f docker-compose.prod.yml build --no-cache vib-backend
-            docker-compose -f docker-compose.prod.yml up -d vib-backend
+            # Clean system caches
+            apt-get clean >/dev/null 2>&1 || true
+            apt-get autoremove -y >/dev/null 2>&1 || true
 
-            # Clean up after backend build
-            docker builder prune -af --filter "until=1m" || true
+            # Remove old journal logs
+            journalctl --vacuum-time=2d >/dev/null 2>&1 || true
 
-            # Build and start frontend
-            echo "Building and starting frontend..."
-            docker-compose -f docker-compose.prod.yml build --no-cache vib-frontend
-            docker-compose -f docker-compose.prod.yml up -d vib-frontend
+            # Show disk usage after cleanup
+            echo "💾 Disk usage after cleanup:"
+            df -h /
+            docker system df || true
 
-            # Final cleanup
-            docker builder prune -af || true
-            docker image prune -af || true
+            # Build services (without --no-cache to use some caching for speed)
+            echo "🔨 Building backend..."
+            docker-compose -f docker-compose.prod.yml build vib-backend
+
+            echo "🔨 Building frontend..."
+            docker-compose -f docker-compose.prod.yml build vib-frontend
+
+            # Start services with increased timeout
+            export COMPOSE_HTTP_TIMEOUT=300
+            echo "🚀 Starting services..."
+            docker-compose -f docker-compose.prod.yml up -d
 
             # Wait for backend to be ready
             echo "Waiting for backend to start..."
@@ -95,6 +109,18 @@ jobs:
             echo "Collecting static files..."
             docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py collectstatic --noinput || echo "Collectstatic failed, continuing..."
 
-            # Check container status
-            echo "Deployment complete! Container status:"
+            # Post-deployment cleanup
+            echo "🧹 Post-deployment cleanup..."
+            docker image prune -f || true
+
+            # Show final disk usage
+            echo "💾 Final disk usage:"
+            df -h /
+            docker system df || true
+
+            # Deployment status
+            echo "📊 Deployment Status:"
             docker-compose -f docker-compose.prod.yml ps
+
+            echo "✅ Deployment completed successfully!"
+            echo "📍 Application URL: https://viktorbezai.online"
