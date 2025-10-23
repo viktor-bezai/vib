@@ -122,7 +122,7 @@
   padding: 0;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  font-family: 'Consolas', 'Monaco', monospace;
+  font-family: "Consolas", "Monaco", monospace;
 }
 
 .codeHeader {
@@ -344,7 +344,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -357,101 +358,101 @@
   .main {
     background: linear-gradient(to bottom, #0a0a0a, #111);
   }
-  
+
   .greeting {
     color: #999;
   }
-  
+
   .name {
     background: linear-gradient(135deg, #58a6ff 0%, #00a8ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .tagline {
     color: #f5f5f5;
   }
-  
+
   .description {
     color: #ccc;
   }
-  
+
   .secondaryButton {
     background: #1a1a1a;
     border-color: #58a6ff;
     color: #58a6ff;
   }
-  
+
   .secondaryButton:hover {
     background: #58a6ff;
     color: white;
   }
-  
+
   .sectionTitle {
     color: #f5f5f5;
   }
-  
+
   .featureCard {
     background: #1a1a1a;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   }
-  
+
   .featureCard:hover {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
   }
-  
+
   .featureCard h4 {
     color: #f5f5f5;
   }
-  
+
   .featureCard p {
     color: #ccc;
   }
-  
+
   .quickLinks {
     background: #111;
   }
-  
+
   .linkCard {
     background: #1a1a1a;
     border-color: #333;
   }
-  
+
   .linkCard:hover {
     background: #222;
   }
-  
+
   .linkContent h4 {
     color: #f5f5f5;
   }
-  
+
   .linkContent p {
     color: #ccc;
   }
-  
+
   .linkArrow {
     stroke: #666;
   }
-  
+
   .linkCard:hover .linkArrow {
     stroke: #58a6ff;
   }
-  
+
   .contactText {
     color: #ccc;
   }
-  
+
   .socialLink {
     background: #1a1a1a;
     border-color: #333;
   }
-  
+
   .socialLink:hover {
     background: #58a6ff;
     border-color: #58a6ff;
   }
-  
+
   .socialLink svg {
     fill: #ccc;
   }
@@ -462,48 +463,48 @@
   .container {
     padding: 0 1rem;
   }
-  
+
   .hero {
     grid-template-columns: 1fr;
     gap: 2rem;
     padding: 3rem 0;
     min-height: auto;
   }
-  
+
   .heroContent {
     text-align: center;
   }
-  
+
   .heroVisual {
     display: none; /* Hide code block on mobile for cleaner look */
   }
-  
+
   .greeting {
     font-size: 1.2rem;
   }
-  
+
   .name {
     font-size: 2.5rem;
     line-height: 1.2;
   }
-  
+
   .tagline {
     font-size: 1.2rem;
     margin-bottom: 1rem;
   }
-  
+
   .description {
     font-size: 1rem;
     margin-bottom: 2rem;
     padding: 0 1rem;
   }
-  
+
   .ctaButtons {
     flex-direction: column;
     gap: 1rem;
     align-items: center;
   }
-  
+
   .primaryButton,
   .secondaryButton {
     width: 90%;
@@ -512,93 +513,93 @@
     padding: 0.875rem 1.5rem;
     font-size: 1rem;
   }
-  
+
   .features,
   .quickLinks,
   .contact {
     padding: 3rem 0;
   }
-  
+
   .sectionTitle {
     font-size: 1.75rem;
     margin-bottom: 2rem;
   }
-  
+
   .featureGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .featureCard {
     padding: 2rem;
   }
-  
+
   .featureIcon {
     width: 50px;
     height: 50px;
     margin-bottom: 1rem;
   }
-  
+
   .featureIcon svg {
     width: 24px;
     height: 24px;
   }
-  
+
   .featureCard h4 {
     font-size: 1.2rem;
   }
-  
+
   .featureCard p {
     font-size: 0.95rem;
   }
-  
+
   .linkGrid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .linkCard {
     padding: 1.25rem;
     gap: 1rem;
   }
-  
+
   .linkIcon {
     width: 40px;
     height: 40px;
   }
-  
+
   .linkIcon svg {
     width: 20px;
     height: 20px;
   }
-  
+
   .linkContent h4 {
     font-size: 1.1rem;
   }
-  
+
   .linkContent p {
     font-size: 0.9rem;
   }
-  
+
   .linkArrow {
     width: 16px;
     height: 16px;
   }
-  
+
   .contactText {
     font-size: 1.1rem;
     padding: 0 1rem;
   }
-  
+
   .socialLinks {
     gap: 1rem;
   }
-  
+
   .socialLink {
     width: 44px;
     height: 44px;
   }
-  
+
   .socialLink svg {
     width: 20px;
     height: 20px;
@@ -610,21 +611,21 @@
   .name {
     font-size: 2rem;
   }
-  
+
   .tagline {
     font-size: 1.1rem;
   }
-  
+
   .primaryButton,
   .secondaryButton {
     width: 100%;
     font-size: 0.95rem;
   }
-  
+
   .sectionTitle {
     font-size: 1.5rem;
   }
-  
+
   .featureCard {
     padding: 1.5rem;
   }

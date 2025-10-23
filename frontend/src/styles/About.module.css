@@ -179,7 +179,7 @@
 }
 
 .sectionTitle::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -10px;
   left: 50%;
@@ -197,7 +197,7 @@
 }
 
 .timeline::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 15px;
   top: 0;
@@ -212,9 +212,15 @@
   animation: slideInLeft 0.6s ease-out both;
 }
 
-.timelineItem:nth-child(1) { animation-delay: 0.1s; }
-.timelineItem:nth-child(2) { animation-delay: 0.2s; }
-.timelineItem:nth-child(3) { animation-delay: 0.3s; }
+.timelineItem:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.timelineItem:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.timelineItem:nth-child(3) {
+  animation-delay: 0.3s;
+}
 
 .timelineMarker {
   position: absolute;
@@ -295,7 +301,7 @@
 }
 
 .highlights li::before {
-  content: '▸';
+  content: "▸";
   position: absolute;
   left: 0.5rem;
   color: #0070f3;
@@ -304,19 +310,19 @@
 
 /* Skills Section */
 .skillsSection {
-  padding: 6rem 0;
+  padding: 3rem 0;
   background: white;
   animation: fadeIn 1s ease-out 0.4s both;
 }
 
 .skillsContainer {
   display: grid;
-  gap: 2rem;
+  gap: 1.25rem;
 }
 
 .skillGroup {
   background: #f8f9fa;
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 12px;
   transition: all 0.3s ease;
 }
@@ -556,7 +562,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 0 0 rgba(0, 112, 243, 0.4);
   }
   50% {
@@ -569,178 +576,178 @@
   .main {
     background: linear-gradient(to bottom, #0a0a0a, #111);
   }
-  
+
   .backLink {
     background: #1a1a1a;
     color: #58a6ff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
-  
+
   .backLink:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   }
-  
+
   .heroContent {
     background: #1a1a1a;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   }
-  
+
   .name {
     background: linear-gradient(135deg, #58a6ff 0%, #00a8ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   .role {
     color: #f5f5f5;
   }
-  
+
   .location {
     color: #ccc;
   }
-  
+
   .summary {
     background: #252525;
     border-left-color: #58a6ff;
   }
-  
+
   .summary p {
     color: #ccc;
   }
-  
+
   .statCard {
     background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
   }
-  
+
   .statCard h3 {
     color: #58a6ff;
   }
-  
+
   .statCard p {
     color: #ccc;
   }
-  
+
   .sectionTitle {
     color: #f5f5f5;
   }
-  
+
   .timeline::before {
     background: #333;
   }
-  
+
   .timelineMarker {
     background: #58a6ff;
     box-shadow: 0 0 0 3px #333;
   }
-  
+
   .experienceCard {
     background: #1a1a1a;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   }
-  
+
   .experienceCard:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
   }
-  
+
   .jobTitle {
     color: #58a6ff;
   }
-  
+
   .company {
     color: #f5f5f5;
   }
-  
+
   .period {
     color: #ccc;
   }
-  
+
   .location {
     color: #999;
   }
-  
+
   .highlights li {
     color: #ccc;
   }
-  
+
   .highlights li::before {
     color: #58a6ff;
   }
-  
+
   .skillsSection {
     background: #111;
   }
-  
+
   .skillGroup {
     background: #1a1a1a;
   }
-  
+
   .skillGroup:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   }
-  
+
   .skillCategory {
     color: #58a6ff;
   }
-  
+
   .skillTag {
     background: #252525;
     border-color: #333;
     color: #ccc;
   }
-  
+
   .skillTag:hover {
     background: #58a6ff;
     color: white;
     border-color: #58a6ff;
   }
-  
+
   .competencyCard {
     background: #1a1a1a;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
   }
-  
+
   .competencyCard:hover {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
   }
-  
+
   .competencyCard h3 {
     color: #f5f5f5;
   }
-  
+
   .competencyCard p {
     color: #ccc;
   }
-  
+
   .ctaSection {
     background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
   }
-  
+
   .ctaText {
     color: #ccc;
   }
-  
+
   .secondaryCta {
     background: #1a1a1a;
     color: #58a6ff;
     border-color: #58a6ff;
   }
-  
+
   .secondaryCta:hover {
     background: #58a6ff;
     color: white;
   }
-  
+
   .socialLink {
     background: #1a1a1a;
     border-color: #333;
   }
-  
+
   .socialLink:hover {
     background: #58a6ff;
     border-color: #58a6ff;
   }
-  
+
   .socialLink svg {
     fill: #ccc;
   }
@@ -751,226 +758,227 @@
   .container {
     padding: 0 1rem;
   }
-  
+
   .navigation {
     padding: 1.5rem 0;
   }
-  
+
   .backLink {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
   }
-  
+
   .backIcon {
     width: 16px;
     height: 16px;
   }
-  
+
   .hero {
     padding: 2rem 0;
   }
-  
+
   .heroContent {
     padding: 1.5rem;
     border-radius: 12px;
   }
-  
+
   .profileSection {
     flex-direction: column;
     text-align: center;
     gap: 1.5rem;
     margin-bottom: 2rem;
   }
-  
+
   .imageGradient {
     width: 80px;
     height: 80px;
   }
-  
+
   .initials {
     font-size: 2rem;
   }
-  
+
   .name {
     font-size: 1.75rem;
     text-align: center;
   }
-  
+
   .role {
     font-size: 1.1rem;
     text-align: center;
   }
-  
+
   .location {
     font-size: 1rem;
     justify-content: center;
   }
-  
+
   .locationIcon {
     width: 16px;
     height: 16px;
   }
-  
+
   .summary {
     padding: 1.5rem;
     margin-bottom: 2rem;
   }
-  
+
   .summary p {
     font-size: 1rem;
     line-height: 1.6;
   }
-  
+
   .stats {
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
   }
-  
+
   .statCard {
     padding: 1rem 0.5rem;
   }
-  
+
   .statCard h3 {
     font-size: 1.75rem;
   }
-  
+
   .statCard p {
     font-size: 0.75rem;
   }
-  
+
   /* Experience Section */
   .experienceSection,
   .skillsSection,
   .competenciesSection {
     padding: 3rem 0;
   }
-  
+
   .sectionTitle {
     font-size: 1.75rem;
     margin-bottom: 2.5rem;
   }
-  
+
   .timeline {
     padding-left: 25px;
   }
-  
+
   .timeline::before {
     left: 8px;
   }
-  
+
   .timelineMarker {
     left: -17px;
     width: 10px;
     height: 10px;
     border-width: 2px;
   }
-  
+
   .experienceCard {
     padding: 1.5rem;
     margin-bottom: 2rem;
   }
-  
+
   .experienceHeader {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   .experienceMeta {
     text-align: left;
   }
-  
+
   .jobTitle {
     font-size: 1.2rem;
   }
-  
+
   .company {
     font-size: 1rem;
   }
-  
+
   .period {
     font-size: 0.9rem;
   }
-  
+
   .location {
     font-size: 0.85rem;
   }
-  
+
   .highlights {
     margin-top: 1rem;
   }
-  
+
   .highlights li {
     padding-left: 1.5rem;
     margin-bottom: 0.5rem;
     font-size: 0.9rem;
     line-height: 1.5;
   }
-  
+
   /* Skills Section */
   .skillGroup {
     padding: 1.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .skillCategory {
     font-size: 1.1rem;
     margin-bottom: 0.75rem;
   }
-  
+
   .skillTags {
     gap: 0.5rem;
   }
-  
+
   .skillTag {
     padding: 0.4rem 0.8rem;
     font-size: 0.85rem;
   }
-  
+
   /* Competencies */
   .competencyGrid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
-  
+
   .competencyCard {
     padding: 2rem;
   }
-  
+
   .competencyIcon {
     width: 50px;
     height: 50px;
   }
-  
+
   .competencyIcon svg {
     width: 24px;
     height: 24px;
   }
-  
+
   .competencyCard h3 {
     font-size: 1.2rem;
   }
-  
+
   .competencyCard p {
     font-size: 0.95rem;
   }
-  
+
   /* CTA Section */
   .ctaSection {
     padding: 3rem 1rem;
     margin-bottom: 2rem;
   }
-  
+
   .ctaText {
     font-size: 1.1rem;
     margin-bottom: 2rem;
   }
-  
+
   .ctaButtons {
     flex-direction: column;
+    align-items: center;
     gap: 1rem;
     margin-bottom: 2rem;
   }
-  
+
   .primaryCta,
   .secondaryCta {
     width: 100%;
@@ -978,21 +986,21 @@
     padding: 0.875rem 1.5rem;
     font-size: 1rem;
   }
-  
+
   .ctaIcon {
     width: 18px;
     height: 18px;
   }
-  
+
   .socialLinks {
     gap: 1rem;
   }
-  
+
   .socialLink {
     width: 44px;
     height: 44px;
   }
-  
+
   .socialLink svg {
     width: 20px;
     height: 20px;
@@ -1004,54 +1012,106 @@
   .name {
     font-size: 1.5rem;
   }
-  
+
   .role {
     font-size: 1rem;
   }
-  
+
   .stats {
     grid-template-columns: 1fr;
   }
-  
+
   .statCard {
     padding: 0.75rem;
   }
-  
+
   .sectionTitle {
     font-size: 1.5rem;
   }
-  
+
   .jobTitle {
     font-size: 1.1rem;
   }
-  
+
   .company {
     font-size: 0.95rem;
   }
-  
+
   .highlights li {
     font-size: 0.85rem;
   }
-  
+
   .skillTag {
     padding: 0.3rem 0.6rem;
     font-size: 0.8rem;
   }
-  
+
   .competencyCard {
     padding: 1.5rem;
   }
-  
+
   .competencyCard h3 {
     font-size: 1.1rem;
   }
-  
+
   .competencyCard p {
     font-size: 0.9rem;
   }
-  
+
   .primaryCta,
   .secondaryCta {
     font-size: 0.95rem;
+  }
+}
+
+/* Scroll to Top Button */
+.scrollToTop {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #0070f3 0%, #00a8ff 100%);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 112, 243, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.scrollToTop:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 112, 243, 0.4);
+}
+
+.scrollToTop svg {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+  stroke-width: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+  .scrollToTop {
+    background: linear-gradient(135deg, #58a6ff 0%, #00a8ff 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .scrollToTop {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+  }
+
+  .scrollToTop svg {
+    width: 20px;
+    height: 20px;
   }
 }
