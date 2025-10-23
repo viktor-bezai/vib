@@ -37,14 +37,14 @@ jobs:
             
             # Build and deploy backend
             docker-compose -f docker-compose.prod.yml build vib-backend
-            docker-compose -f docker-compose.prod.yml up -d vib-backend
-            
+            docker-compose -f docker-compose.prod.yml up -d --force-recreate vib-backend
+
             # Wait for backend to be ready
             sleep 10
-            
+
             # Run migrations
             docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py migrate
-            
+
             # Fix permissions as root user
             docker-compose -f docker-compose.prod.yml exec -T -u root vib-backend bash -c "
                 rm -rf /app/staticfiles/*
@@ -52,13 +52,16 @@ jobs:
                 chown -R appuser:appgroup /app/staticfiles /app/media
                 chmod -R 755 /app/staticfiles /app/media
             "
-            
+
             # Collect static files as appuser
             docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py collectstatic --noinput
-            
+
             # Build and deploy frontend
-            docker-compose -f docker-compose.prod.yml build vib-frontend
-            docker-compose -f docker-compose.prod.yml up -d vib-frontend
+            docker-compose -f docker-compose.prod.yml build --no-cache vib-frontend
+            docker-compose -f docker-compose.prod.yml up -d --force-recreate vib-frontend
+
+            # Wait for frontend to be ready
+            sleep 5
             
             # Clean up old images
             docker image prune -f
