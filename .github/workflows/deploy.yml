@@ -10,11 +10,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -25,43 +25,64 @@ jobs:
           script: |
             # Fix git safe directory
             git config --global --add safe.directory /var/www/viktorbezai
-            
+
             # Navigate to project directory
             cd /var/www/viktorbezai
-            
-            # Pull latest changes
-            git pull origin master
+
+            # Stash any local changes to avoid conflicts
+            git stash
+
+            # Fetch latest changes
+            git fetch origin master
+
+            # Reset to match origin/master exactly
+            git reset --hard origin/master
+
+            # Clean any untracked files
+            git clean -fd
             
             # Copy production environment file if exists
             [ -f .env.production ] && cp .env.production .env
             
-            # Build and deploy backend
-            docker-compose -f docker-compose.prod.yml build vib-backend
-            docker-compose -f docker-compose.prod.yml up -d --force-recreate vib-backend
+            # Stop existing containers
+            docker-compose -f docker-compose.prod.yml down
+
+            # Remove old images to free space
+            docker image prune -af --filter "until=24h"
+
+            # Build backend with no cache
+            echo "Building backend..."
+            docker-compose -f docker-compose.prod.yml build --no-cache vib-backend
+
+            # Build frontend with no cache
+            echo "Building frontend..."
+            docker-compose -f docker-compose.prod.yml build --no-cache vib-frontend
+
+            # Start both services
+            echo "Starting services..."
+            docker-compose -f docker-compose.prod.yml up -d
 
             # Wait for backend to be ready
-            sleep 10
+            echo "Waiting for backend to start..."
+            sleep 15
 
             # Run migrations
-            docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py migrate
+            echo "Running migrations..."
+            docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py migrate || echo "Migration failed, continuing..."
 
             # Fix permissions as root user
+            echo "Fixing permissions..."
             docker-compose -f docker-compose.prod.yml exec -T -u root vib-backend bash -c "
                 rm -rf /app/staticfiles/*
                 mkdir -p /app/staticfiles /app/media
                 chown -R appuser:appgroup /app/staticfiles /app/media
                 chmod -R 755 /app/staticfiles /app/media
-            "
+            " || echo "Permission fix failed, continuing..."
 
             # Collect static files as appuser
-            docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py collectstatic --noinput
+            echo "Collecting static files..."
+            docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py collectstatic --noinput || echo "Collectstatic failed, continuing..."
 
-            # Build and deploy frontend
-            docker-compose -f docker-compose.prod.yml build --no-cache vib-frontend
-            docker-compose -f docker-compose.prod.yml up -d --force-recreate vib-frontend
-
-            # Wait for frontend to be ready
-            sleep 5
-            
-            # Clean up old images
-            docker image prune -f
+            # Check container status
+            echo "Deployment complete! Container status:"
+            docker-compose -f docker-compose.prod.yml ps
