@@ -20,6 +20,20 @@ server {
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
 
+    # Maintenance mode check
+    set $maintenance 0;
+    if (-f /var/www/maintenance-vib.flag) {
+        set $maintenance 1;
+    }
+
+    # Maintenance page location
+    location @maintenance {
+        root /var/www;
+        rewrite ^(.*)$ /maintenance-vib.html break;
+    }
+
+    error_page 503 @maintenance;
+
     # Static files
     location /static/ {
         alias /home/deploy/vib/backend/staticfiles/;
@@ -35,6 +49,9 @@ server {
 
     # API & Admin -> Backend (port 8002)
     location /api/ {
+        if ($maintenance) {
+            return 503;
+        }
         proxy_pass http://127.0.0.1:8002;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -44,6 +61,9 @@ server {
     }
 
     location /admin/ {
+        if ($maintenance) {
+            return 503;
+        }
         proxy_pass http://127.0.0.1:8002;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -62,6 +82,9 @@ server {
 
     # Frontend (everything else)
     location / {
+        if ($maintenance) {
+            return 503;
+        }
         proxy_pass http://127.0.0.1:3002;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
