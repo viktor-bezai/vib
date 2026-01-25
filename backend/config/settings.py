@@ -51,6 +51,8 @@ if IS_PROD:
     ALLOWED_HOSTS = [
         "viktorbezai.online",
         "www.viktorbezai.online",
+        "vib-backend",
+        "localhost",
     ]
     CORS_ALLOWED_ORIGINS = [
         "https://viktorbezai.online",
