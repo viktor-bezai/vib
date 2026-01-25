@@ -1,126 +1,51 @@
-name: Deploy to VPS
+name: Deploy VIB
 
 on:
   push:
     branches:
-      - master
       - main
   workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            # Fix git safe directory
-            git config --global --add safe.directory /var/www/viktorbezai
+            cd /home/deploy/vib
 
-            # Navigate to project directory
-            cd /var/www/viktorbezai
+            # Pull latest code
+            git fetch origin main
+            git reset --hard origin/main
 
-            # Stash any local changes to avoid conflicts
-            git stash
+            # Create .env from secrets
+            cat > .env << 'EOF'
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            ENVIRONMENT=production
+            POSTGRES_NAME=${{ secrets.POSTGRES_NAME }}
+            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+            NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+            EOF
 
-            # Fetch latest changes
-            git fetch origin master
+            # Create frontend env
+            cat > frontend/.env.production << 'EOF'
+            NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+            EOF
 
-            # Reset to match origin/master exactly
-            git reset --hard origin/master
-
-            # Clean any untracked files
-            git clean -fd
-            
-            # Copy production environment file if exists
-            [ -f .env.production ] && cp .env.production .env
-
-            # Pre-build cleanup to free disk space
-            echo "🧹 Pre-build cleanup to free disk space..."
-
-            # Show initial disk usage
-            echo "💾 Initial disk usage:"
-            df -h /
-            docker system df || true
-
-            # Stop services to free up resources
-            docker-compose -f docker-compose.prod.yml down || true
-
-            # Aggressive cleanup for small droplet
-            docker system prune -a -f --volumes || true
-
-            # Clean build cache
-            docker builder prune -a -f || true
-
-            # Clear container logs to free space
-            find /var/lib/docker/containers -name '*-json.log' -exec truncate -s 0 {} \; || true
-
-            # Clean system caches
-            apt-get clean >/dev/null 2>&1 || true
-            apt-get autoremove -y >/dev/null 2>&1 || true
-
-            # Remove old journal logs
-            journalctl --vacuum-time=2d >/dev/null 2>&1 || true
-
-            # Show disk usage after cleanup
-            echo "💾 Disk usage after cleanup:"
-            df -h /
-            docker system df || true
-
-            # Build services (without --no-cache to use some caching for speed)
-            echo "🔨 Building backend..."
-            docker-compose -f docker-compose.prod.yml build vib-backend
-
-            echo "🔨 Building frontend..."
-            docker-compose -f docker-compose.prod.yml build vib-frontend
-
-            # Start services with increased timeout
-            export COMPOSE_HTTP_TIMEOUT=300
-            echo "🚀 Starting services..."
+            # Build and restart containers
+            docker-compose -f docker-compose.prod.yml build
             docker-compose -f docker-compose.prod.yml up -d
 
-            # Wait for backend to be ready
-            echo "Waiting for backend to start..."
-            sleep 15
+            # Cleanup
+            docker image prune -f
 
-            # Run migrations
-            echo "Running migrations..."
-            docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py migrate || echo "Migration failed, continuing..."
-
-            # Fix permissions as root user
-            echo "Fixing permissions..."
-            docker-compose -f docker-compose.prod.yml exec -T -u root vib-backend bash -c "
-                rm -rf /app/staticfiles/*
-                mkdir -p /app/staticfiles /app/media
-                chown -R appuser:appgroup /app/staticfiles /app/media
-                chmod -R 755 /app/staticfiles /app/media
-            " || echo "Permission fix failed, continuing..."
-
-            # Collect static files as appuser
-            echo "Collecting static files..."
-            docker-compose -f docker-compose.prod.yml exec -T vib-backend python manage.py collectstatic --noinput || echo "Collectstatic failed, continuing..."
-
-            # Post-deployment cleanup
-            echo "🧹 Post-deployment cleanup..."
-            docker image prune -f || true
-
-            # Show final disk usage
-            echo "💾 Final disk usage:"
-            df -h /
-            docker system df || true
-
-            # Deployment status
-            echo "📊 Deployment Status:"
-            docker-compose -f docker-compose.prod.yml ps
-
-            echo "✅ Deployment completed successfully!"
-            echo "📍 Application URL: https://viktorbezai.online"
+            echo "Deployed successfully!"
