@@ -2,10 +2,23 @@
 
 Complete guide to deploy VIB and EnglishPreparation on a fresh Ubuntu server.
 
+> **Want to add another app?** See [ADD_NEW_APP.md](./ADD_NEW_APP.md) for a quick guide.
+
+## Quick Reference
+
+| | |
+|---|---|
+| **Server IP** | 174.138.113.224 |
+| **SSH** | `ssh root@174.138.113.224` |
+| **VIB URL** | https://viktorbezai.online |
+| **PrepEnglish URL** | https://prepenglish.viktorbezai.online |
+| **VIB path** | /home/deploy/vib |
+| **PrepEnglish path** | /home/deploy/prepenglish |
+
 ## Architecture
 
 ```
-Server (Ubuntu)
+Server: 174.138.113.224 (Ubuntu)
 ├── nginx (host) - ports 80/443
 │   ├── viktorbezai.online      → localhost:8002/3002
 │   └── prepenglish.viktorbezai.online → localhost:8001/3001
@@ -62,17 +75,19 @@ Add A records pointing to your server IP:
 ## Step 3: Get SSL Certificates
 
 ```bash
-# Stop nginx temporarily
+# Stop nginx temporarily (certbot needs port 80)
 systemctl stop nginx
 
 # Get cert for viktorbezai.online
 certbot certonly --standalone -d viktorbezai.online -d www.viktorbezai.online
 
-# Get cert for prepenglish (if needed)
-certbot certonly --standalone -d prepenglish.viktorbezai.online -d prepcelpip.viktorbezai.online
+# Get cert for prepenglish
+certbot certonly --standalone -d prepenglish.viktorbezai.online
 
-# Verify certs
+# Verify certs were created
 ls /etc/letsencrypt/live/
+
+# Don't start nginx yet - configure it first in Step 4
 ```
 
 ## Step 4: Configure nginx
@@ -104,15 +119,15 @@ systemctl start nginx
 ## Step 5: Clone Repositories
 
 ```bash
-# VIB
-mkdir -p /var/www
-cd /var/www
+# Create deploy directory
+mkdir -p /home/deploy
+cd /home/deploy
+
+# Clone VIB
 git clone https://github.com/YOUR_USERNAME/vib.git
 git config --global --add safe.directory /home/deploy/vib
 
-# EnglishPreparation
-mkdir -p /home/deploy
-cd /home/deploy
+# Clone EnglishPreparation
 git clone https://github.com/YOUR_USERNAME/EnglishPreparation.git prepenglish
 git config --global --add safe.directory /home/deploy/prepenglish
 ```
@@ -147,23 +162,54 @@ git config --global --add safe.directory /home/deploy/prepenglish
 
 ## Step 7: First Deployment
 
-Push to main/master branch, or trigger manually:
+**Option A: Via GitHub Actions (recommended)**
+
+Just push to main/master branch. GitHub Actions will:
+1. SSH to server
+2. Pull latest code
+3. Create .env from secrets
+4. Build and start containers
+
+**Option B: Manual deployment**
 
 ```bash
-# On server, for initial setup:
+# On server:
 
-# VIB
+# VIB - create .env first
 cd /home/deploy/vib
+cp .env.example .env
+nano .env  # Fill in production values
+
+# Build and start
 docker-compose -f docker-compose.prod.yml build
 docker-compose -f docker-compose.prod.yml up -d
 
-# EnglishPreparation
-cd /home/deploy/prepenglish/docker
+# EnglishPreparation - create .env first
+cd /home/deploy/prepenglish
+cp env.example .env
+nano .env  # Fill in production values
+
+# Build and start
+cd docker
 docker-compose -f docker-compose.prod.yml build
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
-## Step 8: Enable Cloudflare Proxy (Optional)
+## Step 8: Verify Everything Works
+
+```bash
+# Check containers are running
+docker ps
+
+# Check nginx is running
+systemctl status nginx
+
+# Test the sites
+curl -I https://viktorbezai.online
+curl -I https://prepenglish.viktorbezai.online
+```
+
+## Step 9: Enable Cloudflare Proxy (Optional)
 
 After everything works, you can switch back to orange cloud (Proxied) in Cloudflare.
 Set SSL mode to "Full (strict)" in Cloudflare SSL/TLS settings.
@@ -238,4 +284,16 @@ docker-compose -f docker-compose.prod.yml logs
 ```bash
 certbot certificates  # List certs
 certbot renew --dry-run  # Test renewal
+```
+
+### Low disk space
+```bash
+# Check disk usage
+df -h
+
+# Clean up Docker (removes unused images, containers, volumes)
+docker system prune -a -f
+
+# Check what's using space
+du -sh /var/lib/docker/*
 ```

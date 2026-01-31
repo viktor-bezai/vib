@@ -25,6 +25,15 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
+            # Update nginx config and enable maintenance mode
+            echo "Updating nginx config..."
+            cp server-configs/nginx/viktorbezai.online /etc/nginx/sites-available/viktorbezai.online
+            nginx -t && systemctl reload nginx
+
+            echo "Enabling maintenance mode..."
+            cp server-configs/maintenance.html /var/www/maintenance-vib.html
+            touch /var/www/maintenance-vib.flag
+
             # Create .env from secrets
             cat > .env << 'EOF'
             SECRET_KEY=${{ secrets.SECRET_KEY }}
@@ -43,8 +52,17 @@ jobs:
             EOF
 
             # Build and restart containers
+            docker-compose -f docker-compose.prod.yml down
             docker-compose -f docker-compose.prod.yml build
             docker-compose -f docker-compose.prod.yml up -d
+
+            # Wait for services to be healthy
+            echo "Waiting for services to start..."
+            sleep 10
+
+            # Disable maintenance mode
+            echo "Disabling maintenance mode..."
+            rm -f /var/www/maintenance-vib.flag
 
             # Cleanup
             docker image prune -f
