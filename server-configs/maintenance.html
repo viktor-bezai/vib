@@ -1,63 +1,295 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintenance - Viktor Bezai</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deploying - Viktor Bezai</title>
+    <!-- Reload periodically so visitors land on the live site once the deploy finishes. -->
+    <meta http-equiv="refresh" content="15" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-a: #0a0a0a;
+        --bg-b: #111318;
+        --accent-a: #0070f3;
+        --accent-b: #00a8ff;
+        --win: #1e1e1e;
+        --win-bar: #2d2d2d;
+        --ink: #e6e6e6;
+        --muted: #8b95a3;
+        --green: #27c93f;
+        --mono: "SFMono-Regular", "Consolas", "Monaco", "Menlo", monospace;
+      }
+
+      body {
+        font-family: var(--mono);
+        background: radial-gradient(
+            1200px 600px at 50% -10%,
+            rgba(0, 120, 255, 0.12),
+            transparent 60%
+          ),
+          linear-gradient(135deg, var(--bg-a) 0%, var(--bg-b) 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink);
+        padding: 24px;
+      }
+
+      .stack {
+        width: 100%;
+        max-width: 620px;
+      }
+
+      /* Terminal window — echoes the site's hero code block */
+      .window {
+        background: var(--win);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .bar {
+        background: var(--win-bar);
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .dot.r {
+        background: #ff5f56;
+      }
+      .dot.y {
+        background: #ffbd2e;
+      }
+      .dot.g {
+        background: #27c93f;
+      }
+
+      .bar-title {
+        margin-left: 0.5rem;
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      .body {
+        padding: 1.4rem 1.5rem 1.6rem;
+        font-size: 0.98rem;
+        line-height: 1.9;
+      }
+
+      .prompt .user {
+        color: #e6e6e6;
+        font-weight: 600;
+      }
+      .prompt .sep {
+        color: var(--accent-a);
+        font-weight: 600;
+      }
+      .prompt .cmd {
+        color: var(--ink);
+      }
+
+      .log {
+        list-style: none;
+        margin: 0.4rem 0 0;
+      }
+      .log li {
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        opacity: 0;
+        animation: lineIn 0.4s ease forwards;
+      }
+      .log li:nth-child(1) {
+        animation-delay: 0.2s;
+      }
+      .log li:nth-child(2) {
+        animation-delay: 0.7s;
+      }
+      .log li:nth-child(3) {
+        animation-delay: 1.2s;
+      }
+      .log li:nth-child(4) {
+        animation-delay: 1.7s;
+      }
+
+      .tick {
+        color: var(--green);
+      }
+      .arrow {
+        color: var(--accent-b);
+      }
+
+      /* Spinner glyph for the in-progress line */
+      .spin {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        border: 2px solid rgba(0, 168, 255, 0.35);
+        border-top-color: var(--accent-b);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+      }
+
+      .caret {
+        display: inline-block;
+        width: 0.55em;
+        height: 1.05em;
+        vertical-align: text-bottom;
+        background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+        border-radius: 1px;
+        animation: blink 1.1s steps(1) infinite;
+      }
+
+      /* Indeterminate progress bar */
+      .progress {
+        margin-top: 1.4rem;
+        height: 3px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .progress::before {
+        content: "";
+        display: block;
+        height: 100%;
+        width: 40%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
+        animation: slide 1.5s ease-in-out infinite;
+      }
+
+      .caption {
+        margin-top: 1.6rem;
+        text-align: center;
+      }
+      .caption h1 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        color: var(--ink);
+        margin-bottom: 0.4rem;
+      }
+      .caption p {
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+      .caption .host {
+        color: var(--accent-b);
+      }
+
+      @keyframes lineIn {
+        from {
+          opacity: 0;
+          transform: translateY(4px);
         }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            text-align: center;
-            padding: 20px;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
-        .container {
-            max-width: 600px;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+      }
+      @keyframes blink {
+        0%,
+        50% {
+          opacity: 1;
         }
-        p {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
+        50.01%,
+        100% {
+          opacity: 0;
         }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
+      }
+      @keyframes slide {
+        0% {
+          transform: translateX(-100%);
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        50% {
+          transform: translateX(160%);
         }
-        .subtitle {
-            font-size: 1rem;
-            opacity: 0.7;
-            margin-top: 2rem;
+        100% {
+          transform: translateX(-100%);
         }
+      }
+
+      @media (max-width: 480px) {
+        .body {
+          font-size: 0.85rem;
+          padding: 1.1rem 1.1rem 1.3rem;
+        }
+        .bar-title {
+          display: none;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .log li {
+          opacity: 1;
+          animation: none;
+        }
+        .spin {
+          animation: none;
+        }
+        .caret {
+          animation: none;
+        }
+        .progress::before {
+          animation: none;
+          width: 100%;
+          opacity: 0.6;
+        }
+      }
     </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Site Maintenance</h1>
-        <p>We're updating the site to serve you better. Please check back in a few minutes.</p>
-        <div class="spinner"></div>
-        <p class="subtitle">viktorbezai.online</p>
+  </head>
+  <body>
+    <div class="stack">
+      <div class="window" role="status" aria-live="polite">
+        <div class="bar">
+          <span class="dot r"></span>
+          <span class="dot y"></span>
+          <span class="dot g"></span>
+          <span class="bar-title">deploy — viktorbezai.online</span>
+        </div>
+        <div class="body">
+          <div class="prompt">
+            <span class="user">viktor@bezai</span><span class="sep">:~$</span>
+            <span class="cmd"> ./deploy.sh</span>
+          </div>
+          <ul class="log">
+            <li><span class="tick">✓</span> Pulled latest changes</li>
+            <li><span class="tick">✓</span> Built containers</li>
+            <li><span class="spin" aria-hidden="true"></span> Applying migrations</li>
+            <li><span class="arrow">▸</span> Restarting services <span class="caret" aria-hidden="true"></span></li>
+          </ul>
+          <div class="progress" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="caption">
+        <h1>Shipping an update</h1>
+        <p>
+          Back in a moment — this page refreshes itself.
+          <span class="host">viktorbezai.online</span>
+        </p>
+      </div>
     </div>
-</body>
+  </body>
 </html>
