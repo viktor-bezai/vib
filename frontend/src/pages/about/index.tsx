@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import Header from "@/components/Header";
 import styles from "@/styles/About.module.css";
 
 export default function AboutPage() {
@@ -92,6 +93,7 @@ export default function AboutPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        <Header />
         <div className={styles.container}>
           {/* Navigation */}
           <nav className={styles.navigation}>

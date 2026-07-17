@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
+import Header from "@/components/Header";
 import styles from "@/styles/Home.module.css";
 import { getDirectApiUrl } from "@/utils/api";
 
@@ -16,6 +17,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
+        <Header />
         <div className={styles.container}>
           {/* Hero Section */}
           <section className={styles.hero}>
@@ -209,6 +211,51 @@ export default function Home() {
                     Take CELPIP-inspired practice tests, find all study
                     materials in one place, and discover powerful tools to ace
                     your CELPIP exam.
+                  </p>
+                </div>
+                <svg
+                  className={styles.linkArrow}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  />
+                </svg>
+              </a>
+
+              <a
+                href="https://anna-egypt.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.linkCard}
+              >
+                <div className={styles.linkIcon}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </div>
+                <div className={styles.linkContent}>
+                  <h4>Anna-Egypt - tours across Egypt</h4>
+                  <p>
+                    Book individual and group excursions in Hurghada, Sharm
+                    el-Sheikh, Cairo, and Luxor - author-guided routes from
+                    someone who has lived in Egypt since 2014.
                   </p>
                 </div>
                 <svg

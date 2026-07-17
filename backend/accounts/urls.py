@@ -2,7 +2,6 @@ from django.urls import path
 
 from accounts.views.resume_view import ResumeDownloadView
 
-
 app_name = "accounts"
 
 urlpatterns = [

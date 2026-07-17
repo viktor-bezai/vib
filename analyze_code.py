@@ -38,18 +38,15 @@ def review_code_changes(diff):
         messages=[
             {
                 "role": "system",
-                "content": "You are a pragmatic senior developer reviewing code. Be direct, focus only on real issues that matter. Skip the fluff."
+                "content": "You are a pragmatic senior developer reviewing code. Be direct, focus only on real issues that matter. Skip the fluff.",
             },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
+            {"role": "user", "content": prompt},
+        ],
     )
     return response.choices[0].message.content
 
 
-with open('changes.diff', 'r') as f:
+with open("changes.diff", "r") as f:
     diff_content = f.read()
 
 review_feedback = review_code_changes(diff_content)
