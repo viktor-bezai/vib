@@ -21,9 +21,9 @@ jobs:
           script: |
             cd /home/deploy/vib
 
-            # Pull latest code
-            git fetch origin main
-            git reset --hard origin/main
+            # Pull latest code (production tracks master; origin/main does not exist)
+            git fetch origin master
+            git reset --hard origin/master
 
             # Update nginx config and enable maintenance mode
             echo "Updating nginx config..."
@@ -56,9 +56,27 @@ jobs:
             docker-compose -f docker-compose.prod.yml build
             docker-compose -f docker-compose.prod.yml up -d
 
-            # Wait for services to be healthy
-            echo "Waiting for services to start..."
-            sleep 10
+            # Wait for services to be healthy before lifting maintenance.
+            # Poll the containers directly (ports bypass the nginx maintenance
+            # gate) so we only drop the flag once real traffic would succeed.
+            echo "Waiting for services to become healthy..."
+            healthy=0
+            for i in $(seq 1 60); do
+              if curl -fs http://127.0.0.1:8002/api/health/ >/dev/null 2>&1 \
+                 && curl -fs -o /dev/null http://127.0.0.1:3002/; then
+                healthy=1
+                echo "Services healthy after $((i * 3))s"
+                break
+              fi
+              sleep 3
+            done
+
+            if [ "$healthy" != "1" ]; then
+              echo "Services did not become healthy within 180s."
+              echo "Leaving maintenance page up so visitors don't hit a 502."
+              docker-compose -f docker-compose.prod.yml ps
+              exit 1
+            fi
 
             # Disable maintenance mode
             echo "Disabling maintenance mode..."

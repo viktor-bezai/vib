@@ -26,13 +26,18 @@ server {
         set $maintenance 1;
     }
 
+    # Show the branded maintenance page both when the flag is set (explicit
+    # deploy) and when an upstream is unreachable/timing out (502/504) - the
+    # latter is the safety net so a startup window never leaks a raw gateway
+    # error. All three are normalized to 503 (temporary) for clients/Cloudflare.
+    proxy_intercept_errors on;
+    error_page 502 503 504 =503 @maintenance;
+
     # Maintenance page location
     location @maintenance {
         root /var/www;
         rewrite ^(.*)$ /maintenance-vib.html break;
     }
-
-    error_page 503 @maintenance;
 
     # Static files
     location /static/ {
