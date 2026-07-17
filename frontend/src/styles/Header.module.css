@@ -21,30 +21,77 @@
   gap: 1.5rem;
 }
 
-/* Brand — shell prompt drawn from the site's terminal motif */
+/* Brand — a live shell prompt drawn from the site's terminal motif */
 .brand {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.35rem;
   font-family: "Consolas", "Monaco", monospace;
   font-size: 1.05rem;
   letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+.host {
+  color: #333;
+  font-weight: 600;
   transition: opacity 0.2s ease;
 }
 
-.brand:hover {
-  opacity: 0.85;
+.host:hover {
+  opacity: 0.7;
 }
 
-.prompt {
-  color: #333;
-  font-weight: 600;
+/* The clickable typing zone: `:~$` + input + caret */
+.terminal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: text;
+  border-radius: 4px;
+}
+
+.terminal:focus-within {
+  outline: 2px solid rgba(0, 112, 243, 0.5);
+  outline-offset: 3px;
 }
 
 .sep {
   color: #0070f3;
   font-weight: 600;
+}
+
+/* Real input styled to look like terminal text; native caret hidden in favor
+   of the custom block caret that follows it. */
+.input {
+  min-width: 1ch;
+  max-width: 46vw;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  color: #111;
+  caret-color: transparent;
+}
+
+.hint {
+  color: #aaa;
+  font-size: 0.8rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  user-select: none;
+  animation: hintFade 0.3s ease;
+}
+
+@keyframes hintFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Blinking block caret — the signature element */
@@ -142,12 +189,20 @@
     border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
-  .prompt {
+  .host {
     color: #e6e6e6;
   }
 
   .sep {
     color: #58a6ff;
+  }
+
+  .input {
+    color: #f5f5f5;
+  }
+
+  .hint {
+    color: #666;
   }
 
   .caret {
@@ -192,13 +247,17 @@
     gap: 0.75rem;
   }
 
-  .prompt {
+  .host {
     display: none;
   }
 
   .brand {
     font-size: 1rem;
     gap: 0.25rem;
+  }
+
+  .input {
+    max-width: 34vw;
   }
 
   .links {
@@ -214,14 +273,96 @@
   }
 }
 
+/* Full-screen takeover — the typed command bursts across the whole viewport,
+   then fades out on its own (or on click / Escape). */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6vw;
+  cursor: pointer;
+  background: rgba(8, 10, 14, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: splashLife 2.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.splashText {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  max-width: 92vw;
+  font-family: "Consolas", "Monaco", monospace;
+  font-weight: 700;
+  font-size: clamp(2.75rem, 13vw, 11rem);
+  line-height: 1.05;
+  text-align: center;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  background: linear-gradient(135deg, #0070f3 0%, #00a8ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 40px rgba(0, 120, 255, 0.35));
+}
+
+.splashCaret {
+  flex: none;
+  width: 0.12em;
+  height: 0.95em;
+  background: #00a8ff;
+  border-radius: 2px;
+  animation: caretBlink 1.1s steps(1) infinite;
+}
+
+@keyframes splashLife {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  9% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+  16% {
+    transform: scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.06);
+  }
+}
+
 /* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  .caret {
+  .caret,
+  .splashCaret {
     animation: none;
   }
 
   .link::after,
   .external {
     transition: none;
+  }
+
+  .splash {
+    animation: splashFade 2.8s ease forwards;
+  }
+
+  @keyframes splashFade {
+    0%,
+    82% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 }
