@@ -1,0 +1,74 @@
+/* Floating scroll-to-top button — appears once the page is scrolled down. */
+.scrollToTop {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #0070f3 0%, #00a8ff 100%);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 112, 243, 0.3);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  animation: scrollBtnIn 0.3s ease-out;
+}
+
+.scrollToTop:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 112, 243, 0.4);
+}
+
+.scrollToTop:focus-visible {
+  outline: 2px solid #0070f3;
+  outline-offset: 3px;
+}
+
+.scrollToTop svg {
+  width: 24px;
+  height: 24px;
+  stroke: white;
+  stroke-width: 2;
+}
+
+@keyframes scrollBtnIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .scrollToTop {
+    background: linear-gradient(135deg, #58a6ff 0%, #00a8ff 100%);
+  }
+}
+
+@media (max-width: 768px) {
+  .scrollToTop {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 44px;
+    height: 44px;
+  }
+
+  .scrollToTop svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrollToTop {
+    animation: none;
+    transition: none;
+  }
+}

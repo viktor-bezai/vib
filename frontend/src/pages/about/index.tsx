@@ -1,24 +1,11 @@
 import Head from "next/head";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import Image from "next/image";
 import Header from "@/components/Header";
+import ScrollToTop from "@/components/ScrollToTop";
 import styles from "@/styles/About.module.css";
 
 export default function AboutPage() {
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
   const experiences = [
     {
       title: "Software Developer",
@@ -121,7 +108,14 @@ export default function AboutPage() {
               <div className={styles.profileSection}>
                 <div className={styles.profileImage}>
                   <div className={styles.imageGradient}>
-                    <span className={styles.initials}>VB</span>
+                    <Image
+                      src="/viktor-bezai.jpg"
+                      alt="Viktor Bezai"
+                      className={styles.profilePhoto}
+                      width={120}
+                      height={120}
+                      priority
+                    />
                   </div>
                 </div>
                 <div className={styles.profileInfo}>
@@ -358,24 +352,7 @@ export default function AboutPage() {
           </section>
         </div>
 
-        {/* Scroll to Top Button */}
-        {showScrollTop && (
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className={styles.scrollToTop}
-            aria-label="Scroll to top"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 15l7-7 7 7"
-              />
-            </svg>
-          </button>
-        )}
+        <ScrollToTop />
       </main>
     </>
   );

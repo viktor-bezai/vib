@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import Header from "@/components/Header";
+import ScrollToTop from "@/components/ScrollToTop";
 import styles from "@/styles/Home.module.css";
 import { getDirectApiUrl } from "@/utils/api";
 
@@ -316,6 +317,8 @@ export default function Home() {
             </div>
           </section>
         </div>
+
+        <ScrollToTop />
       </main>
     </>
   );
