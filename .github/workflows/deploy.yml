@@ -27,7 +27,11 @@ jobs:
 
             # Update nginx config and enable maintenance mode
             echo "Updating nginx config..."
-            cp server-configs/nginx/viktorbezai.online /etc/nginx/sites-available/viktorbezai.online
+            cp server-configs/nginx/viktorbezai.com /etc/nginx/sites-available/viktorbezai.com
+            ln -sf /etc/nginx/sites-available/viktorbezai.com /etc/nginx/sites-enabled/viktorbezai.com
+            # Retire the pre-rename vhost. Leaving it enabled would duplicate
+            # server_name viktorbezai.online, which nginx only warns about.
+            rm -f /etc/nginx/sites-enabled/viktorbezai.online /etc/nginx/sites-available/viktorbezai.online
             nginx -t && systemctl reload nginx
 
             echo "Enabling maintenance mode..."

@@ -42,21 +42,21 @@ services:
 
 ### 2. Create nginx config
 
-Create `/etc/nginx/sites-available/newapp.viktorbezai.online`:
+Create `/etc/nginx/sites-available/newapp.viktorbezai.com`:
 
 ```nginx
 server {
     listen 80;
-    server_name newapp.viktorbezai.online;
+    server_name newapp.viktorbezai.com;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name newapp.viktorbezai.online;
+    server_name newapp.viktorbezai.com;
 
-    ssl_certificate /etc/letsencrypt/live/newapp.viktorbezai.online/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/newapp.viktorbezai.online/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/newapp.viktorbezai.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/newapp.viktorbezai.com/privkey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
@@ -110,11 +110,11 @@ git config --global --add safe.directory /home/deploy/newapp
 
 # Get SSL certificate (nginx must be stopped)
 systemctl stop nginx
-certbot certonly --standalone -d newapp.viktorbezai.online
+certbot certonly --standalone -d newapp.viktorbezai.com
 systemctl start nginx
 
 # Enable nginx site
-ln -s /etc/nginx/sites-available/newapp.viktorbezai.online /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/newapp.viktorbezai.com /etc/nginx/sites-enabled/
 nginx -t
 systemctl reload nginx
 

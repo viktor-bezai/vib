@@ -191,7 +191,7 @@ export default function Home() {
               </Link>
 
               <a
-                href="https://prepenglish.viktorbezai.online/"
+                href="https://envolprep.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.linkCard}
@@ -207,7 +207,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <div className={styles.linkContent}>
-                  <h4>PrepEnglish - CELPIP fan platform!</h4>
+                  <h4>EnvolPrep - free CELPIP practice with AI feedback</h4>
                   <p>
                     Take CELPIP-inspired practice tests, find all study
                     materials in one place, and discover powerful tools to ace

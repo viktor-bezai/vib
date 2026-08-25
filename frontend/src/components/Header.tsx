@@ -109,12 +109,12 @@ export default function Header() {
             </li>
             <li>
               <a
-                href="https://prepenglish.viktorbezai.online/"
+                href="https://envolprep.com/"
                 className={styles.link}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                PrepEnglish
+                EnvolPrep
                 <span className={styles.external} aria-hidden="true">
                   ↗
                 </span>
