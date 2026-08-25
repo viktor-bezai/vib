@@ -1,30 +1,59 @@
-import Head from "next/head";
 import Link from "next/link";
 import Header from "@/components/Header";
+import SEOHead from "@/components/SEOHead";
 import ScrollToTop from "@/components/ScrollToTop";
+import { PROJECTS } from "@/constants/projects";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_ROLE } from "@/constants/site";
+import { homePageSchema } from "@/utils/structuredData";
 import styles from "@/styles/Home.module.css";
 import { getDirectApiUrl } from "@/utils/api";
+
+/** Keyed by slug so the card art stays with the page and the copy stays in constants. */
+const PROJECT_ICONS: Record<string, React.ReactNode> = {
+  envolprep: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+      />
+    </svg>
+  ),
+  "anna-egypt": (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+    </svg>
+  ),
+};
 
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>Viktor Bezai - Software Developer</title>
-        <meta
-          name="description"
-          content="Software Developer specializing in Python, Django, React, and modern web technologies"
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <SEOHead
+        title={`${SITE_NAME} - ${SITE_ROLE}`}
+        description={SITE_DESCRIPTION}
+        structuredData={homePageSchema()}
+      />
       <main className={styles.main}>
         <Header />
         <div className={styles.container}>
           {/* Hero Section */}
           <section className={styles.hero}>
             <div className={styles.heroContent}>
-              <h1 className={styles.greeting}>{"Hello, I'm"}</h1>
-              <h2 className={styles.name}>Viktor Bezai</h2>
+              <p className={styles.greeting}>{"Hello, I'm"}</p>
+              <h1 className={styles.name}>Viktor Bezai</h1>
               <p className={styles.tagline}>Software Developer</p>
               <p className={styles.description}>
                 Building scalable web applications with modern technologies.
@@ -98,7 +127,7 @@ export default function Home() {
 
           {/* Features Section */}
           <section className={styles.features}>
-            <h3 className={styles.sectionTitle}>My Experience</h3>
+            <h2 className={styles.sectionTitle}>My Experience</h2>
             <div className={styles.featureGrid}>
               <div className={styles.featureCard}>
                 <div className={styles.featureIcon}>
@@ -111,7 +140,7 @@ export default function Home() {
                     />
                   </svg>
                 </div>
-                <h4>Full-Stack Development</h4>
+                <h3>Full-Stack Development</h3>
                 <p>
                   End-to-end web application development with modern frameworks
                   and best practices
@@ -129,7 +158,7 @@ export default function Home() {
                     />
                   </svg>
                 </div>
-                <h4>Cloud Solutions</h4>
+                <h3>Cloud Solutions</h3>
                 <p>
                   Scalable cloud infrastructure on AWS and Azure with CI/CD
                   pipelines
@@ -147,7 +176,7 @@ export default function Home() {
                     />
                   </svg>
                 </div>
-                <h4>API Development</h4>
+                <h3>API Development</h3>
                 <p>
                   RESTful APIs and microservices with high performance and
                   reliability
@@ -158,7 +187,7 @@ export default function Home() {
 
           {/* Quick Links Section */}
           <section className={styles.quickLinks}>
-            <h3 className={styles.sectionTitle}>Explore More</h3>
+            <h2 className={styles.sectionTitle}>Explore More</h2>
             <div className={styles.linkGrid}>
               <Link href="/about" className={styles.linkCard}>
                 <div className={styles.linkIcon}>
@@ -172,7 +201,7 @@ export default function Home() {
                   </svg>
                 </div>
                 <div className={styles.linkContent}>
-                  <h4>About Me</h4>
+                  <h3>About Me</h3>
                   <p>Learn about my journey and experience</p>
                 </div>
                 <svg
@@ -190,95 +219,42 @@ export default function Home() {
                 </svg>
               </Link>
 
-              <a
-                href="https://envolprep.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.linkCard}
-              >
-                <div className={styles.linkIcon}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              {PROJECTS.map((project) => (
+                <Link
+                  key={project.slug}
+                  href={`/projects/${project.slug}`}
+                  className={styles.linkCard}
+                >
+                  <div className={styles.linkIcon}>
+                    {PROJECT_ICONS[project.slug]}
+                  </div>
+                  <div className={styles.linkContent}>
+                    <h3>
+                      {project.name} - {project.tagline}
+                    </h3>
+                    <p>{project.summary}</p>
+                  </div>
+                  <svg
+                    className={styles.linkArrow}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                      d="M9 5l7 7-7 7"
                     />
                   </svg>
-                </div>
-                <div className={styles.linkContent}>
-                  <h4>EnvolPrep - free CELPIP practice with AI feedback</h4>
-                  <p>
-                    Take CELPIP-inspired practice tests, find all study
-                    materials in one place, and discover powerful tools to ace
-                    your CELPIP exam.
-                  </p>
-                </div>
-                <svg
-                  className={styles.linkArrow}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
-
-              <a
-                href="https://anna-egypt.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.linkCard}
-              >
-                <div className={styles.linkIcon}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </div>
-                <div className={styles.linkContent}>
-                  <h4>Anna-Egypt - tours across Egypt</h4>
-                  <p>
-                    Book individual and group excursions in Hurghada, Sharm
-                    el-Sheikh, Cairo, and Luxor - author-guided routes from
-                    someone who has lived in Egypt since 2014.
-                  </p>
-                </div>
-                <svg
-                  className={styles.linkArrow}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
+                </Link>
+              ))}
             </div>
           </section>
 
           {/* Contact Section */}
           <section className={styles.contact}>
-            <h3 className={styles.sectionTitle}>{"Let's Connect"}</h3>
+            <h2 className={styles.sectionTitle}>{"Let's Connect"}</h2>
             <p className={styles.contactText}>
               {"I'm always interested in new opportunities and collaborations"}
             </p>

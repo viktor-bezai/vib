@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# The Django API and Next.js internals are not content. Blocking them keeps the
+# crawl budget on the four real pages.
+Disallow: /api/
+Disallow: /admin/
+
+Sitemap: https://viktorbezai.com/sitemap.xml
