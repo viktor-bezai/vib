@@ -49,19 +49,22 @@ if IS_LOCAL:
 
 if IS_PROD:
     ALLOWED_HOSTS = [
+        "viktorbezai.com",
+        "www.viktorbezai.com",
+        # Legacy hosts: kept while their 301s are still live (at least 12 months).
         "viktorbezai.online",
         "www.viktorbezai.online",
         "vib-backend",
         "localhost",
     ]
     CORS_ALLOWED_ORIGINS = [
-        "https://viktorbezai.online",
-        "https://www.viktorbezai.online",
+        "https://viktorbezai.com",
+        "https://www.viktorbezai.com",
     ]
     CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
     # Allow unauthenticated access in Swagger
     SWAGGER_SETTINGS = {
-        "DEFAULT_API_URL": "https://viktorbezai.online",
+        "DEFAULT_API_URL": "https://viktorbezai.com",
     }
 
 CORS_ALLOW_CREDENTIALS = True  # Ensures cookies (CSRF token, sessionid) are sent

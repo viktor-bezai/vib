@@ -1,15 +1,46 @@
+# All plain HTTP, every hostname we answer for, straight to the canonical origin.
 server {
     listen 80;
-    server_name viktorbezai.online www.viktorbezai.online;
-    return 301 https://$host$request_uri;
+    server_name viktorbezai.com www.viktorbezai.com
+                viktorbezai.online www.viktorbezai.online;
+    return 301 https://viktorbezai.com$request_uri;
 }
 
+# Legacy domain: apex and www ONLY. Never widen this to *.viktorbezai.online.
+# prepenglish. and prepcelpip. are served by the EnvolPrep vhost, and a
+# duplicate server_name is only an nginx *warning*, so `nginx -t` would pass
+# while one of the two vhosts silently stopped answering.
 server {
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name viktorbezai.online www.viktorbezai.online;
 
     ssl_certificate /etc/letsencrypt/live/viktorbezai.online/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/viktorbezai.online/privkey.pem;
+
+    return 301 https://viktorbezai.com$request_uri;
+}
+
+# www -> apex, so only one hostname is ever canonical.
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name www.viktorbezai.com;
+
+    ssl_certificate /etc/letsencrypt/live/viktorbezai.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/viktorbezai.com/privkey.pem;
+
+    return 301 https://viktorbezai.com$request_uri;
+}
+
+# Primary domain
+server {
+    listen 443 ssl;
+    http2 on;
+    server_name viktorbezai.com;
+
+    ssl_certificate /etc/letsencrypt/live/viktorbezai.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/viktorbezai.com/privkey.pem;
 
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;

@@ -1,6 +1,6 @@
 # Server Setup Guide
 
-Complete guide to deploy VIB and EnglishPreparation on a fresh Ubuntu server.
+Complete guide to deploy VIB and EnvolPrep on a fresh Ubuntu server.
 
 > **Want to add another app?** See [ADD_NEW_APP.md](./ADD_NEW_APP.md) for a quick guide.
 
@@ -10,24 +10,24 @@ Complete guide to deploy VIB and EnglishPreparation on a fresh Ubuntu server.
 |---|---|
 | **Server IP** | 174.138.113.224 |
 | **SSH** | `ssh root@174.138.113.224` |
-| **VIB URL** | https://viktorbezai.online |
-| **PrepEnglish URL** | https://prepenglish.viktorbezai.online |
+| **VIB URL** | https://viktorbezai.com |
+| **EnvolPrep URL** | https://envolprep.com |
 | **VIB path** | /home/deploy/vib |
-| **PrepEnglish path** | /home/deploy/prepenglish |
+| **EnvolPrep path** | /home/deploy/prepenglish |
 
 ## Architecture
 
 ```
 Server: 174.138.113.224 (Ubuntu)
 ├── nginx (host) - ports 80/443
-│   ├── viktorbezai.online      → localhost:8002/3002
-│   └── prepenglish.viktorbezai.online → localhost:8001/3001
+│   ├── viktorbezai.com  → localhost:8002/3002  (this repo)
+│   └── envolprep.com     → localhost:8001/3001  (EnvolPrep repo)
 │
 ├── VIB (/home/deploy/vib)
 │   ├── vib-backend     → 127.0.0.1:8002
 │   └── vib-frontend    → 127.0.0.1:3002
 │
-└── EnglishPreparation (/home/deploy/prepenglish)
+└── EnvolPrep (/home/deploy/prepenglish)
     ├── ep-backend      → 127.0.0.1:8001
     ├── ep-frontend     → 127.0.0.1:3001
     ├── ep-celery
@@ -66,9 +66,11 @@ systemctl enable nginx
 ## Step 2: Configure DNS (Cloudflare or your DNS provider)
 
 Add A records pointing to your server IP:
-- `viktorbezai.online` → YOUR_SERVER_IP
-- `www.viktorbezai.online` → YOUR_SERVER_IP
-- `prepenglish.viktorbezai.online` → YOUR_SERVER_IP
+- `viktorbezai.com` → YOUR_SERVER_IP
+- `www.viktorbezai.com` → YOUR_SERVER_IP
+
+Keep the `viktorbezai.online` zone too. Its apex and www 301 to `viktorbezai.com`, and
+`prepenglish` / `prepcelpip` are EnvolPrep's legacy hosts. Do not retire it.
 
 **Important:** If using Cloudflare, temporarily set proxy to "DNS only" (grey cloud) for SSL setup.
 
@@ -78,11 +80,11 @@ Add A records pointing to your server IP:
 # Stop nginx temporarily (certbot needs port 80)
 systemctl stop nginx
 
-# Get cert for viktorbezai.online
-certbot certonly --standalone -d viktorbezai.online -d www.viktorbezai.online
+# Get cert for the current domain
+certbot certonly --standalone -d viktorbezai.com -d www.viktorbezai.com
 
-# Get cert for prepenglish
-certbot certonly --standalone -d prepenglish.viktorbezai.online
+# Legacy domain: still needed, the 301 block terminates TLS for it
+certbot certonly --standalone -d viktorbezai.online -d www.viktorbezai.online
 
 # Verify certs were created
 ls /etc/letsencrypt/live/
@@ -97,19 +99,15 @@ ls /etc/letsencrypt/live/
 rm /etc/nginx/sites-enabled/default
 
 # Copy nginx configs (from your local machine)
-scp server-configs/nginx/viktorbezai.online root@YOUR_SERVER_IP:/etc/nginx/sites-available/
-scp server-configs/nginx/prepenglish.viktorbezai.online root@YOUR_SERVER_IP:/etc/nginx/sites-available/
+scp server-configs/nginx/viktorbezai.com root@YOUR_SERVER_IP:/etc/nginx/sites-available/
+# EnvolPrep ships its own vhost from its own repo; do not copy one from here.
 
 # Or create manually on server
-nano /etc/nginx/sites-available/viktorbezai.online
-# (paste content from server-configs/nginx/viktorbezai.online)
-
-nano /etc/nginx/sites-available/prepenglish.viktorbezai.online
-# (paste content from server-configs/nginx/prepenglish.viktorbezai.online)
+nano /etc/nginx/sites-available/viktorbezai.com
+# (paste content from server-configs/nginx/viktorbezai.com)
 
 # Enable sites
-ln -s /etc/nginx/sites-available/viktorbezai.online /etc/nginx/sites-enabled/
-ln -s /etc/nginx/sites-available/prepenglish.viktorbezai.online /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/viktorbezai.com /etc/nginx/sites-enabled/
 
 # Test and start nginx
 nginx -t
@@ -128,7 +126,7 @@ git clone https://github.com/YOUR_USERNAME/vib.git
 git config --global --add safe.directory /home/deploy/vib
 
 # Clone EnglishPreparation
-git clone https://github.com/YOUR_USERNAME/EnglishPreparation.git prepenglish
+git clone https://github.com/YOUR_USERNAME/EnvolPrep.git prepenglish
 git config --global --add safe.directory /home/deploy/prepenglish
 ```
 
@@ -148,7 +146,7 @@ git config --global --add safe.directory /home/deploy/prepenglish
 | `POSTGRES_USER` | vibuser |
 | `POSTGRES_PASSWORD` | Your DB password |
 | `POSTGRES_PORT` | 25060 |
-| `NEXT_PUBLIC_API_BASE_URL` | https://viktorbezai.online |
+| `NEXT_PUBLIC_API_BASE_URL` | https://viktorbezai.com |
 
 ### EnglishPreparation Repository
 
@@ -205,8 +203,9 @@ docker ps
 systemctl status nginx
 
 # Test the sites
-curl -I https://viktorbezai.online
-curl -I https://prepenglish.viktorbezai.online
+curl -I https://viktorbezai.com
+curl -I https://viktorbezai.online   # expect 301 to viktorbezai.com
+curl -I https://envolprep.com
 ```
 
 ## Step 9: Enable Cloudflare Proxy (Optional)
