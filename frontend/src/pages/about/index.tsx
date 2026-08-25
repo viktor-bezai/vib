@@ -1,8 +1,10 @@
-import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
+import SEOHead from "@/components/SEOHead";
+import { SITE_NAME } from "@/constants/site";
+import { aboutPageSchema } from "@/utils/structuredData";
 import styles from "@/styles/About.module.css";
 
 export default function AboutPage() {
@@ -70,15 +72,12 @@ export default function AboutPage() {
 
   return (
     <>
-      <Head>
-        <title>About Me - Viktor Bezai</title>
-        <meta
-          name="description"
-          content="Full-Stack Software Developer specializing in Python, Django, React, and cloud technologies"
-        />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <SEOHead
+        title={`About ${SITE_NAME}`}
+        description="Full-stack software developer in London, Ontario. Python, Django, React and cloud infrastructure, with five years of shipping and running production systems."
+        ogType="profile"
+        structuredData={aboutPageSchema()}
+      />
       <main className={styles.main}>
         <Header />
         <div className={styles.container}>

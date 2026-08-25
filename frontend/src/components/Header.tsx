@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { PROJECTS } from "@/constants/projects";
 import styles from "@/styles/Header.module.css";
 
 type Splash = { id: number; text: string };
@@ -108,31 +109,33 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <a
-                href="https://envolprep.com/"
+              <Link
+                href="/projects"
                 className={styles.link}
-                target="_blank"
-                rel="noopener noreferrer"
+                aria-current={
+                  pathname.startsWith("/projects") ? "page" : undefined
+                }
               >
-                EnvolPrep
-                <span className={styles.external} aria-hidden="true">
-                  ↗
-                </span>
-              </a>
+                Projects
+              </Link>
             </li>
-            <li>
-              <a
-                href="https://anna-egypt.com/"
-                className={styles.link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Anna-Egypt
-                <span className={styles.external} aria-hidden="true">
-                  ↗
-                </span>
-              </a>
-            </li>
+            {/* Direct outbound links, on every page, never nofollowed. The
+                /projects pages give them context; these give them reach. */}
+            {PROJECTS.map((project) => (
+              <li key={project.slug}>
+                <a
+                  href={project.url}
+                  className={styles.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {project.name}
+                  <span className={styles.external} aria-hidden="true">
+                    ↗
+                  </span>
+                </a>
+              </li>
+            ))}
           </ul>
         </nav>
       </header>

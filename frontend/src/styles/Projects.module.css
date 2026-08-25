@@ -1,0 +1,197 @@
+/* Shared by the projects index and each project page. Matches the design
+   language in Home.module.css: #0070f3 accent, soft cards, 1200px container. */
+
+.main {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #fafafa, #f5f5f5);
+}
+
+.container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.header {
+  padding: 5rem 0 3rem;
+}
+
+.breadcrumb {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb a:hover {
+  color: #0070f3;
+}
+
+.breadcrumbSep {
+  margin: 0 0.5rem;
+  color: #bbb;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #0070f3 0%, #00a8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  font-size: 1.4rem;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.intro {
+  font-size: 1.15rem;
+  color: #555;
+  line-height: 1.8;
+  max-width: 720px;
+}
+
+/* Index list */
+
+.list {
+  display: grid;
+  gap: 1.5rem;
+  padding-bottom: 5rem;
+}
+
+.card {
+  display: block;
+  padding: 2rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateX(5px);
+}
+
+.cardTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  color: #171717;
+}
+
+.cardTagline {
+  color: #0070f3;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.cardSummary {
+  color: #555;
+  line-height: 1.7;
+}
+
+/* Detail page */
+
+.body {
+  padding-bottom: 2rem;
+  max-width: 720px;
+}
+
+.body p {
+  font-size: 1.1rem;
+  color: #444;
+  line-height: 1.9;
+  margin-bottom: 1.25rem;
+}
+
+.sectionTitle {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 2.5rem 0 1rem;
+  color: #171717;
+}
+
+.highlights {
+  list-style: none;
+  max-width: 720px;
+}
+
+.highlights li {
+  position: relative;
+  padding-left: 1.75rem;
+  margin-bottom: 0.85rem;
+  color: #444;
+  line-height: 1.7;
+}
+
+.highlights li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0070f3;
+}
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.tag {
+  padding: 0.4rem 0.9rem;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.visit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 3rem 0 5rem;
+  padding: 1rem 2rem;
+  background: #0070f3;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.visit:hover {
+  background: #0058c4;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 112, 243, 0.25);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1.25rem;
+  }
+
+  .header {
+    padding: 3rem 0 2rem;
+  }
+
+  .title {
+    font-size: 2.1rem;
+  }
+
+  .tagline {
+    font-size: 1.15rem;
+  }
+}
