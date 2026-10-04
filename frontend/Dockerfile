@@ -16,6 +16,10 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 
+# Next.js inlines it into the bundle and the /api rewrite at build time. CI passes it; a local
+# build without it falls back to frontend/.env.production, since an unset ARG stays unset.
+ARG NEXT_PUBLIC_API_BASE_URL
+
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.

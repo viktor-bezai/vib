@@ -1,9 +1,15 @@
-version: '3.8'
+# Production stack. GitHub Actions builds the images and pushes them to GHCR; the server only pulls.
+# scripts/deploy runs this file with VIB_RELEASE set to a commit SHA. Manual commands read
+# VIB_RELEASE (the live release) from .env. See server-configs/DEPLOY.md.
+
+# Pinned, so Compose labels and the network stay "vib" whatever the folder is called.
+name: vib
 
 services:
   vib-backend:
-    build:
-      context: ./backend
+    image: ghcr.io/viktor-bezai/vib-backend:${VIB_RELEASE:?VIB_RELEASE is not set. Deploy with scripts/deploy.}
+    # Only the deploy pulls, with a short-lived token, so Compose must never try on its own.
+    pull_policy: never
     container_name: vib-backend
     restart: unless-stopped
     ports:
@@ -15,10 +21,8 @@ services:
     volumes:
       - ./backend/staticfiles:/app/staticfiles
       - ./backend/media:/app/media
-    command: >
-      sh -c "python manage.py migrate --noinput &&
-             python manage.py collectstatic --noinput &&
-             gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --threads 2 --timeout 120"
+    # Migrations and collectstatic run once per deploy, in a one-off container before the swap.
+    command: ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--threads", "2", "--timeout", "120"]
     mem_limit: 256m
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
@@ -26,6 +30,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+      # Checks often while starting, so a deploy sees "healthy" in seconds, not after 30s.
+      start_interval: 3s
     logging:
       driver: "json-file"
       options:
@@ -33,8 +39,8 @@ services:
         max-file: "3"
 
   vib-frontend:
-    build:
-      context: ./frontend
+    image: ghcr.io/viktor-bezai/vib-frontend:${VIB_RELEASE:?VIB_RELEASE is not set. Deploy with scripts/deploy.}
+    pull_policy: never
     container_name: vib-frontend
     restart: unless-stopped
     ports:
@@ -52,6 +58,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+      start_interval: 3s
     logging:
       driver: "json-file"
       options:
