@@ -57,6 +57,7 @@ main() {
         [[ $answer == [yY] ]] || die "Cancelled."
     fi
 
+    collect_static "$target"
     if switch_to "$target"; then
         set_live_release "$target"
         record_history "$target" rolled-back
@@ -64,7 +65,7 @@ main() {
         return 0
     fi
     log "::error::$target did not become healthy."
-    if [[ -n $live ]] && switch_to "$live"; then
+    if [[ -n $live ]] && collect_static "$live" && switch_to "$live"; then
         log "$live is live again."
     else
         log "::error::Could not bring back ${live:-the earlier release} either. Check the containers by hand."

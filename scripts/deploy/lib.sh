@@ -35,6 +35,8 @@ readonly LEGACY_RELEASE=legacy
 readonly RELEASES_TO_KEEP=3
 # Backend start: database check and gunicorn boot. Generous, since the server is memory-tight.
 readonly HEALTH_TIMEOUT=180
+# The legacy backend also runs pip install, migrate and collectstatic on start. The old flow allowed 300s.
+readonly LEGACY_HEALTH_TIMEOUT=300
 
 log() {
     printf '[%s] %s\n' "$(date -u +%H:%M:%S)" "$*"
@@ -64,7 +66,7 @@ release_images_present() {
 
 record_history() {
     local release=$1 event=$2
-    mkdir -p "$STATE_DIR"
+    install -d -m 700 "$STATE_DIR"
     printf '%s %s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$release" "$event" >>"$HISTORY_FILE"
 }
 
@@ -72,7 +74,7 @@ record_history() {
 # bootstrap.sh takes it before the checkout and hands the same fd to deploy.sh; flock on a lock
 # this process already holds returns at once.
 take_lock() {
-    mkdir -p "$STATE_DIR"
+    install -d -m 700 "$STATE_DIR"
     if [[ ! -e /dev/fd/9 || ! /dev/fd/9 -ef $LOCK_FILE ]]; then
         exec 9>"$LOCK_FILE"
     fi
@@ -150,7 +152,9 @@ port_answers() {
 # Waits until the container runs the release, its own healthcheck passes and its host port
 # answers. Fails early when the healthcheck gives up or the container restarts.
 wait_healthy() {
-    local service=$1 release=$2 deadline=$((SECONDS + HEALTH_TIMEOUT)) image health restarts first_restarts
+    local service=$1 release=$2 timeout=$HEALTH_TIMEOUT deadline image health restarts first_restarts
+    if [[ $release == "$LEGACY_RELEASE" ]]; then timeout=$LEGACY_HEALTH_TIMEOUT; fi
+    deadline=$((SECONDS + timeout))
     image=$(image_ref "$service" "$release")
     first_restarts=$(docker inspect --format '{{.RestartCount}}' "$service" 2>/dev/null || echo 0)
     while ((SECONDS < deadline)); do
@@ -170,7 +174,7 @@ wait_healthy() {
         fi
         sleep 2
     done
-    log "$service is not healthy after ${HEALTH_TIMEOUT}s (status $health)."
+    log "$service is not healthy after ${timeout}s (status $health)."
     return 1
 }
 
@@ -201,6 +205,24 @@ swap_service() {
     wait_healthy "$service" "$release" && return 0
     save_logs "$service" "$release"
     return 1
+}
+
+# A deploy's collectstatic overwrites the shared static folder, so a rollback puts the target's
+# files back first. The legacy image collects them itself on start.
+collect_static() {
+    local release=$1 log_file
+    [[ $release != "$LEGACY_RELEASE" ]] || return 0
+    log_file="$STATE_DIR/collectstatic-$release.log"
+    install -m 600 /dev/null "$log_file"
+    if ! compose_release "$release" run --rm --no-deps -T vib-backend python manage.py collectstatic --noinput >"$log_file" 2>&1; then
+        log "::warning::collectstatic for $release failed (log: $log_file). Static files may be from a newer release."
+    fi
+}
+
+# A killed deploy can leave its one-off migrate container behind.
+remove_one_off_containers() {
+    docker ps --all --quiet --filter label=com.docker.compose.project=vib --filter label=com.docker.compose.oneoff=True |
+        xargs -r docker rm --force >/dev/null 2>&1 || true
 }
 
 # Moves both services to a release, backend first. Stops at the first one that fails.

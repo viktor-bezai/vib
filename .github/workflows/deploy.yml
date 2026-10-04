@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       sha:
-        description: "Commit on master to deploy (empty: the commit this run starts from)"
+        description: "Commit on master to deploy (empty: the head of master)"
         required: false
         default: ""
       rebuild:
@@ -50,9 +50,12 @@ jobs:
       - name: Pick the commit
         id: pick
         env:
-          REQUESTED_SHA: ${{ inputs.sha || github.sha }}
+          INPUT_SHA: ${{ inputs.sha }}
+          PUSH_SHA: ${{ github.event_name == 'push' && github.sha || '' }}
         run: |
           set -euo pipefail
+          # A manual run without a sha deploys master's head, whichever branch it was started from.
+          REQUESTED_SHA=${INPUT_SHA:-${PUSH_SHA:-$(git rev-parse HEAD)}}
           if [[ ! $REQUESTED_SHA =~ ^[0-9a-f]{7,40}$ ]]; then
             echo "::error::sha must be 7 to 40 lowercase hex characters."
             exit 1
@@ -200,7 +203,8 @@ jobs:
   prune-registry:
     name: Prune ${{ matrix.package }}
     needs: deploy
-    if: needs.deploy.result == 'success'
+    # !cancelled(): a skipped build (images already in GHCR) would otherwise skip this job too.
+    if: ${{ !cancelled() && needs.deploy.result == 'success' }}
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:

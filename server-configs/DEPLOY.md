@@ -20,11 +20,13 @@ A push to `master` (a merged `preview` -> `master` PR) runs **Actions -> Deploy 
      logs out. If the pull fails, the site is untouched.
    - installs the nginx config (kept only if `nginx -t` passes with no duplicate `server_name`)
      and writes `.env` from the secrets.
-   - runs `migrate` and `collectstatic` once, in a one-off container, while the old release still serves.
+   - runs `migrate` and `collectstatic` once, in a one-off container, while the old release still
+     serves. Their output goes to `.deploy/migrate-<sha>.log` on the server, not the public log.
    - replaces `vib-backend`, waits until it is healthy, then does the same for `vib-frontend`.
      "Healthy" means the container runs the new image, its own healthcheck passes, and its host
      port (8002 or 3002) answers 200.
-   - if either fails, puts **both** back on the previous release, then fails the job.
+   - if either fails, puts **both** back on the previous release (static files included), then
+     fails the job. A failed `rebuild` of the live release goes back to the images it replaced.
    - removes old vib images, keeping the last 3 releases on disk.
 4. **Prune the registry.** GHCR keeps the 10 newest versions of each image.
 
@@ -52,7 +54,8 @@ never reverses them. So every migration must work with **both** the old and the 
 
 - **Automatic.** A deploy that does not get healthy goes back to the previous release by itself.
 - **From GitHub.** Actions -> Deploy VIB -> Run workflow, with `sha` set to an older `master`
-  commit. GHCR still has the last 10 builds, so there is usually no rebuild.
+  commit (empty means the head of `master`). GHCR still has the last 10 builds, so there is
+  usually no rebuild.
 - **On the server, fastest.** The last 3 releases are on disk:
 
   ```bash
@@ -62,7 +65,9 @@ never reverses them. So every migration must work with **both** the old and the 
   scripts/deploy/rollback.sh <full sha> # or a named one; add --yes to skip the question
   ```
 
-`rollback.sh` uses the same health-gated swap. It does not change the git checkout.
+`rollback.sh` puts the target's static files back, then uses the same health-gated swap. It does
+not change the git checkout. Going back to `legacy` is slower (up to 5 minutes): that image still
+runs `pip install`, `migrate` and `collectstatic` when it starts.
 
 ## Secrets
 
@@ -97,6 +102,7 @@ Everything lives in `/home/deploy/vib`:
   read it, so `docker compose -f docker-compose.prod.yml ps` shows the live containers.
 - `.deploy/history` lists every deploy, rollback and failure.
 - `.deploy/deploy-<sha>.log` is each deploy's full log.
+- `.deploy/migrate-<sha>.log` and `.deploy/collectstatic-<sha>.log` hold the one-off runs' output.
 - `.deploy/<service>-<sha>.log` holds a failed container's last logs. They stay on the server,
   because the Actions log of this public repo is public.
 - `.deploy/compose/<release>.yml` is the compose file each kept release ran with, so a rollback

@@ -5,9 +5,14 @@
 set -euo pipefail
 
 start_deploy() {
+    [[ $DEPLOY_SHA =~ ^[0-9a-f]{40}$ ]] || {
+        printf '::error::Not a full commit SHA: %s\n' "$DEPLOY_SHA" >&2
+        exit 1
+    }
     cd /home/deploy/vib
     # The lock from lib.sh, taken before the checkout so a manual rollback cannot run in between.
-    mkdir -p .deploy
+    # Root only: rollback.sh runs the saved compose files in it as root.
+    install -d -m 700 .deploy
     exec 9>.deploy/lock
     # A cancelled run leaves its detached deploy.sh running, so wait for it instead of failing at once.
     if ! flock -n 9; then
@@ -20,6 +25,11 @@ start_deploy() {
     local previous_commit
     previous_commit=$(git rev-parse HEAD)
     git fetch --quiet origin master
+    # Checked here too, before any code from the commit runs.
+    git merge-base --is-ancestor "$DEPLOY_SHA" origin/master || {
+        printf '::error::%s is not on master.\n' "$DEPLOY_SHA" >&2
+        exit 1
+    }
     # Older commits deploy with the old build-on-the-server flow, which this one replaced.
     git cat-file -e "$DEPLOY_SHA:scripts/deploy/deploy.sh" 2>/dev/null || {
         printf '::error::%s has no scripts/deploy/deploy.sh, so it is older than the GHCR deploy. Use scripts/deploy/rollback.sh.\n' "$DEPLOY_SHA" >&2

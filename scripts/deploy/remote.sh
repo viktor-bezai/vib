@@ -32,8 +32,9 @@ main() {
     trap 'rm -rf "$ssh_dir"' EXIT
     (umask 077 && printf '%s\n' "$DROPLET_SSH_KEY" >"$ssh_dir/key")
     # Keys are matched under a fixed alias, so the secret does not have to repeat DROPLET_HOST's exact spelling.
+    # Marker lines (@revoked, @cert-authority) would lose their meaning under the alias, so they are dropped.
     printf '%s\n' "$DROPLET_SSH_KNOWN_HOSTS" |
-        awk -v alias="$HOST_KEY_ALIAS" 'NF >= 3 && $1 !~ /^#/ { $1 = alias; print }' >"$ssh_dir/known_hosts"
+        awk -v alias="$HOST_KEY_ALIAS" 'NF >= 3 && $1 !~ /^[#@]/ { $1 = alias; print }' >"$ssh_dir/known_hosts"
     if [[ ! -s $ssh_dir/known_hosts ]]; then
         printf '::error::DROPLET_SSH_KNOWN_HOSTS holds no host key lines. See server-configs/DEPLOY.md.\n'
         exit 1

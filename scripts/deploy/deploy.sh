@@ -29,6 +29,8 @@ previous_commit=""
 # The release live before this deploy, and the one a failure goes back to.
 previous=""
 registry_config=""
+# The image each service ran before this deploy, by ID: a rebuild moves the tag to the new image.
+declare -A previous_images=()
 # What the exit handler must undo: see on_exit.
 stage=prepare
 
@@ -56,6 +58,10 @@ main() {
     if [[ $previous == "$LEGACY_RELEASE" ]]; then
         adopt_legacy
     fi
+    local service
+    for service in "${SERVICES[@]}"; do
+        previous_images[$service]=$(docker inspect --format '{{.Image}}' "$service" 2>/dev/null || true)
+    done
     log "Live release: ${previous:-none}"
     if [[ -n $previous ]] && ! release_images_present "$previous"; then
         log "::warning::The images of $previous are not on this server, so a failure cannot roll back."
@@ -79,9 +85,14 @@ main() {
     phase "Migrate"
     # Before the swap, so the new code never runs on an old schema. The old release keeps serving
     # meanwhile, so every migration must work with its code too (expand/contract, DEPLOY.md).
-    compose_release "$release" run --rm --no-deps -T vib-backend \
-        sh -c 'python manage.py migrate --noinput && python manage.py collectstatic --noinput' ||
-        die "Migrate or collectstatic failed. ${previous:-Nothing} still runs, untouched."
+    # Output goes to a root-only file: a database error names the host, and the deploy log is public.
+    local migrate_log="$STATE_DIR/migrate-$release.log"
+    install -m 600 /dev/null "$migrate_log"
+    if ! compose_release "$release" run --rm --no-deps -T vib-backend \
+        sh -c 'python manage.py migrate --noinput && python manage.py collectstatic --noinput' >"$migrate_log" 2>&1; then
+        die "Migrate or collectstatic failed (log: $migrate_log on the server). ${previous:-Nothing} still runs, untouched."
+    fi
+    grep -E '^  (Apply|No migrations)' "$migrate_log" || true
 
     phase "Switch to $release"
     stage=switch
@@ -192,6 +203,17 @@ roll_back() {
         return 0
     fi
     log "Going back to $previous."
+    # A rebuild of the live release moved its tag to the new image, so point it back at the old one.
+    if [[ $previous == "$release" ]]; then
+        local service
+        for service in "${SERVICES[@]}"; do
+            if [[ -n ${previous_images[$service]-} ]]; then
+                docker tag "${previous_images[$service]}" "$(image_ref "$service" "$previous")"
+            fi
+        done
+    else
+        collect_static "$previous"
+    fi
     if switch_to "$previous"; then
         set_live_release "$previous"
         record_history "$previous" rolled-back
@@ -206,6 +228,7 @@ on_exit() {
     set +e
     trap - EXIT INT TERM
     forget_registry_login
+    remove_one_off_containers
     if ((status != 0)); then
         case $stage in
             prepare)
