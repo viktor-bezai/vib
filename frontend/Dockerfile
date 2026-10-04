@@ -17,7 +17,7 @@ RUN npm ci
 COPY . .
 
 # Next.js inlines it into the bundle and the /api rewrite at build time. CI passes it; a local
-# build without it falls back to frontend/.env.production, since an unset ARG stays unset.
+# build without it uses next.config.ts's http://localhost:8000 (.dockerignore keeps .env* out).
 ARG NEXT_PUBLIC_API_BASE_URL
 
 # Next.js collects completely anonymous telemetry data about general usage.

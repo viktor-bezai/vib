@@ -165,8 +165,9 @@ jobs:
       (needs.build.result == 'success' || needs.build.result == 'skipped')
     runs-on: ubuntu-latest
     # Up to 10 minutes waiting for a deploy left running by a cancelled run (bootstrap.sh), then
-    # the deploy itself, with room for a rollback.
-    timeout-minutes: 30
+    # a first full pull, health waits and a rollback to legacy in the worst case. The deploy runs
+    # detached, so a timed-out job only means: read .deploy/history on the server.
+    timeout-minutes: 40
     permissions:
       contents: read
       # The server pulls with this job's token, which expires when the job ends.
