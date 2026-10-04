@@ -214,3 +214,15 @@ SPECTACULAR_SETTINGS = {
         "persistAuthorization": True,
     },
 }
+
+# With DEBUG off, Django's default console handler goes quiet and errors only go to mail_admins
+# (no ADMINS here), so a 500 would leave no trace. Send warnings and errors to stdout for docker logs.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {"handlers": ["console"], "level": "WARNING"},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "WARNING", "propagate": False},
+    },
+}
