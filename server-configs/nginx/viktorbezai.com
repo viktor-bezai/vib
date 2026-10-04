@@ -6,13 +6,15 @@ server {
     return 301 https://viktorbezai.com$request_uri;
 }
 
+# `listen 443 ssl http2`, not `http2 on`: the server runs Ubuntu 24.04's nginx 1.24, which has no
+# `http2` directive (1.25.1+). Newer nginx still accepts this form, with a deprecation warning.
+
 # Legacy domain: apex and www ONLY. Never widen this to *.viktorbezai.online.
 # prepenglish. and prepcelpip. are served by the EnvolPrep vhost, and a
 # duplicate server_name is only an nginx *warning*, so `nginx -t` would pass
 # while one of the two vhosts silently stopped answering.
 server {
-    listen 443 ssl;
-    http2 on;
+    listen 443 ssl http2;
     server_name viktorbezai.online www.viktorbezai.online;
 
     ssl_certificate /etc/letsencrypt/live/viktorbezai.online/fullchain.pem;
@@ -23,8 +25,7 @@ server {
 
 # www -> apex, so only one hostname is ever canonical.
 server {
-    listen 443 ssl;
-    http2 on;
+    listen 443 ssl http2;
     server_name www.viktorbezai.com;
 
     ssl_certificate /etc/letsencrypt/live/viktorbezai.com/fullchain.pem;
@@ -35,8 +36,7 @@ server {
 
 # Primary domain
 server {
-    listen 443 ssl;
-    http2 on;
+    listen 443 ssl http2;
     server_name viktorbezai.com;
 
     ssl_certificate /etc/letsencrypt/live/viktorbezai.com/fullchain.pem;
