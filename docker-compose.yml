@@ -21,7 +21,8 @@ services:
       - POSTGRES_HOST=host.docker.internal
     volumes:
       - ./backend:/app
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    # The image entrypoint only waits for the database, so local dev installs and migrates here.
+    command: ["sh", "-c", "pip install --no-cache-dir -r requirements.txt && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]
 
   vib-frontend:
     build:

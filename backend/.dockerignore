@@ -23,3 +23,7 @@ htmlcov/
 node_modules
 staticfiles/
 media/
+
+# Local Google credentials (git-ignored too)
+credentials/
+token.json

@@ -3,96 +3,220 @@ name: Deploy VIB
 on:
   push:
     branches:
-      - main
       - master
+  # With a sha, this redeploys an older master commit: its images are reused when GHCR still
+  # has them, so this is also the rollback button.
   workflow_dispatch:
+    inputs:
+      sha:
+        description: "Commit on master to deploy (empty: the head of master)"
+        required: false
+        default: ""
+      rebuild:
+        description: "Build the images again even if GHCR has them (for a changed NEXT_PUBLIC_API_BASE_URL)"
+        type: boolean
+        default: false
+
+# Queue deploys instead of running them side by side. A newer run waits for the older one.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+# Nothing by default; each job asks for what it needs.
+permissions: {}
+
+env:
+  IMAGE_NAMESPACE: ghcr.io/viktor-bezai
 
 jobs:
-  deploy:
+  # Picks the commit to deploy and checks whether GHCR already has its images.
+  resolve:
+    name: Pick the release
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      sha: ${{ steps.pick.outputs.sha }}
+      build: ${{ steps.images.outputs.build }}
     steps:
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Check out master
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT }}
-          script: |
-            cd /home/deploy/vib
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
 
-            # Pull latest code (production tracks master; origin/main does not exist)
-            git fetch origin master
-            git reset --hard origin/master
+      - name: Pick the commit
+        id: pick
+        env:
+          INPUT_SHA: ${{ inputs.sha }}
+          PUSH_SHA: ${{ github.event_name == 'push' && github.sha || '' }}
+        run: |
+          set -euo pipefail
+          # A manual run without a sha deploys master's head, whichever branch it was started from.
+          REQUESTED_SHA=${INPUT_SHA:-${PUSH_SHA:-$(git rev-parse HEAD)}}
+          if [[ ! $REQUESTED_SHA =~ ^[0-9a-f]{7,40}$ ]]; then
+            echo "::error::sha must be 7 to 40 lowercase hex characters."
+            exit 1
+          fi
+          sha=$(git rev-parse --verify --quiet "$REQUESTED_SHA^{commit}") || {
+            echo "::error::$REQUESTED_SHA is not a commit in this repository."
+            exit 1
+          }
+          # Only reviewed code reaches prod, so the release must be on master.
+          if ! git merge-base --is-ancestor "$sha" HEAD; then
+            echo "::error::$sha is not on master."
+            exit 1
+          fi
+          # Older commits have no deploy scripts or image-based compose file.
+          if ! git cat-file -e "$sha:scripts/deploy/deploy.sh" 2>/dev/null; then
+            echo "::error::$sha is older than the GHCR deploy. Use scripts/deploy/rollback.sh on the server (server-configs/DEPLOY.md)."
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "Release: $sha"
 
-            # Update nginx config and enable maintenance mode
-            echo "Updating nginx config..."
-            cp server-configs/nginx/viktorbezai.com /etc/nginx/sites-available/viktorbezai.com
-            ln -sf /etc/nginx/sites-available/viktorbezai.com /etc/nginx/sites-enabled/viktorbezai.com
-            # Retire the pre-rename vhost. Leaving it enabled would duplicate
-            # server_name viktorbezai.online, which nginx only warns about.
-            rm -f /etc/nginx/sites-enabled/viktorbezai.online /etc/nginx/sites-available/viktorbezai.online
-            nginx -t && systemctl reload nginx
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-            echo "Enabling maintenance mode..."
-            cp server-configs/maintenance.html /var/www/maintenance-vib.html
-            touch /var/www/maintenance-vib.flag
-
-            # Create .env from secrets
-            cat > .env << 'EOF'
-            SECRET_KEY=${{ secrets.SECRET_KEY }}
-            ENVIRONMENT=production
-            POSTGRES_NAME=${{ secrets.POSTGRES_NAME }}
-            POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
-            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
-            NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
-            EOF
-
-            # Create frontend env
-            cat > frontend/.env.production << 'EOF'
-            NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
-            EOF
-
-            # Build and restart containers
-            docker-compose -f docker-compose.prod.yml down
-            docker-compose -f docker-compose.prod.yml build
-            docker-compose -f docker-compose.prod.yml up -d
-
-            # Wait for services to be healthy using each container's OWN
-            # healthcheck status (docker-compose.prod.yml defines them with the
-            # correct Host, so this avoids ALLOWED_HOSTS 400s that a raw
-            # 127.0.0.1 curl would hit). This box is memory-tight, so startup
-            # (migrate + collectstatic + gunicorn / Next boot) can be slow -
-            # allow up to 300s and print a heartbeat so the log never looks stuck.
-            echo "Waiting for services to become healthy..."
-            healthy=0
-            for i in $(seq 1 100); do
-              be=$(docker inspect -f '{{.State.Health.Status}}' vib-backend 2>/dev/null || echo missing)
-              fe=$(docker inspect -f '{{.State.Health.Status}}' vib-frontend 2>/dev/null || echo missing)
-              if [ "$be" = "healthy" ] && [ "$fe" = "healthy" ]; then
-                healthy=1
-                echo "Services healthy after $((i * 3))s"
-                break
-              fi
-              [ $((i % 10)) -eq 0 ] && echo "  still waiting (${i}x3s): backend=$be frontend=$fe"
-              sleep 3
-            done
-
-            # Always lift maintenance so the flag can never get stuck on. If the
-            # app is still warming up, nginx's error_page 502/503/504 fallback
-            # serves the branded page instead of a raw gateway error.
-            echo "Disabling maintenance mode..."
-            rm -f /var/www/maintenance-vib.flag
-
-            if [ "$healthy" != "1" ]; then
-              echo "WARNING: services not healthy within 300s; nginx fallback covers until ready."
-              docker-compose -f docker-compose.prod.yml ps
-              exit 1
+      - name: Check for existing images
+        id: images
+        env:
+          SHA: ${{ steps.pick.outputs.sha }}
+          REBUILD: ${{ inputs.rebuild || false }}
+        run: |
+          set -euo pipefail
+          build=false
+          for service in vib-backend vib-frontend; do
+            if ! docker buildx imagetools inspect "$IMAGE_NAMESPACE/$service:$SHA" >/dev/null 2>&1; then
+              build=true
             fi
+          done
+          if [[ $REBUILD == true ]]; then build=true; fi
+          echo "build=$build" >> "$GITHUB_OUTPUT"
+          echo "Build needed: $build"
 
-            # Cleanup
-            docker image prune -f
+  # Builds both images in parallel and pushes them to GHCR, tagged with the commit SHA only.
+  build:
+    name: Build ${{ matrix.service }}
+    needs: resolve
+    if: needs.resolve.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - service: vib-backend
+            context: backend
+          - service: vib-frontend
+            context: frontend
+    steps:
+      - name: Check out the release
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.resolve.outputs.sha }}
+          persist-credentials: false
 
-            echo "Deployed successfully!"
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # One plain image manifest per push (no provenance or SBOM attachments): the retention job
+      # counts versions, and attachments would show up as untagged versions it could delete.
+      - name: Build and push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.context }}
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          sbom: false
+          tags: ${{ env.IMAGE_NAMESPACE }}/${{ matrix.service }}:${{ needs.resolve.outputs.sha }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ needs.resolve.outputs.sha }}
+          # Next.js inlines NEXT_PUBLIC_* into the bundle, so this is a public value. The backend ignores it.
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=${{ matrix.service == 'vib-frontend' && secrets.NEXT_PUBLIC_API_BASE_URL || '' }}
+          cache-from: type=gha,scope=${{ matrix.service }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service }}
+
+  # The server pulls the images and swaps the containers. If a build failed, this never starts
+  # and the site keeps serving the old release untouched.
+  deploy:
+    name: Deploy to production
+    needs: [resolve, build]
+    if: |
+      !cancelled() &&
+      needs.resolve.result == 'success' &&
+      (needs.build.result == 'success' || needs.build.result == 'skipped')
+    runs-on: ubuntu-latest
+    # Up to 10 minutes waiting for a deploy left running by a cancelled run (bootstrap.sh), then
+    # a first full pull, health waits and a rollback to legacy in the worst case. The deploy runs
+    # detached, so a timed-out job only means: read .deploy/history on the server.
+    timeout-minutes: 40
+    permissions:
+      contents: read
+      # The server pulls with this job's token, which expires when the job ends.
+      packages: read
+    steps:
+      - name: Check out the release
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.resolve.outputs.sha }}
+          persist-credentials: false
+
+      - name: Deploy on the server
+        env:
+          DROPLET_HOST: ${{ secrets.VPS_HOST }}
+          DROPLET_USER: ${{ secrets.VPS_USER }}
+          DROPLET_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          DROPLET_PORT: ${{ secrets.VPS_PORT }}
+          DROPLET_SSH_KNOWN_HOSTS: ${{ secrets.DROPLET_SSH_KNOWN_HOSTS }}
+          DEPLOY_SHA: ${{ needs.resolve.outputs.sha }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          POSTGRES_NAME: ${{ secrets.POSTGRES_NAME }}
+          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+        run: bash scripts/deploy/remote.sh
+
+  # Keeps the 10 newest versions of each image in GHCR. The server keeps the last three releases
+  # on disk, so a rollback never depends on this. Tidiness only, so a failure never marks the
+  # deploy as failed.
+  prune-registry:
+    name: Prune ${{ matrix.package }}
+    needs: deploy
+    # !cancelled(): a skipped build (images already in GHCR) would otherwise skip this job too.
+    if: ${{ !cancelled() && needs.deploy.result == 'success' }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [vib-backend, vib-frontend]
+    steps:
+      - name: Delete old versions
+        uses: actions/delete-package-versions@e5bc658cc4c965c472efe991f8beea3981499c55 # v5.0.0
+        with:
+          package-name: ${{ matrix.package }}
+          package-type: container
+          min-versions-to-keep: 10
