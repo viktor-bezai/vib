@@ -33,9 +33,8 @@ ENVIRONMENT = os.getenv("ENVIRONMENT")
 IS_LOCAL = ENVIRONMENT == "local"
 IS_PROD = ENVIRONMENT != "local"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True if IS_LOCAL else False
-DEBUG = True
+# Debug pages list every URL pattern and, on errors, settings and stack traces: local only.
+DEBUG = IS_LOCAL
 
 if IS_LOCAL:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "vib-backend", "vib-backend:8000"]
@@ -213,5 +212,17 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "SWAGGER_UI_SETTINGS": {
         "persistAuthorization": True,
+    },
+}
+
+# With DEBUG off, Django's default console handler goes quiet and errors only go to mail_admins
+# (no ADMINS here), so a 500 would leave no trace. Send warnings and errors to stdout for docker logs.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {"handlers": ["console"], "level": "WARNING"},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "WARNING", "propagate": False},
     },
 }
