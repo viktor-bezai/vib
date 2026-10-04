@@ -147,6 +147,7 @@ git config --global --add safe.directory /home/deploy/prepenglish
 | `POSTGRES_PASSWORD` | Your DB password |
 | `POSTGRES_PORT` | 25060 |
 | `NEXT_PUBLIC_API_BASE_URL` | https://viktorbezai.com |
+| `DROPLET_SSH_KNOWN_HOSTS` | The server's host keys, see [DEPLOY.md](./DEPLOY.md#secrets) |
 
 ### EnglishPreparation Repository
 
@@ -162,25 +163,16 @@ git config --global --add safe.directory /home/deploy/prepenglish
 
 **Option A: Via GitHub Actions (recommended)**
 
-Just push to main/master branch. GitHub Actions will:
-1. SSH to server
-2. Pull latest code
-3. Create .env from secrets
-4. Build and start containers
+Merge into master. For VIB, GitHub Actions builds the images, pushes them to GHCR, and the
+server only pulls and swaps the containers. See [DEPLOY.md](./DEPLOY.md).
 
 **Option B: Manual deployment**
 
 ```bash
 # On server:
 
-# VIB - create .env first
-cd /home/deploy/vib
-cp .env.example .env
-nano .env  # Fill in production values
-
-# Build and start
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml up -d
+# VIB: deploy with the workflow instead (images come from GHCR, never built here).
+# To go back to an earlier release by hand: see DEPLOY.md, "Rolling back".
 
 # EnglishPreparation - create .env first
 cd /home/deploy/prepenglish
@@ -233,9 +225,9 @@ tail -f /var/log/nginx/error.log
 
 ### Restart services
 ```bash
-# VIB only
+# VIB only (Compose v2; .env says which release runs)
 cd /home/deploy/vib
-docker-compose -f docker-compose.prod.yml restart
+docker compose -f docker-compose.prod.yml restart
 
 # EnglishPreparation only
 cd /home/deploy/prepenglish/docker
@@ -290,8 +282,8 @@ certbot renew --dry-run  # Test renewal
 # Check disk usage
 df -h
 
-# Clean up Docker (removes unused images, containers, volumes)
-docker system prune -a -f
+# Not `docker system prune -a`: it deletes VIB's rollback images and the other projects' images.
+# VIB prunes its own old images after every deploy (DEPLOY.md).
 
 # Check what's using space
 du -sh /var/lib/docker/*

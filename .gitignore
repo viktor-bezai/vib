@@ -71,3 +71,6 @@ Thumbs.db
 /backend/staticfiles/
 /backend/credentials/
 /backend/token.json
+
+# Deploy state on the server: lock, history, logs (scripts/deploy)
+/.deploy/
