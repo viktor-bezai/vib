@@ -33,9 +33,8 @@ ENVIRONMENT = os.getenv("ENVIRONMENT")
 IS_LOCAL = ENVIRONMENT == "local"
 IS_PROD = ENVIRONMENT != "local"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True if IS_LOCAL else False
-DEBUG = True
+# Debug pages list every URL pattern and, on errors, settings and stack traces: local only.
+DEBUG = IS_LOCAL
 
 if IS_LOCAL:
     ALLOWED_HOSTS = ["localhost", "127.0.0.1", "vib-backend", "vib-backend:8000"]
