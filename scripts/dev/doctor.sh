@@ -67,7 +67,9 @@ elif [[ ! -x "$venv_python" ]]; then
     fail "no .venv" "uv venv .venv --python $PYTHON_VERSION && $venv_fix"
 elif [[ "$("$venv_python" -c 'import sys; print(f"{sys.version_info[0]}.{sys.version_info[1]}")')" != "$PYTHON_VERSION" ]]; then
     fail ".venv runs another Python than CI ($PYTHON_VERSION)" "rm -rf .venv && uv venv .venv --python $PYTHON_VERSION && $venv_fix"
-elif uv pip sync "$PROJECT_ROOT/backend/requirements-dev.txt" --python "$venv_python" --dry-run 2>&1 | grep -q "Would make no changes"; then
+# Read the plan first: grep -q would close the pipe early and, with pipefail, fail the check.
+elif sync_plan=$(uv pip sync "$PROJECT_ROOT/backend/requirements-dev.txt" --python "$venv_python" --dry-run 2>&1) \
+    && [[ "$sync_plan" == *"Would make no changes"* ]]; then
     ok ".venv matches backend/requirements-dev.txt"
 else
     fail ".venv is out of date with backend/requirements-dev.txt" "$venv_fix"
