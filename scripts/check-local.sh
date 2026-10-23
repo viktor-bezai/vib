@@ -10,7 +10,8 @@
 #
 # This file is shared, word for word, by EnvolPrep, VIB and Egypt. What differs per project (the
 # extra lint checks, CI's backend environment and commands, the frontend steps) lives in
-# scripts/check-local.project.sh.
+# scripts/check-local.project.sh. That file only sets variables and defines functions: it is read
+# twice, by this script and by the clean shell the backend checks run in.
 #
 # Runs on this machine, not in containers: Docker's file sharing on macOS made a run 3-5x slower.
 # Backend and frontend run at the same time.
@@ -35,7 +36,7 @@ COMPOSE_FILE="$PROJECT_ROOT/docker/docker-compose.yml"
 VENV_PYTHON="$PROJECT_ROOT/.venv/bin/python"
 CHECKOUT_ID="$(echo -n "$PROJECT_ROOT" | shasum -a 256 | cut -c1-8)"
 # --keepdb keeps each worker's copy as it is, so a migration change must give new databases.
-MIGRATIONS_ID="$(find "$PROJECT_ROOT/backend" -path '*/migrations/*.py' | sort | xargs shasum | shasum | cut -c1-8)"
+MIGRATIONS_ID="$(find "$PROJECT_ROOT/backend" -path '*/migrations/*.py' -print0 | sort -z | xargs -0 shasum | shasum | cut -c1-8)"
 # Django adds test_ and, for each parallel worker, a number.
 CHECKOUT_DB_PREFIX="check_local_${CHECKOUT_ID}_"
 CHECKOUT_DB="$CHECKOUT_DB_PREFIX$MIGRATIONS_ID"
@@ -63,7 +64,7 @@ check_lint() {
 
 check_backend() {
     if [[ ! -x "$VENV_PYTHON" ]]; then
-        echo "No .venv. Create it: uv venv .venv && uv pip sync backend/requirements-dev.txt --python .venv/bin/python"
+        echo "No .venv. Create it: uv venv .venv --python $PYTHON_VERSION && uv pip sync backend/requirements-dev.txt --python .venv/bin/python"
         return 1
     fi
     # The tests create their own databases on the dev Postgres server.
@@ -74,7 +75,7 @@ check_backend() {
     # this shell. The project's commands run in a clean bash that reads the project file again.
     (
         cd "$PROJECT_ROOT/backend" || exit 1
-        TEST_DB="$CHECKOUT_DB" DB_USER="$db_user" DB_PASSWORD="$db_password" DB_PORT="$db_port" project_backend_env
+        TEST_DB="$CHECKOUT_DB" DB_USER="$db_user" DB_PASSWORD="$db_password" DB_PORT="$db_port" project_backend_env || exit 1
         env -i PATH="$PATH" HOME="$HOME" PY="$VENV_PYTHON" PROJECT_ROOT="$PROJECT_ROOT" "${BACKEND_ENV[@]}" \
             bash --noprofile --norc -c 'set -euo pipefail; source "$1"; project_backend_checks' _ "$PROJECT_FILE"
     )
@@ -93,8 +94,9 @@ db_host_port() {
 drop_old_test_databases() {
     local psql=(docker compose -f "$COMPOSE_FILE" exec -T db sh -c 'psql -U "$POSTGRES_USER" -d postgres -Atq "$@"' _)
     local old
-    old="$("${psql[@]}" -c "SELECT datname FROM pg_database WHERE datname LIKE 'test_${CHECKOUT_DB_PREFIX}%' \
-        AND datname NOT LIKE 'test_${CHECKOUT_DB}%'")" || return 1
+    # starts_with, not LIKE: in LIKE "_" matches any character, and these databases get dropped.
+    old="$("${psql[@]}" -c "SELECT datname FROM pg_database WHERE starts_with(datname, 'test_${CHECKOUT_DB_PREFIX}') \
+        AND NOT starts_with(datname, 'test_${CHECKOUT_DB}')")" || return 1
     for name in $old; do
         "${psql[@]}" -c "DROP DATABASE \"$name\"" || return 1
     done
