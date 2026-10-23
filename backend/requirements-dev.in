@@ -1,7 +1,7 @@
 # Local development and CI only; production does not install this.
 # The constraint keeps every shared package on the exact version production runs.
 # After editing, relock from backend/:
-#   uv pip compile requirements-dev.in -o requirements-dev.txt --python-version 3.12
+#   uv pip compile requirements-dev.in -o requirements-dev.txt --python-version 3.13
 -r requirements.in
 -c requirements.txt
 

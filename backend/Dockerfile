@@ -1,14 +1,12 @@
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
+# psycopg2-binary brings its own libpq; pg_isready (entrypoint) and curl (healthcheck) need these.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    python3-dev \
-    libpq-dev \
     postgresql-client \
     curl \
     && rm -rf /var/lib/apt/lists/*
