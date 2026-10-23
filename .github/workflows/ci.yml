@@ -119,7 +119,7 @@ jobs:
           --health-retries 5
     env:
       SECRET_KEY: test-secret-key-not-for-production
-      ENVIRONMENT: local
+      DJANGO_SETTINGS_MODULE: config.settings.local
       POSTGRES_NAME: vib
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

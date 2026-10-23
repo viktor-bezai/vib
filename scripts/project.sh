@@ -23,7 +23,7 @@ project_lint() {
 project_backend_env() {
     BACKEND_ENV=(
         SECRET_KEY=test-secret-key-not-for-production
-        ENVIRONMENT=local
+        DJANGO_SETTINGS_MODULE=config.settings.local
         POSTGRES_NAME="$TEST_DB"
         POSTGRES_USER="$DB_USER"
         POSTGRES_PASSWORD="$DB_PASSWORD"
