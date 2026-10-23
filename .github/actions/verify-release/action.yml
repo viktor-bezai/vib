@@ -1,0 +1,101 @@
+name: Verify release
+description: >-
+  Deploy gate shared by EnvolPrep, VIB and Egypt. The commit on master must be the merge commit of
+  a release PR into master whose required checks were green.
+
+inputs:
+  required-checks:
+    description: One check name per line, exactly as ci.yml names its jobs.
+    required: true
+  token:
+    description: A token that can read pull requests and checks.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # A squashed release gives master a commit preview never had, and the next release PR conflicts
+    # (viktor-bezai/EnvolPrep#1020). Stop here, before anything is built, while the fix is still
+    # one sync PR.
+    - name: Require a merge commit
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        REPO: ${{ github.repository }}
+        SHA: ${{ github.sha }}
+      run: |
+        set -euo pipefail
+        parents=$(gh api "repos/$REPO/commits/$SHA" --jq '.parents | length')
+        if [ "$parents" -lt 2 ]; then
+          echo "::error::$SHA on master is not a merge commit. Release PRs (preview -> master) must use 'Create a merge commit', never squash or rebase. Fix: merge master into a branch off preview, open a PR into preview and merge it with a merge commit (see viktor-bezai/EnvolPrep#1085). Then run this deploy by hand from Actions."
+          exit 1
+        fi
+        echo "Merge commit with $parents parents."
+
+    - name: Require green required checks on the release PR
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        REPO: ${{ github.repository }}
+        SHA: ${{ github.sha }}
+        REQUIRED_CHECKS: ${{ inputs.required-checks }}
+      run: |
+        set -euo pipefail
+
+        # /commits/{sha}/pulls lags a few seconds after a merge, so retry,
+        # then fall back to the "#<PR>" in the merge commit message.
+        echo "Looking up the PR merged as $SHA..."
+        PR_NUMBER=""
+        for attempt in 1 2 3 4 5; do
+          # A commit can belong to several PRs (a feature PR and the release); take the one merged as it.
+          PR_NUMBER=$(gh api "repos/$REPO/commits/$SHA/pulls" \
+            --jq "[.[] | select(.merge_commit_sha == \"$SHA\")][0].number // empty")
+          if [ -n "$PR_NUMBER" ]; then
+            echo "API returned PR #$PR_NUMBER on attempt $attempt"
+            break
+          fi
+          echo "Attempt $attempt: API returned empty, retrying in 5s..."
+          sleep 5
+        done
+
+        if [ -z "$PR_NUMBER" ]; then
+          echo "API never returned a PR; falling back to commit message parsing..."
+          COMMIT_MSG=$(gh api "repos/$REPO/commits/$SHA" --jq '.commit.message')
+          PR_NUMBER=$(echo "$COMMIT_MSG" | grep -oE '#[0-9]+' | head -1 | tr -d '#' || true)
+        fi
+
+        if [ -z "$PR_NUMBER" ]; then
+          echo "::error::No PR found for $SHA. Direct pushes to master are not allowed."
+          echo "Open a PR instead; CI will run on the PR and the merge will deploy."
+          echo "To deploy anyway, run this workflow by hand (workflow_dispatch)."
+          exit 1
+        fi
+
+        # The PR must be the merge that made this commit, so an old "#N" in a direct push's
+        # message, or an open PR that contains the commit, cannot stand in for review.
+        PR_MERGE=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '"\(.merged_at != null) \(.base.ref) \(.merge_commit_sha)"')
+        if [ "$PR_MERGE" != "true master $SHA" ]; then
+          echo "::error::PR #$PR_NUMBER is not the merge into master that made $SHA ($PR_MERGE)."
+          exit 1
+        fi
+        PR_HEAD=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.head.sha')
+        echo "Release PR #$PR_NUMBER, head $PR_HEAD"
+
+        FAILED=0
+        while IFS= read -r check; do
+          [ -z "$check" ] && continue
+          # Take the latest run of this check on the PR head commit.
+          CONCLUSION=$(gh api "repos/$REPO/commits/$PR_HEAD/check-runs" \
+            --jq "[.check_runs[] | select(.name == \"$check\")] | sort_by(.started_at) | last | .conclusion // \"missing\"")
+          echo "  $check: $CONCLUSION"
+          if [ "$CONCLUSION" != "success" ]; then
+            FAILED=1
+          fi
+        done <<< "$REQUIRED_CHECKS"
+
+        if [ "$FAILED" -eq 1 ]; then
+          echo "::error::One or more required checks are not green on PR #$PR_NUMBER. Refusing to deploy."
+          exit 1
+        fi
+
+        echo "All required checks green on PR #$PR_NUMBER - proceeding to deploy."
