@@ -43,6 +43,7 @@ cd docker && docker compose logs -f vib-backend
 cd docker && docker compose exec vib-backend python manage.py makemigrations
 cd docker && docker compose exec vib-backend python manage.py migrate
 ./scripts/check-local.sh [--build]          # Every CI check, before a PR into preview
+./scripts/dev/doctor.sh                     # Is the local stack ready? Says how to fix what is not
 ./scripts/format-all.sh                     # Prettier + Ruff (Ruff from .venv, see below)
 ./scripts/format-all.sh --check             # What CI runs
 cd frontend && npm run lint                 # ESLint, zero warnings
@@ -67,6 +68,7 @@ frontend http://localhost:3200, backend http://localhost:8200, Postgres 5434 (`v
 - **Backend** (`backend/`): Django 5.2 LTS, DRF, drf-spectacular, PostgreSQL. One app, `accounts`: the custom `VIBUser` (email login) and `ResumeDownloadView` (`/api/v1/accounts/resume/<email>/download/`). Health check at `/api/health/`, schema at `/api/schema/`, Swagger at `/api/swagger-ui/`.
 - **Frontend** (`frontend/`): Next.js 15 (pages router), React 19, TypeScript, CSS modules. Pages: `/`, `/about`, `/projects`, `/projects/[slug]`, `/sitemap.xml`.
 - **Docker** (`docker/`): `docker-compose.yml` (dev), `docker-compose.prod.yml` (prod).
+- **Shared scripts**: `scripts/check-local.sh`, `scripts/dev/doctor.sh` and `scripts/prod/exec-backend.sh` are the same file in EnvolPrep, VIB and Egypt; change them in EnvolPrep first. VIB's own part of them is `scripts/project.sh`.
 
 ## Deploy and production
 
@@ -78,5 +80,6 @@ frontend http://localhost:3200, backend http://localhost:8200, Postgres 5434 (`v
 ssh root@174.138.113.224
 cd /home/deploy/vib
 docker compose --project-directory . -f docker/docker-compose.prod.yml ps
+scripts/prod/exec-backend.sh python manage.py shell   # Django shell in the live backend
 docker logs vib-backend --tail 100
 ```
