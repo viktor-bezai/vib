@@ -1,0 +1,15 @@
+name: Set up Buildx
+description: Buildx that pulls Docker Hub images through Google's public mirror.
+
+runs:
+  using: composite
+  steps:
+    - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      with:
+        # Docker Hub caps anonymous pulls per IP, and runners share IPs: on 2026-10-09 every base
+        # image pull failed with 429. Google's public Docker Hub mirror serves the same images;
+        # Buildx falls back to Docker Hub when the mirror misses. Twin for plain docker and compose:
+        # .github/actions/docker-hub-mirror.
+        buildkitd-config-inline: |
+          [registry."docker.io"]
+            mirrors = ["mirror.gcr.io"]

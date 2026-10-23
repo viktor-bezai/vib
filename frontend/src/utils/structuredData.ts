@@ -5,9 +5,9 @@ import {
   SITE_URL,
   SOCIAL_LINKS,
   absoluteUrl,
-} from "@/constants/site";
-import { PROJECTS, Project } from "@/constants/projects";
-import { EDUCATION, SKILLS, SPOKEN_LANGUAGES } from "@/constants/profile";
+} from '@/constants/site';
+import { PROJECTS, Project } from '@/constants/projects';
+import { EDUCATION, SKILLS, SPOKEN_LANGUAGES } from '@/constants/profile';
 
 /**
  * JSON-LD builders.
@@ -22,27 +22,27 @@ import { EDUCATION, SKILLS, SPOKEN_LANGUAGES } from "@/constants/profile";
  * actually are: work he made, not another profile of him.
  */
 
-const PERSON_ID = absoluteUrl("/#person");
-const WEBSITE_ID = absoluteUrl("/#website");
+const PERSON_ID = absoluteUrl('/#person');
+const WEBSITE_ID = absoluteUrl('/#website');
 
 const projectNodeId = (project: Project) => `${project.url}#website`;
 
 const personNode = () => ({
-  "@type": "Person",
-  "@id": PERSON_ID,
+  '@type': 'Person',
+  '@id': PERSON_ID,
   name: SITE_NAME,
   url: SITE_URL,
   jobTitle: SITE_ROLE,
   description: SITE_DESCRIPTION,
   address: {
-    "@type": "PostalAddress",
-    addressLocality: "London",
-    addressRegion: "ON",
-    addressCountry: "CA",
+    '@type': 'PostalAddress',
+    addressLocality: 'London',
+    addressRegion: 'ON',
+    addressCountry: 'CA',
   },
   sameAs: [SOCIAL_LINKS.linkedin, SOCIAL_LINKS.github],
   alumniOf: [...new Set(EDUCATION.map((item) => item.school))].map((name) => ({
-    "@type": "CollegeOrUniversity",
+    '@type': 'CollegeOrUniversity',
     name,
   })),
   knowsLanguage: SPOKEN_LANGUAGES.map((language) => language.code),
@@ -50,31 +50,31 @@ const personNode = () => ({
 });
 
 const websiteNode = () => ({
-  "@type": "WebSite",
-  "@id": WEBSITE_ID,
+  '@type': 'WebSite',
+  '@id': WEBSITE_ID,
   url: SITE_URL,
   name: SITE_NAME,
   description: SITE_DESCRIPTION,
-  publisher: { "@id": PERSON_ID },
-  inLanguage: "en",
+  publisher: { '@id': PERSON_ID },
+  inLanguage: 'en',
 });
 
 /** One external project, stated as a site this person created. */
 const projectNode = (project: Project) => ({
-  "@type": "WebSite",
-  "@id": projectNodeId(project),
+  '@type': 'WebSite',
+  '@id': projectNodeId(project),
   url: project.url,
   name: project.name,
   description: project.summary,
-  creator: { "@id": PERSON_ID },
-  author: { "@id": PERSON_ID },
-  inLanguage: "en",
+  creator: { '@id': PERSON_ID },
+  author: { '@id': PERSON_ID },
+  inLanguage: 'en',
 });
 
 const breadcrumbNode = (trail: { name: string; path: string }[]) => ({
-  "@type": "BreadcrumbList",
+  '@type': 'BreadcrumbList',
   itemListElement: trail.map((crumb, index) => ({
-    "@type": "ListItem",
+    '@type': 'ListItem',
     position: index + 1,
     name: crumb.name,
     item: absoluteUrl(crumb.path),
@@ -82,8 +82,8 @@ const breadcrumbNode = (trail: { name: string; path: string }[]) => ({
 });
 
 const graph = (nodes: object[]) => ({
-  "@context": "https://schema.org",
-  "@graph": nodes,
+  '@context': 'https://schema.org',
+  '@graph': nodes,
 });
 
 export const homePageSchema = () =>
@@ -92,12 +92,12 @@ export const homePageSchema = () =>
     websiteNode(),
     ...PROJECTS.map(projectNode),
     {
-      "@type": "WebPage",
-      "@id": absoluteUrl("/#webpage"),
+      '@type': 'WebPage',
+      '@id': absoluteUrl('/#webpage'),
       url: SITE_URL,
       name: `${SITE_NAME} - ${SITE_ROLE}`,
-      isPartOf: { "@id": WEBSITE_ID },
-      about: { "@id": PERSON_ID },
+      isPartOf: { '@id': WEBSITE_ID },
+      about: { '@id': PERSON_ID },
     },
   ]);
 
@@ -106,16 +106,16 @@ export const aboutPageSchema = () =>
     personNode(),
     websiteNode(),
     {
-      "@type": "ProfilePage",
-      "@id": absoluteUrl("/about#webpage"),
-      url: absoluteUrl("/about"),
+      '@type': 'ProfilePage',
+      '@id': absoluteUrl('/about#webpage'),
+      url: absoluteUrl('/about'),
       name: `About ${SITE_NAME}`,
-      isPartOf: { "@id": WEBSITE_ID },
-      mainEntity: { "@id": PERSON_ID },
+      isPartOf: { '@id': WEBSITE_ID },
+      mainEntity: { '@id': PERSON_ID },
     },
     breadcrumbNode([
-      { name: "Home", path: "/" },
-      { name: "About", path: "/about" },
+      { name: 'Home', path: '/' },
+      { name: 'About', path: '/about' },
     ]),
   ]);
 
@@ -125,23 +125,23 @@ export const projectsPageSchema = () =>
     websiteNode(),
     ...PROJECTS.map(projectNode),
     {
-      "@type": "CollectionPage",
-      "@id": absoluteUrl("/projects#webpage"),
-      url: absoluteUrl("/projects"),
+      '@type': 'CollectionPage',
+      '@id': absoluteUrl('/projects#webpage'),
+      url: absoluteUrl('/projects'),
       name: `Projects by ${SITE_NAME}`,
-      isPartOf: { "@id": WEBSITE_ID },
+      isPartOf: { '@id': WEBSITE_ID },
       mainEntity: {
-        "@type": "ItemList",
+        '@type': 'ItemList',
         itemListElement: PROJECTS.map((project, index) => ({
-          "@type": "ListItem",
+          '@type': 'ListItem',
           position: index + 1,
-          item: { "@id": projectNodeId(project) },
+          item: { '@id': projectNodeId(project) },
         })),
       },
     },
     breadcrumbNode([
-      { name: "Home", path: "/" },
-      { name: "Projects", path: "/projects" },
+      { name: 'Home', path: '/' },
+      { name: 'Projects', path: '/projects' },
     ]),
   ]);
 
@@ -151,17 +151,17 @@ export const projectPageSchema = (project: Project) =>
     websiteNode(),
     projectNode(project),
     {
-      "@type": "WebPage",
-      "@id": absoluteUrl(`/projects/${project.slug}#webpage`),
+      '@type': 'WebPage',
+      '@id': absoluteUrl(`/projects/${project.slug}#webpage`),
       url: absoluteUrl(`/projects/${project.slug}`),
       name: `${project.name} - ${project.tagline}`,
       description: project.summary,
-      isPartOf: { "@id": WEBSITE_ID },
-      about: { "@id": projectNodeId(project) },
+      isPartOf: { '@id': WEBSITE_ID },
+      about: { '@id': projectNodeId(project) },
     },
     breadcrumbNode([
-      { name: "Home", path: "/" },
-      { name: "Projects", path: "/projects" },
+      { name: 'Home', path: '/' },
+      { name: 'Projects', path: '/projects' },
       { name: project.name, path: `/projects/${project.slug}` },
     ]),
   ]);

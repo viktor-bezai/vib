@@ -20,7 +20,7 @@ Before reviewing anything, read `CLAUDE.md` at the repo root if it exists (and a
 
 Before launching the agents, confirm the branch is reviewable:
 
-- The formatter passes cleanly: `bash scripts/format.sh` (Ruff for `backend/`, Prettier + ESLint for `frontend/`). Scope it with `bash scripts/format.sh backend` or `bash scripts/format.sh frontend` if only one side changed.
+- The formatter passes cleanly: `./scripts/format-all.sh --check` (Prettier for `frontend/`, Ruff for `backend/`), and `npm run lint` in `frontend/` for ESLint.
 - No migration ordering conflicts with `preview` (new migrations under `backend/<app>/migrations/` don't collide with migrations merged into `preview` after this branch was cut, and there's no second leaf migration for the same app).
 - No leftover debug artifacts (`print()`, `breakpoint()`, `pdb.set_trace()`, `console.log(...)`, commented-out blocks, `TODO` markers added in the diff).
 
@@ -374,10 +374,10 @@ Hard cap: max 3 findings. If the comments are simple and earn their lines, retur
 While the agents are running, run the project formatter (Ruff for backend, Prettier + ESLint for frontend):
 
 ```bash
-bash scripts/format.sh
+./scripts/format-all.sh --check
 ```
 
-Scope it to one side with `bash scripts/format.sh backend` or `bash scripts/format.sh frontend` if the diff only touches one. Any unfixable issues it prints (e.g. ESLint errors that can't be auto-fixed) belong in the final review as `[Must Fix]` items before the feature-specific findings.
+Run `./scripts/format-all.sh` without `--check` to fix what it can. Any issues it cannot fix belong in the final review as `[Must Fix]` items before the feature-specific findings.
 
 ## Step 2.75 — Run tests for changed code areas
 

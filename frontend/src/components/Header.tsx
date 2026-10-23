@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { PROJECTS } from "@/constants/projects";
-import styles from "@/styles/Header.module.css";
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { PROJECTS } from '@/constants/projects';
+import styles from '@/styles/Header.module.css';
 
 type Splash = { id: number; text: string };
 
@@ -15,7 +15,7 @@ export default function Header() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const nextId = useRef(0);
 
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState('');
   const [focused, setFocused] = useState(false);
   const [splash, setSplash] = useState<Splash | null>(null);
 
@@ -28,16 +28,16 @@ export default function Header() {
     const text = value.trim();
     if (!text) return;
     setSplash({ id: nextId.current++, text });
-    setValue("");
+    setValue('');
     if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => setSplash(null), SPLASH_DURATION);
   }, [value]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault();
       runCommand();
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       inputRef.current?.blur();
     }
   };
@@ -46,10 +46,10 @@ export default function Header() {
   useEffect(() => {
     if (!splash) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") clearSplash();
+      if (e.key === 'Escape') clearSplash();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [splash, clearSplash]);
 
   useEffect(() => {
@@ -61,19 +61,12 @@ export default function Header() {
   return (
     <>
       <header className={styles.header}>
-        <nav className={styles.inner} aria-label="Primary">
+        <nav className={styles.inner} aria-label='Primary'>
           <div className={styles.brand}>
-            <Link
-              href="/"
-              className={styles.host}
-              aria-label="Viktor Bezai — home"
-            >
+            <Link href='/' className={styles.host} aria-label='Viktor Bezai — home'>
               viktor@bezai
             </Link>
-            <span
-              className={styles.terminal}
-              onClick={() => inputRef.current?.focus()}
-            >
+            <span className={styles.terminal} onClick={() => inputRef.current?.focus()}>
               <span className={styles.sep}>:~$</span>
               <input
                 ref={inputRef}
@@ -84,14 +77,14 @@ export default function Header() {
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
                 style={{ width: `${Math.max(value.length, 1)}ch` }}
-                aria-label="Terminal — type a message and press Enter"
+                aria-label='Terminal — type a message and press Enter'
                 spellCheck={false}
-                autoComplete="off"
+                autoComplete='off'
                 maxLength={60}
               />
-              <span className={styles.caret} aria-hidden="true" />
+              <span className={styles.caret} aria-hidden='true' />
               {focused && !value && (
-                <span className={styles.hint} aria-hidden="true">
+                <span className={styles.hint} aria-hidden='true'>
                   type &amp; press enter
                 </span>
               )}
@@ -101,20 +94,18 @@ export default function Header() {
           <ul className={styles.links}>
             <li>
               <Link
-                href="/about"
+                href='/about'
                 className={styles.link}
-                aria-current={pathname === "/about" ? "page" : undefined}
+                aria-current={pathname === '/about' ? 'page' : undefined}
               >
                 About Me
               </Link>
             </li>
             <li>
               <Link
-                href="/projects"
+                href='/projects'
                 className={styles.link}
-                aria-current={
-                  pathname.startsWith("/projects") ? "page" : undefined
-                }
+                aria-current={pathname.startsWith('/projects') ? 'page' : undefined}
               >
                 Projects
               </Link>
@@ -126,11 +117,11 @@ export default function Header() {
                 <a
                   href={project.url}
                   className={styles.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target='_blank'
+                  rel='noopener noreferrer'
                 >
                   {project.name}
-                  <span className={styles.external} aria-hidden="true">
+                  <span className={styles.external} aria-hidden='true'>
                     ↗
                   </span>
                 </a>
@@ -145,12 +136,12 @@ export default function Header() {
           key={splash.id}
           className={styles.splash}
           onClick={clearSplash}
-          role="status"
-          aria-live="assertive"
+          role='status'
+          aria-live='assertive'
         >
           <span className={styles.splashText}>
             {splash.text}
-            <span className={styles.splashCaret} aria-hidden="true" />
+            <span className={styles.splashCaret} aria-hidden='true' />
           </span>
         </div>
       )}

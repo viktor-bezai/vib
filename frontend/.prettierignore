@@ -1,0 +1,42 @@
+# Dependencies
+node_modules
+
+# Build outputs  
+.next
+out
+build
+dist
+*.tsbuildinfo
+
+# Cache directories
+.cache
+.parcel-cache
+.nyc_output
+
+# Environment and config
+.env*
+!.env.example
+
+# IDE and OS files
+.vscode/settings.json
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Coverage and test outputs
+coverage/
+junit.xml
+
+# Generated files
+next-env.d.ts
+src/types/api.generated.ts
+*.min.js
+*.min.css
+public/static/js/
+public/static/css/
+
+# Public assets (should be manually formatted if needed)
+public/
