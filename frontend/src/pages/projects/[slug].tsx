@@ -1,11 +1,11 @@
-import { GetStaticPaths, GetStaticProps } from "next";
-import Link from "next/link";
-import Header from "@/components/Header";
-import SEOHead from "@/components/SEOHead";
-import ScrollToTop from "@/components/ScrollToTop";
-import { PROJECTS, Project, getProject } from "@/constants/projects";
-import { projectPageSchema } from "@/utils/structuredData";
-import styles from "@/styles/Projects.module.css";
+import { GetStaticPaths, GetStaticProps } from 'next';
+import Link from 'next/link';
+import Header from '@/components/Header';
+import SEOHead from '@/components/SEOHead';
+import ScrollToTop from '@/components/ScrollToTop';
+import { PROJECTS, Project, getProject } from '@/constants/projects';
+import { projectPageSchema } from '@/utils/structuredData';
+import styles from '@/styles/Projects.module.css';
 
 interface ProjectPageProps {
   project: Project;
@@ -23,10 +23,10 @@ export default function ProjectPage({ project }: ProjectPageProps) {
         <Header />
         <div className={styles.container}>
           <header className={styles.header}>
-            <nav className={styles.breadcrumb} aria-label="Breadcrumb">
-              <Link href="/">Home</Link>
+            <nav className={styles.breadcrumb} aria-label='Breadcrumb'>
+              <Link href='/'>Home</Link>
               <span className={styles.breadcrumbSep}>/</span>
-              <Link href="/projects">Projects</Link>
+              <Link href='/projects'>Projects</Link>
               <span className={styles.breadcrumbSep}>/</span>
               <span>{project.name}</span>
             </nav>
@@ -58,14 +58,9 @@ export default function ProjectPage({ project }: ProjectPageProps) {
 
           {/* The outbound link this page exists for. No nofollow: it is a site
               I own and vouch for, which is exactly what the link should say. */}
-          <a
-            href={project.url}
-            className={styles.visit}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a href={project.url} className={styles.visit} target='_blank' rel='noopener noreferrer'>
             Visit {project.name}
-            <span aria-hidden="true">↗</span>
+            <span aria-hidden='true'>↗</span>
           </a>
         </div>
         <ScrollToTop />
@@ -79,9 +74,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
   fallback: false,
 });
 
-export const getStaticProps: GetStaticProps<ProjectPageProps> = ({
-  params,
-}) => {
+export const getStaticProps: GetStaticProps<ProjectPageProps> = ({ params }) => {
   const project = getProject(String(params?.slug));
   if (!project) return { notFound: true };
   return { props: { project } };

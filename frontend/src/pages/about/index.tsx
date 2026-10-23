@@ -1,9 +1,9 @@
-import Link from "next/link";
-import Image from "next/image";
-import Header from "@/components/Header";
-import ScrollToTop from "@/components/ScrollToTop";
-import SEOHead from "@/components/SEOHead";
-import { SITE_NAME } from "@/constants/site";
+import Link from 'next/link';
+import Image from 'next/image';
+import Header from '@/components/Header';
+import ScrollToTop from '@/components/ScrollToTop';
+import SEOHead from '@/components/SEOHead';
+import { SITE_NAME } from '@/constants/site';
 import {
   CODING_SINCE,
   EDUCATION,
@@ -11,17 +11,17 @@ import {
   PRODUCTION_PRACTICES,
   SKILLS,
   SPOKEN_LANGUAGES,
-} from "@/constants/profile";
-import { aboutPageSchema } from "@/utils/structuredData";
-import styles from "@/styles/About.module.css";
+} from '@/constants/profile';
+import { aboutPageSchema } from '@/utils/structuredData';
+import styles from '@/styles/About.module.css';
 
 export default function AboutPage() {
   return (
     <>
       <SEOHead
         title={`About ${SITE_NAME}`}
-        description="Full-stack software developer in London, Ontario. Python, Django, React and cloud infrastructure, with five years of shipping and running production systems."
-        ogType="profile"
+        description='Full-stack software developer in London, Ontario. Python, Django, React and cloud infrastructure, with five years of shipping and running production systems.'
+        ogType='profile'
         structuredData={aboutPageSchema()}
       />
       <main className={styles.main}>
@@ -29,18 +29,18 @@ export default function AboutPage() {
         <div className={styles.container}>
           {/* Navigation */}
           <nav className={styles.navigation}>
-            <Link href="/" className={styles.backLink}>
+            <Link href='/' className={styles.backLink}>
               <svg
                 className={styles.backIcon}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
+                viewBox='0 0 24 24'
+                fill='none'
+                stroke='currentColor'
               >
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
                   strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
+                  d='M15 19l-7-7 7-7'
                 />
               </svg>
               Back to Home
@@ -54,8 +54,8 @@ export default function AboutPage() {
                 <div className={styles.profileImage}>
                   <div className={styles.imageGradient}>
                     <Image
-                      src="/viktor-bezai.jpg"
-                      alt="Viktor Bezai"
+                      src='/viktor-bezai.jpg'
+                      alt='Viktor Bezai'
                       className={styles.profilePhoto}
                       width={120}
                       height={120}
@@ -69,21 +69,21 @@ export default function AboutPage() {
                   <p className={styles.location}>
                     <svg
                       className={styles.locationIcon}
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
+                      viewBox='0 0 24 24'
+                      fill='none'
+                      stroke='currentColor'
                     >
                       <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
                         strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z'
                       />
                       <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
                         strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        d='M15 11a3 3 0 11-6 0 3 3 0 016 0z'
                       />
                     </svg>
                     London, ON, Canada
@@ -93,17 +93,15 @@ export default function AboutPage() {
 
               <div className={styles.summary}>
                 <p>
-                  Experienced Software Engineer with a strong background in
-                  building scalable backend systems using Python and
-                  Django/FastAPI, and frontend interfaces using React/Next.js.
-                  Proven ability to take ownership of critical platform
-                  components, contribute to cross-functional teams, and deliver
-                  production-ready solutions with high availability.
+                  Experienced Software Engineer with a strong background in building scalable
+                  backend systems using Python and Django/FastAPI, and frontend interfaces using
+                  React/Next.js. Proven ability to take ownership of critical platform components,
+                  contribute to cross-functional teams, and deliver production-ready solutions with
+                  high availability.
                 </p>
                 <p>
-                  Before software, I spent seven years as a project manager, so
-                  I plan work, keep promises on dates and talk to people outside
-                  engineering easily.
+                  Before software, I spent seven years as a project manager, so I plan work, keep
+                  promises on dates and talk to people outside engineering easily.
                 </p>
               </div>
 
@@ -218,56 +216,53 @@ export default function AboutPage() {
             <div className={styles.competencyGrid}>
               <div className={styles.competencyCard}>
                 <div className={styles.competencyIcon}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor'>
                     <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
                       strokeWidth={2}
-                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                      d='M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z'
                     />
                   </svg>
                 </div>
                 <h3>Problem Solving</h3>
                 <p>
-                  Strong analytical skills with a track record of solving
-                  complex technical challenges
+                  Strong analytical skills with a track record of solving complex technical
+                  challenges
                 </p>
               </div>
 
               <div className={styles.competencyCard}>
                 <div className={styles.competencyIcon}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor'>
                     <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
                       strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      d='M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z'
                     />
                   </svg>
                 </div>
                 <h3>Team Collaboration</h3>
                 <p>
-                  Excellent team player with experience mentoring juniors and
-                  leading technical initiatives
+                  Excellent team player with experience mentoring juniors and leading technical
+                  initiatives
                 </p>
               </div>
 
               <div className={styles.competencyCard}>
                 <div className={styles.competencyIcon}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor'>
                     <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
                       strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                      d='M13 10V3L4 14h7v7l9-11h-7z'
                     />
                   </svg>
                 </div>
                 <h3>Performance Focus</h3>
-                <p>
-                  Dedicated to optimizing applications for speed, scalability,
-                  and reliability
-                </p>
+                <p>Dedicated to optimizing applications for speed, scalability, and reliability</p>
               </div>
             </div>
           </section>
@@ -276,41 +271,32 @@ export default function AboutPage() {
           <section className={styles.ctaSection}>
             <h2 className={styles.sectionTitle}>{"Let's Work Together"}</h2>
             <p className={styles.ctaText}>
-              {
-                "I'm always interested in new opportunities and exciting projects"
-              }
+              {"I'm always interested in new opportunities and exciting projects"}
             </p>
             <div className={styles.ctaButtons}>
               <a
-                href="https://www.linkedin.com/in/viktor-bezai/"
-                target="_blank"
-                rel="noopener noreferrer"
+                href='https://www.linkedin.com/in/viktor-bezai/'
+                target='_blank'
+                rel='noopener noreferrer'
                 className={styles.primaryCta}
               >
-                <svg
-                  className={styles.ctaIcon}
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                <svg className={styles.ctaIcon} viewBox='0 0 24 24' fill='currentColor'>
+                  <path d='M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z' />
                 </svg>
                 Connect on LinkedIn
               </a>
-              <a
-                href="mailto:viktorbezai@gmail.com"
-                className={styles.secondaryCta}
-              >
+              <a href='mailto:viktorbezai@gmail.com' className={styles.secondaryCta}>
                 <svg
                   className={styles.ctaIcon}
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
+                  viewBox='0 0 24 24'
+                  fill='none'
+                  stroke='currentColor'
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
                     strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'
                   />
                 </svg>
                 Send an Email
@@ -319,23 +305,19 @@ export default function AboutPage() {
 
             <div className={styles.socialLinks}>
               <a
-                href="https://github.com/viktor-bezai"
-                target="_blank"
-                rel="noopener noreferrer"
+                href='https://github.com/viktor-bezai'
+                target='_blank'
+                rel='noopener noreferrer'
                 className={styles.socialLink}
-                aria-label="GitHub"
+                aria-label='GitHub'
               >
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                <svg viewBox='0 0 24 24' fill='currentColor'>
+                  <path d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z' />
                 </svg>
               </a>
-              <a
-                href="tel:+12269739711"
-                className={styles.socialLink}
-                aria-label="Phone"
-              >
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z" />
+              <a href='tel:+12269739711' className={styles.socialLink} aria-label='Phone'>
+                <svg viewBox='0 0 24 24' fill='currentColor'>
+                  <path d='M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z' />
                 </svg>
               </a>
             </div>

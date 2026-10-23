@@ -29,9 +29,104 @@ env:
   IMAGE_NAMESPACE: ghcr.io/viktor-bezai
 
 jobs:
+  verify-pr-checks:
+    name: Verify originating PR checks
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: read
+    steps:
+      # A squashed release gives master a commit preview never had, and the next release PR conflicts
+      # (viktor-bezai/EnvolPrep#1020 and viktor-bezai/EnvolPrep#1088). Stop here, before anything is built, while the fix is still one sync PR.
+      - name: Require a merge commit
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          parents=$(gh api "repos/$REPO/commits/$SHA" --jq '.parents | length')
+          if [ "$parents" -lt 2 ]; then
+            echo "::error::$SHA on master is not a merge commit. Release PRs (preview -> master) must use 'Create a merge commit', never squash or rebase. Fix: merge master into a branch off preview, open a PR into preview and merge it with a merge commit (see viktor-bezai/EnvolPrep#1085 and viktor-bezai/EnvolPrep#1099). Then run this deploy by hand from Actions."
+            exit 1
+          fi
+          echo "Merge commit with $parents parents."
+
+      - name: Require green required checks on originating PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          # The checks ci.yml runs on every release PR. VIB has no frontend tests yet.
+          REQUIRED_CHECKS=("Lint (Ruff + Prettier)" "Frontend lint (ESLint)" "Backend tests" "Frontend build")
+
+          # Resolve the PR that introduced this commit. GitHub's
+          # /commits/{sha}/pulls endpoint lags by a few seconds after a merge,
+          # so we retry a handful of times before falling back to parsing the
+          # commit message (merge commits always contain "#<PR_NUMBER>").
+          echo "Looking up PR associated with commit $SHA..."
+          PR_NUMBER=""
+          for attempt in 1 2 3 4 5; do
+            PR_NUMBER=$(gh api "repos/$REPO/commits/$SHA/pulls" --jq '.[0].number // empty')
+            if [ -n "$PR_NUMBER" ]; then
+              echo "API returned PR #$PR_NUMBER on attempt $attempt"
+              break
+            fi
+            echo "Attempt $attempt: API returned empty, retrying in 5s..."
+            sleep 5
+          done
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "API never returned a PR; falling back to commit message parsing..."
+            COMMIT_MSG=$(gh api "repos/$REPO/commits/$SHA" --jq '.commit.message')
+            PR_NUMBER=$(echo "$COMMIT_MSG" | grep -oE '#[0-9]+' | head -1 | tr -d '#' || true)
+            if [ -n "$PR_NUMBER" ]; then
+              echo "Extracted PR #$PR_NUMBER from commit message"
+            fi
+          fi
+
+          if [ -z "$PR_NUMBER" ]; then
+            echo "::error::No associated PR found for $SHA. Direct pushes to master are not allowed."
+            echo "Open a PR instead; CI will run on the PR and the merge will deploy."
+            exit 1
+          fi
+
+          echo "Found PR #$PR_NUMBER"
+          PR_HEAD=$(gh api "repos/$REPO/pulls/$PR_NUMBER" --jq '.head.sha')
+          echo "PR head SHA: $PR_HEAD"
+
+          FAILED=0
+          for check in "${REQUIRED_CHECKS[@]}"; do
+            # Pick the most recent run for this check name on the PR head commit.
+            CONCLUSION=$(gh api "repos/$REPO/commits/$PR_HEAD/check-runs" \
+              --jq "[.check_runs[] | select(.name == \"$check\")] | sort_by(.started_at) | last | .conclusion // \"missing\"")
+            echo "  $check: $CONCLUSION"
+            if [ "$CONCLUSION" != "success" ]; then
+              FAILED=1
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo "::error::One or more required checks are not green on PR #$PR_NUMBER. Refusing to deploy."
+            exit 1
+          fi
+
+          echo "All required checks green on PR #$PR_NUMBER - proceeding to deploy."
+
   # Picks the commit to deploy and checks whether GHCR already has its images.
   resolve:
     name: Pick the release
+    needs: verify-pr-checks
+    # !cancelled(): verify-pr-checks is skipped on manual runs, which must still go on.
+    if: |
+      !cancelled() &&
+      ((github.event_name == 'push' && needs.verify-pr-checks.result == 'success')
+       || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -125,7 +220,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Buildx
-        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        uses: ./.github/actions/setup-buildx
 
       - name: Log in to GHCR
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0

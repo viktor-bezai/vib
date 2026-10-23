@@ -1,10 +1,12 @@
 import os
+
 from django.http import FileResponse
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+
 from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from accounts.models import VIBUser
 
@@ -79,6 +81,4 @@ class ResumeDownloadView(APIView):
                 )
 
         except VIBUser.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
