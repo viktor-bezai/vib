@@ -33,14 +33,14 @@ export const PROJECTS: Project[] = [
     body: [
       "EnvolPrep started as a tool I built for myself while preparing for the CELPIP test. The official practice material is good for reading and listening, but it does not tell you what was wrong with a writing or speaking answer. That gap is the whole reason the site exists.",
       "It covers all four skills. Reading and listening are scored automatically. Writing and speaking answers go to an AI evaluator that returns feedback against the criteria the real test uses, so the response says what to change rather than just giving a number.",
-      "The platform is free to use. AI feedback has a daily limit, with a paid option for unlimited access. Everything else stays open, which is the part most similar sites put behind a login.",
+      "Practice is free. AI feedback has a free daily limit, and optional passes add more reviews for people who want them.",
       "EnvolPrep is not affiliated with Paragon Testing Enterprises, and CELPIP is their registered trademark. The practice material is CELPIP-inspired, written to match the format of the real exam.",
     ],
     highlights: [
       "Reading, listening, writing and speaking practice in one place",
       "AI feedback on writing and speaking, mapped to the exam criteria",
       "Audio transcription so spoken answers can be evaluated",
-      "Free to use, with no login required to read the material",
+      "Free practice, with optional passes for more AI reviews",
     ],
     stack: [
       "Django",
@@ -50,7 +50,13 @@ export const PROJECTS: Project[] = [
       "Redis",
       "Next.js",
       "TypeScript",
+      "MUI",
+      "OpenAI",
+      "Whisper",
+      "Stripe",
       "Docker",
+      "GitHub Actions",
+      "Nginx",
     ],
   },
   {

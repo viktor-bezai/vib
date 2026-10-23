@@ -1,0 +1,79 @@
+# Weekly dependency updates into preview, grouped so CI runs a few times a week, not per package.
+# Security updates are not grouped by type and arrive as soon as an advisory is published.
+# Same setup as EnvolPrep's .github/dependabot.yml.
+version: 2
+updates:
+  # uv, not pip: the lock is compiled with `uv pip compile --python-version 3.12`, which uv keeps.
+  - package-ecosystem: uv
+    directory: /backend
+    target-branch: preview
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Toronto
+    open-pull-requests-limit: 5
+    groups:
+      backend-minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # Majors are planned migrations; security updates still arrive.
+      - dependency-name: "*"
+        update-types: [version-update:semver-major]
+    commit-message:
+      prefix: "Deps (backend)"
+
+  - package-ecosystem: npm
+    directory: /frontend
+    target-branch: preview
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Toronto
+    open-pull-requests-limit: 5
+    groups:
+      frontend-minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # Majors are planned migrations; security updates still arrive.
+      - dependency-name: "*"
+        update-types: [version-update:semver-major]
+    commit-message:
+      prefix: "Deps (frontend)"
+
+  # Only patch bumps of base images; runtime majors and minors are deliberate upgrades.
+  - package-ecosystem: docker
+    directories: [/backend, /frontend]
+    target-branch: preview
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Toronto
+    groups:
+      base-images:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: python
+        update-types: [version-update:semver-major, version-update:semver-minor]
+      - dependency-name: node
+        update-types: [version-update:semver-major, version-update:semver-minor]
+    commit-message:
+      prefix: "Deps (images)"
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: preview
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: America/Toronto
+    # Majors of actions used only by deploy.yml would first run on a real deploy: take them one by one.
+    groups:
+      actions:
+        patterns: ["*"]
+        update-types: [minor, patch]
+    commit-message:
+      prefix: "Deps (actions)"

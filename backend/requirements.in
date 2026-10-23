@@ -1,0 +1,15 @@
+# Production dependencies.
+# After editing, relock from backend/:
+#   uv pip compile requirements.in -o requirements.txt --python-version 3.12
+
+# Core
+Django>=5.2.18,<6.0
+djangorestframework>=3.16.1,<4.0
+# Built from source; the Dockerfile installs gcc and libpq-dev for it.
+psycopg2>=2.9.10
+python-dotenv>=1.0.1
+gunicorn>=23.0.0
+
+# Django extensions
+django-cors-headers>=4.6.0
+drf-spectacular>=0.28.0

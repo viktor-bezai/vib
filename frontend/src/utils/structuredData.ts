@@ -7,6 +7,7 @@ import {
   absoluteUrl,
 } from "@/constants/site";
 import { PROJECTS, Project } from "@/constants/projects";
+import { EDUCATION, SKILLS, SPOKEN_LANGUAGES } from "@/constants/profile";
 
 /**
  * JSON-LD builders.
@@ -40,6 +41,12 @@ const personNode = () => ({
     addressCountry: "CA",
   },
   sameAs: [SOCIAL_LINKS.linkedin, SOCIAL_LINKS.github],
+  alumniOf: [...new Set(EDUCATION.map((item) => item.school))].map((name) => ({
+    "@type": "CollegeOrUniversity",
+    name,
+  })),
+  knowsLanguage: SPOKEN_LANGUAGES.map((language) => language.code),
+  knowsAbout: Object.values(SKILLS).flat(),
 });
 
 const websiteNode = () => ({
