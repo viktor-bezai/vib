@@ -13,14 +13,14 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   async rewrites() {
-    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+    const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8200';
     console.log('Backend URL from env:', process.env.NEXT_PUBLIC_API_BASE_URL);
     console.log('Using backend URL:', backendUrl);
 
     // Ensure the URL has proper protocol
     let finalUrl = backendUrl;
     if (!backendUrl.startsWith('http://') && !backendUrl.startsWith('https://')) {
-      finalUrl = 'http://localhost:8000';
+      finalUrl = 'http://localhost:8200';
       console.log('Invalid URL format, using default:', finalUrl);
     }
 

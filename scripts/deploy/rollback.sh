@@ -27,7 +27,8 @@ ensure_compose_file() {
     [[ -f $file ]] && return 0
     [[ $target != "$LEGACY_RELEASE" ]] || die "No saved compose file for $target."
     mkdir -p "$COMPOSE_DIR"
-    git -C "$PROJECT_DIR" show "$target:$COMPOSE_FILE" >"$file" 2>/dev/null || {
+    git -C "$PROJECT_DIR" show "$target:$COMPOSE_FILE" >"$file" 2>/dev/null ||
+        git -C "$PROJECT_DIR" show "$target:$OLD_COMPOSE_FILE" >"$file" 2>/dev/null || {
         rm -f "$file"
         die "No compose file for $target, saved or in git."
     }

@@ -227,7 +227,7 @@ tail -f /var/log/nginx/error.log
 ```bash
 # VIB only (Compose v2; .env says which release runs)
 cd /home/deploy/vib
-docker compose -f docker-compose.prod.yml restart
+docker compose --project-directory . -f docker/docker-compose.prod.yml restart
 
 # EnglishPreparation only
 cd /home/deploy/prepenglish/docker

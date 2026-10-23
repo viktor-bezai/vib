@@ -99,7 +99,7 @@ gh secret set DROPLET_SSH_KNOWN_HOSTS -R viktor-bezai/vib < known_hosts
 Everything lives in `/home/deploy/vib`:
 
 - `.env` holds the app settings and `VIB_RELEASE`, the live release. Manual Compose commands
-  read it, so `docker compose -f docker-compose.prod.yml ps` shows the live containers.
+  read it, so `docker compose --project-directory . -f docker/docker-compose.prod.yml ps` shows the live containers.
 - `.deploy/history` lists every deploy, rollback and failure.
 - `.deploy/deploy-<sha>.log` is each deploy's full log.
 - `.deploy/migrate-<sha>.log` and `.deploy/collectstatic-<sha>.log` hold the one-off runs' output.
@@ -113,7 +113,7 @@ Useful commands:
 ```bash
 docker logs vib-backend --tail 100
 docker logs vib-frontend --tail 100
-docker compose -f docker-compose.prod.yml ps
+docker compose --project-directory . -f docker/docker-compose.prod.yml ps
 cat .deploy/history
 ```
 
@@ -141,7 +141,7 @@ back to `legacy`, run `scripts/deploy/rollback.sh legacy` on the server.
 ## Testing changes to the deploy scripts
 
 `scripts/deploy` runs locally against stand-in containers when `VIB_REHEARSAL=true` and
-`VIB_PROJECT_DIR=<a folder with docker-compose.prod.yml, scripts/ and a .env>` are set. It
+`VIB_PROJECT_DIR=<a folder with docker/docker-compose.prod.yml, scripts/ and a .env>` are set. It
 then skips the git checks, the registry pull, nginx and `.env`, and uses images tagged on
 the machine. Run it in a Linux container with Compose 2.23.3, the Docker socket and host
 networking, since it needs `flock` and reaches the containers on 127.0.0.1.
