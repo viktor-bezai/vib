@@ -1,6 +1,6 @@
 # Production dependencies.
 # After editing, relock from backend/:
-#   uv pip compile requirements.in -o requirements.txt --python-version 3.12
+#   uv pip compile requirements.in -o requirements.txt --python-version 3.13
 # Dev tools go in requirements-dev.in.
 
 # Core

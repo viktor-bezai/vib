@@ -25,7 +25,7 @@ services:
   vib-backend:
     build:
       context: ../backend
-    container_name: vib_backend_local
+    container_name: vib-backend
     restart: always
     ports:
       - "8200:8000"
@@ -50,7 +50,7 @@ services:
     build:
       context: ../frontend
       dockerfile: Dockerfile.dev
-    container_name: vib_frontend_local
+    container_name: vib-frontend
     restart: always
     ports:
       - "3200:3000"
