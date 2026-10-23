@@ -17,10 +17,10 @@ readonly SCRIPT_DIR
 source "$SCRIPT_DIR/lib.sh"
 
 readonly NGINX_SITE=/etc/nginx/sites-available/viktorbezai.com
-# The app settings that go into .env. ENVIRONMENT and VIB_RELEASE are added on top.
+# The app settings that go into .env. VIB_RELEASE and the rollback names are added on top.
 readonly ENV_VARIABLES=(
     SECRET_KEY
-    POSTGRES_NAME POSTGRES_HOST POSTGRES_USER POSTGRES_PASSWORD POSTGRES_PORT
+    POSTGRES_DB POSTGRES_HOST POSTGRES_USER POSTGRES_PASSWORD POSTGRES_PORT
     NEXT_PUBLIC_API_BASE_URL
 )
 
@@ -185,7 +185,10 @@ write_env_file() {
         for name in "${ENV_VARIABLES[@]}"; do
             printf "%s='%s'\n" "$name" "${!name}"
         done
+        # Releases from before 2026-10-24 read these, so a rollback to one still starts. Remove
+        # both once the server keeps none of them (a deploy keeps three releases).
         printf "ENVIRONMENT='production'\n"
+        printf "POSTGRES_NAME='%s'\n" "$POSTGRES_DB"
         printf 'VIB_RELEASE=%s\n' "${previous:-$release}"
     } >"$temp"
     mv -f "$temp" "$ENV_FILE"

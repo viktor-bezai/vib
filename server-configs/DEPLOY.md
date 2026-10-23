@@ -77,7 +77,7 @@ Repository secrets used by the workflow:
 |---|---|
 | `VPS_HOST`, `VPS_USER`, `VPS_PORT`, `VPS_SSH_KEY` | SSH access to the server |
 | `DROPLET_SSH_KNOWN_HOSTS` | **New.** The server's public host keys (not secret, but stored as one) |
-| `SECRET_KEY`, `POSTGRES_NAME`, `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT` | Written into `.env` |
+| `SECRET_KEY`, `POSTGRES_DB`, `POSTGRES_HOST`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT` | Written into `.env` |
 | `NEXT_PUBLIC_API_BASE_URL` | Baked into the frontend image at build time, and written into `.env` |
 
 No secret may hold a single quote or a line break: `.env` stores each value in single quotes,

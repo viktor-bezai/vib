@@ -120,7 +120,7 @@ jobs:
     env:
       SECRET_KEY: test-secret-key-not-for-production
       DJANGO_SETTINGS_MODULE: config.settings.local
-      POSTGRES_NAME: vib
+      POSTGRES_DB: vib
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST: localhost

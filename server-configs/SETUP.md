@@ -141,7 +141,7 @@ git config --global --add safe.directory /home/deploy/prepenglish
 | `VPS_SSH_KEY` | Your SSH private key |
 | `VPS_PORT` | 22 |
 | `SECRET_KEY` | Django secret key |
-| `POSTGRES_NAME` | vib-database |
+| `POSTGRES_DB` | vib-database |
 | `POSTGRES_HOST` | Your DB host |
 | `POSTGRES_USER` | vibuser |
 | `POSTGRES_PASSWORD` | Your DB password |
