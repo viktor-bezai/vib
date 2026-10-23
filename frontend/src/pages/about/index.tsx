@@ -4,72 +4,18 @@ import Header from "@/components/Header";
 import ScrollToTop from "@/components/ScrollToTop";
 import SEOHead from "@/components/SEOHead";
 import { SITE_NAME } from "@/constants/site";
+import {
+  CODING_SINCE,
+  EDUCATION,
+  EXPERIENCES,
+  PRODUCTION_PRACTICES,
+  SKILLS,
+  SPOKEN_LANGUAGES,
+} from "@/constants/profile";
 import { aboutPageSchema } from "@/utils/structuredData";
 import styles from "@/styles/About.module.css";
 
 export default function AboutPage() {
-  const experiences = [
-    {
-      title: "Software Developer",
-      company: "Bucketlist Rewards",
-      period: "April 2025 - Present",
-      location: "Remote, Canada",
-      highlights: [
-        "Built and improved backend features using Django, making the system easier to understand and maintain",
-        "Worked on the frontend using React and Angular to improve user interactions",
-        "Created and updated REST APIs to connect different parts of the system",
-        "Developed automation tools saving time and reducing manual work",
-      ],
-    },
-    {
-      title: "Software Developer",
-      company: "Peavey Industries LP",
-      period: "August 2023 - February 2025",
-      location: "London, Ontario",
-      highlights: [
-        "Maintained and scaled backend APIs using Django and PostgreSQL",
-        "Integrated with third-party APIs (Shopify, KIBO, Azure services)",
-        "Built and maintained CI/CD pipelines using Jenkins and GitHub Actions",
-        "Developed data import/export modules for CSV, Excel, XML, and JSON formats",
-      ],
-    },
-    {
-      title: "Python Developer",
-      company: "Andersen Lab",
-      period: "December 2020 - June 2023",
-      location: "Remote, Ukraine",
-      highlights: [
-        "Developed scalable microservices using Event Driven Design (Kafka, RabbitMQ)",
-        "Achieved 94% test coverage following TDD principles",
-        "Optimized SQL queries, reducing database response times by up to 30%",
-        "Mentored junior developers and conducted technical interviews",
-      ],
-    },
-  ];
-
-  const skills = {
-    Languages: ["Python", "JavaScript", "TypeScript", "HTML5", "CSS3"],
-    Backend: [
-      "Django",
-      "FastAPI",
-      "Django REST",
-      "Celery",
-      "RabbitMQ",
-      "Kafka",
-    ],
-    Frontend: ["React", "Next.js", "Angular", "Redux", "Tailwind CSS"],
-    Database: ["PostgreSQL", "MySQL", "Redis", "MongoDB", "SQLAlchemy"],
-    "Cloud & DevOps": [
-      "AWS",
-      "Azure",
-      "Docker",
-      "Kubernetes",
-      "Jenkins",
-      "CI/CD",
-    ],
-    Tools: ["Git", "Linux", "Nginx", "Sentry", "OpenAI API", "Pytest"],
-  };
-
   return (
     <>
       <SEOHead
@@ -154,20 +100,25 @@ export default function AboutPage() {
                   components, contribute to cross-functional teams, and deliver
                   production-ready solutions with high availability.
                 </p>
+                <p>
+                  Before software, I spent seven years as a project manager, so
+                  I plan work, keep promises on dates and talk to people outside
+                  engineering easily.
+                </p>
               </div>
 
               <div className={styles.stats}>
                 <div className={styles.statCard}>
-                  <h3>5+</h3>
-                  <p>Years of Experience</p>
+                  <h3>{CODING_SINCE}</h3>
+                  <p>Writing Code Since</p>
                 </div>
                 <div className={styles.statCard}>
                   <h3>20+</h3>
                   <p>Projects Delivered</p>
                 </div>
                 <div className={styles.statCard}>
-                  <h3>94%</h3>
-                  <p>Test Coverage Average</p>
+                  <h3>TDD</h3>
+                  <p>Every Change Ships With Tests</p>
                 </div>
               </div>
             </div>
@@ -177,7 +128,7 @@ export default function AboutPage() {
           <section className={styles.experienceSection}>
             <h2 className={styles.sectionTitle}>Professional Journey</h2>
             <div className={styles.timeline}>
-              {experiences.map((exp, index) => (
+              {EXPERIENCES.map((exp, index) => (
                 <div key={index} className={styles.timelineItem}>
                   <div className={styles.timelineMarker}></div>
                   <div className={styles.experienceCard}>
@@ -206,7 +157,7 @@ export default function AboutPage() {
           <section className={styles.skillsSection}>
             <h2 className={styles.sectionTitle}>Technical Expertise</h2>
             <div className={styles.skillsContainer}>
-              {Object.entries(skills).map(([category, items]) => (
+              {Object.entries(SKILLS).map(([category, items]) => (
                 <div key={category} className={styles.skillGroup}>
                   <h3 className={styles.skillCategory}>{category}</h3>
                   <div className={styles.skillTags}>
@@ -218,6 +169,46 @@ export default function AboutPage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+
+          {/* Production Practices */}
+          <section className={styles.competenciesSection}>
+            <h2 className={styles.sectionTitle}>How I Run Production</h2>
+            <p className={styles.sectionIntro}>
+              My own sites run on these, built and maintained by me alone.
+            </p>
+            <div className={styles.competencyGrid}>
+              {PRODUCTION_PRACTICES.map((practice) => (
+                <div key={practice.title} className={styles.competencyCard}>
+                  <h3>{practice.title}</h3>
+                  <p>{practice.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Education and Languages */}
+          <section className={styles.skillsSection}>
+            <h2 className={styles.sectionTitle}>Education and Languages</h2>
+            <div className={styles.skillsContainer}>
+              {EDUCATION.map((item) => (
+                <div key={item.degree} className={styles.skillGroup}>
+                  <h3 className={styles.skillCategory}>{item.degree}</h3>
+                  <p>{item.school}</p>
+                  <p className={styles.period}>{item.period}</p>
+                </div>
+              ))}
+              <div className={styles.skillGroup}>
+                <h3 className={styles.skillCategory}>Languages I Speak</h3>
+                <div className={styles.skillTags}>
+                  {SPOKEN_LANGUAGES.map((language) => (
+                    <span key={language.code} className={styles.skillTag}>
+                      {language.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </section>
 
