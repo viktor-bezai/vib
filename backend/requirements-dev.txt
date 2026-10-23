@@ -50,7 +50,7 @@ packaging==24.1
     # via
     #   -c requirements.txt
     #   gunicorn
-psycopg2==2.9.10
+psycopg2-binary==2.9.13
     # via
     #   -c requirements.txt
     #   -r requirements.in
