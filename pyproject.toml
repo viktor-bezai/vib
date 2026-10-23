@@ -106,10 +106,6 @@ ignore = [
 
 [tool.ruff.lint.isort]
 # Configure isort settings for Django
-known-first-party = [
-    "accounts",
-    "config",
-]
 section-order = ["future", "standard-library", "django", "third-party", "first-party", "local-folder"]
 
 [tool.ruff.lint.flake8-tidy-imports]
