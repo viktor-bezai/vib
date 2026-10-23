@@ -9,7 +9,7 @@ PYTHON_VERSION=3.13
 
 # --- check-local.sh ---------------------------------------------------------------------------
 
-LINT_STEPS="Ruff, Prettier"
+LINT_STEPS="Ruff, Prettier, versions"
 BACKEND_STEPS="system checks, migrations, OpenAPI schema, tests"
 FRONTEND_STEPS="typecheck, ESLint"
 

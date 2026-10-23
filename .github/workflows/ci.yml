@@ -98,6 +98,10 @@ jobs:
         env:
           RUFF: ruff
 
+      # Dependabot bumps a Dockerfile on its own, so this runs on every PR (scripts/check-versions.sh).
+      - name: Python and Node versions agree
+        run: ./scripts/check-versions.sh
+
   test-backend:
     name: Backend tests
     needs: changes

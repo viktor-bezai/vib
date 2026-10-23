@@ -59,7 +59,8 @@ done
 [[ ${#SIDES[@]} -eq 0 ]] && SIDES=(lint backend frontend)
 
 check_lint() {
-    "$PROJECT_ROOT/scripts/format-all.sh" --check && (cd "$PROJECT_ROOT" && project_lint)
+    "$PROJECT_ROOT/scripts/format-all.sh" --check && "$PROJECT_ROOT/scripts/check-versions.sh" \
+        && (cd "$PROJECT_ROOT" && project_lint)
 }
 
 check_backend() {
