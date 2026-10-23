@@ -7,9 +7,9 @@
 Django>=5.2.18,<6.0
 djangorestframework>=3.16.1,<4.0
 psycopg2-binary>=2.9.10
-python-dotenv>=1.0.1
+python-dotenv>=1.2.4
 gunicorn>=23.0.0
 
 # Django extensions
-django-cors-headers>=4.6.0
+django-cors-headers>=4.9.0
 drf-spectacular>=0.28.0

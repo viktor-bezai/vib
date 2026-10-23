@@ -17,7 +17,7 @@ django==5.2.18
     #   django-cors-headers
     #   djangorestframework
     #   drf-spectacular
-django-cors-headers==4.6.0
+django-cors-headers==4.9.0
     # via
     #   -c requirements.txt
     #   -r requirements.in
@@ -54,7 +54,7 @@ psycopg2-binary==2.9.13
     # via
     #   -c requirements.txt
     #   -r requirements.in
-python-dotenv==1.0.1
+python-dotenv==1.2.4
     # via
     #   -c requirements.txt
     #   -r requirements.in
