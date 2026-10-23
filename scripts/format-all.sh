@@ -46,7 +46,7 @@ if ! command -v npm &> /dev/null; then
 fi
 
 # Two patterns, not one: a single {src,test}/** glob never matches a file sitting
-# directly in frontend/, so next.config.ts and the vitest config would be
+# directly in frontend/, so the config files there (Next.js, ESLint, tests) would be
 # formatted by `npm run format` locally and never checked by this gate. They must
 # stay in step with the format scripts in frontend/package.json.
 PRETTIER_PATTERNS=(
@@ -78,7 +78,7 @@ cd "$PROJECT_ROOT"
 # A global one can be far older and pass what CI rejects.
 RUFF="${RUFF:-$PROJECT_ROOT/.venv/bin/ruff}"
 if ! command -v "$RUFF" &> /dev/null; then
-    echo -e "${RED}No .venv with Ruff. Set it up: docs/runbooks/local-dev.md, \"Python venv\".${NC}"
+    echo -e "${RED}No .venv with Ruff. Create it: uv venv .venv && uv pip sync backend/requirements-dev.txt --python .venv/bin/python${NC}"
     exit 1
 fi
 
