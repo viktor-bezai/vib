@@ -84,9 +84,11 @@ runs:
         FAILED=0
         while IFS= read -r check; do
           [ -z "$check" ] && continue
-          # Take the latest run of this check on the PR head commit.
-          CONCLUSION=$(gh api "repos/$REPO/commits/$PR_HEAD/check-runs" \
-            --jq "[.check_runs[] | select(.name == \"$check\")] | sort_by(.started_at) | last | .conclusion // \"missing\"")
+          # Take the latest run of this check on the PR head commit. --arg, so a name with a quote
+          # cannot break the filter.
+          CONCLUSION=$(gh api "repos/$REPO/commits/$PR_HEAD/check-runs?per_page=100" \
+            | jq -r --arg check "$check" \
+              '[.check_runs[] | select(.name == $check)] | sort_by(.started_at) | last | .conclusion // "missing"')
           echo "  $check: $CONCLUSION"
           if [ "$CONCLUSION" != "success" ]; then
             FAILED=1
