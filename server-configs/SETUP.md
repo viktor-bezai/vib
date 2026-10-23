@@ -181,8 +181,8 @@ nano .env  # Fill in production values
 
 # Build and start
 cd docker
-docker compose --project-directory . -f docker/docker-compose.prod.yml build
-docker compose --project-directory . -f docker/docker-compose.prod.yml up -d
+docker-compose -f docker-compose.prod.yml build
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ## Step 8: Verify Everything Works
@@ -231,7 +231,7 @@ docker compose --project-directory . -f docker/docker-compose.prod.yml restart
 
 # EnglishPreparation only
 cd /home/deploy/prepenglish/docker
-docker compose --project-directory . -f docker/docker-compose.prod.yml restart
+docker-compose -f docker-compose.prod.yml restart
 
 # nginx
 systemctl reload nginx
@@ -268,7 +268,7 @@ journalctl -u nginx  # View logs
 
 ### Container won't start
 ```bash
-docker compose --project-directory . -f docker/docker-compose.prod.yml logs
+docker-compose -f docker-compose.prod.yml logs
 ```
 
 ### SSL certificate issues
