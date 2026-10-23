@@ -14,20 +14,25 @@ source scripts/project.sh
 # One "<file>:<version>" line per place that names the version. No match is not an error here.
 python_versions() {
     echo "scripts/project.sh:$PYTHON_VERSION"
-    grep -HoE 'python-version: "?[0-9.]+' .github/workflows/*.yml | sed -E 's/python-version: "?//' || true
-    grep -HoE '^FROM python:[0-9.]+' backend/Dockerfile* | sed 's/FROM python://' || true
+    grep -sHoE 'python-version: "?[0-9.]+' .github/workflows/*.yml | sed -E 's/python-version: "?//' || true
+    grep -sHoE '^FROM python:[0-9.]+' backend/Dockerfile* | sed 's/FROM python://' || true
 }
 
 node_versions() {
-    grep -HoE 'node-version: "?[0-9]+' .github/workflows/*.yml | sed -E 's/node-version: "?//' || true
-    grep -HoE '^FROM node:[0-9]+' frontend/Dockerfile* | sed 's/FROM node://' || true
+    grep -sHoE 'node-version: "?[0-9]+' .github/workflows/*.yml | sed -E 's/node-version: "?//' || true
+    grep -sHoE '^FROM node:[0-9]+' frontend/Dockerfile* | sed 's/FROM node://' || true
 }
 
 # Fails when the places disagree, and lists them all so the odd one out is easy to see.
+# Versions compare as written, so every place must pin the same way (Python 3.13, Node 24).
 check() {
     local name=$1 places count
     places=$("${name}_versions" | sort -u)
-    count=$(cut -d: -f2 <<<"$places" | sort -u | grep -c .)
+    if [[ -z $places ]]; then
+        echo "FAIL  no file names a $name version"
+        return 1
+    fi
+    count=$(cut -d: -f2 <<<"$places" | sort -u | wc -l)
     if ((count == 1)); then
         echo "OK    $name $(head -1 <<<"$places" | cut -d: -f2) everywhere"
         return 0
