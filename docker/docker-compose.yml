@@ -33,7 +33,7 @@ services:
       - ../.env
     # The dev database above, whatever .env says (it may point at production).
     environment:
-      - POSTGRES_NAME=vib
+      - POSTGRES_DB=vib
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=db

@@ -24,7 +24,7 @@ project_backend_env() {
     BACKEND_ENV=(
         SECRET_KEY=test-secret-key-not-for-production
         DJANGO_SETTINGS_MODULE=config.settings.local
-        POSTGRES_NAME="$TEST_DB"
+        POSTGRES_DB="$TEST_DB"
         POSTGRES_USER="$DB_USER"
         POSTGRES_PASSWORD="$DB_PASSWORD"
         POSTGRES_HOST=localhost
