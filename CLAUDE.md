@@ -68,7 +68,7 @@ frontend http://localhost:3200, backend http://localhost:8200, Postgres 5434 (`v
 - **Backend** (`backend/`): Django 5.2 LTS, DRF, drf-spectacular, PostgreSQL. One app, `accounts`: the custom `VIBUser` (email login) and `ResumeDownloadView` (`/api/v1/accounts/resume/<email>/download/`). Health check at `/api/health/`, schema at `/api/schema/`, Swagger at `/api/swagger-ui/`.
 - **Frontend** (`frontend/`): Next.js 15 (pages router), React 19, TypeScript, CSS modules. Pages: `/`, `/about`, `/projects`, `/projects/[slug]`, `/sitemap.xml`.
 - **Docker** (`docker/`): `docker-compose.yml` (dev), `docker-compose.prod.yml` (prod).
-- **Shared scripts**: `scripts/check-local.sh`, `scripts/dev/doctor.sh` and `scripts/prod/exec-backend.sh` are the same file in EnvolPrep, VIB and Egypt; change them in EnvolPrep first. VIB's own part of them is `scripts/project.sh`.
+- **Shared scripts**: The shared scripts, `.github/actions/`, `pyproject.toml` and the Prettier files are the same file in EnvolPrep, VIB and Egypt (the list is in EnvolPrep's `scripts/sync-shared.sh`). Change them in EnvolPrep first, then copy them here with that script. VIB's own part of them is `scripts/project.sh`.
 
 ## Deploy and production
 

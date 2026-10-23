@@ -49,7 +49,7 @@ runs:
         for attempt in 1 2 3 4 5; do
           # A commit can belong to several PRs (a feature PR and the release); take the one merged as it.
           PR_NUMBER=$(gh api "repos/$REPO/commits/$SHA/pulls" \
-            --jq "[.[] | select(.merge_commit_sha == \"$SHA\")][0].number // empty")
+            | jq -r --arg sha "$SHA" '[.[] | select(.merge_commit_sha == $sha)][0].number // empty')
           if [ -n "$PR_NUMBER" ]; then
             echo "API returned PR #$PR_NUMBER on attempt $attempt"
             break
