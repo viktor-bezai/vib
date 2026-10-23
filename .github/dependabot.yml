@@ -3,7 +3,7 @@
 # Same setup as EnvolPrep's .github/dependabot.yml.
 version: 2
 updates:
-  # uv, not pip: the lock is compiled with `uv pip compile --python-version 3.12`, which uv keeps.
+  # uv, not pip: the lock is compiled with `uv pip compile --python-version 3.13`, which uv keeps.
   - package-ecosystem: uv
     directory: /backend
     target-branch: preview

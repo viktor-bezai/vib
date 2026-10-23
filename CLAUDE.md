@@ -51,7 +51,7 @@ cd frontend && npm run typecheck            # next typegen + tsc
 
 `check-local.sh` and `format-all.sh` use `.venv`, with the packages `backend/requirements-dev.txt` locks.
 Create it, and sync it after a pull that changes the lockfile:
-`uv venv .venv --python 3.12 && uv pip sync backend/requirements-dev.txt --python .venv/bin/python`.
+`uv venv .venv --python 3.13 && uv pip sync backend/requirements-dev.txt --python .venv/bin/python`.
 
 Dev ports (each project has its own block, so all run at once; BucketList's are never touched):
 frontend http://localhost:3200, backend http://localhost:8200, Postgres 5434 (`vib-db`).
@@ -59,7 +59,7 @@ frontend http://localhost:3200, backend http://localhost:8200, Postgres 5434 (`v
 ## Dependencies
 
 - Backend: add a package to `backend/requirements.in`, then relock from `backend/`:
-  `uv pip compile requirements.in -o requirements.txt --python-version 3.12` (and the same for `requirements-dev.in`).
+  `uv pip compile requirements.in -o requirements.txt --python-version 3.13` (and the same for `requirements-dev.in`).
 - Dependabot opens weekly grouped updates into `preview`. Majors are planned upgrades, done one at a time.
 
 ## Project structure

@@ -4,7 +4,7 @@
 # Names the frontend copy's cache folder.
 PROJECT_SLUG=vib
 # CI's Python (ci.yml), for .venv.
-PYTHON_VERSION=3.12
+PYTHON_VERSION=3.13
 
 LINT_STEPS="Ruff, Prettier"
 BACKEND_STEPS="system checks, migrations, OpenAPI schema, tests"

@@ -75,7 +75,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.13"
 
       # The locked version, the same one scripts/format-all.sh runs from the local venv.
       # format-all.sh is told to use it below (RUFF).
@@ -138,7 +138,7 @@ jobs:
         if: needs.changes.outputs.backend == 'true'
         uses: actions/setup-python@v7
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: pip
           cache-dependency-path: backend/requirements-dev.txt
 
