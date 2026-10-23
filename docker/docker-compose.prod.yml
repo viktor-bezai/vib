@@ -17,7 +17,7 @@ services:
     env_file:
       - .env
     environment:
-      - ENVIRONMENT=production
+      - DJANGO_SETTINGS_MODULE=config.settings.production
     volumes:
       - ./backend/staticfiles:/app/staticfiles
       - ./backend/media:/app/media
