@@ -19,7 +19,9 @@ fi
 readonly IMAGE_NAMESPACE=ghcr.io/viktor-bezai
 # Compose service, container and GHCR package share each name. Backend first: the frontend calls it.
 readonly SERVICES=(vib-backend vib-frontend)
-readonly COMPOSE_FILE=docker-compose.prod.yml
+readonly COMPOSE_FILE=docker/docker-compose.prod.yml
+# Where releases before the move into docker/ keep it, for a rollback that reads it from git.
+readonly OLD_COMPOSE_FILE=docker-compose.prod.yml
 readonly ENV_FILE="$PROJECT_DIR/.env"
 readonly STATE_DIR="$PROJECT_DIR/.deploy"
 readonly LOCK_FILE="$STATE_DIR/lock"

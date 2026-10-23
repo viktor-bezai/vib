@@ -3,11 +3,10 @@
  * This bypasses the Next.js proxy which doesn't work for file downloads
  */
 export function getDirectApiUrl(path: string): string {
-  // In development, use localhost:8000 directly
-  // In production, use the production domain
+  // In development, the dev backend's host port (docker/docker-compose.yml); in production, the domain.
   const baseUrl =
     process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8000'
+      ? 'http://localhost:8200'
       : process.env.NEXT_PUBLIC_API_BASE_URL || 'https://viktorbezai.com';
 
   return `${baseUrl}${path}`;

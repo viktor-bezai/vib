@@ -12,7 +12,7 @@ Quick guide to deploy another app alongside VIB and EnglishPreparation.
 
 ## Steps
 
-### 1. Create docker-compose.prod.yml
+### 1. Create docker/docker-compose.prod.yml
 
 ```yaml
 version: '3.8'
@@ -120,8 +120,8 @@ systemctl reload nginx
 
 # Start containers
 cd /home/deploy/newapp
-docker-compose -f docker-compose.prod.yml build
-docker-compose -f docker-compose.prod.yml up -d
+docker compose --project-directory . -f docker/docker-compose.prod.yml build
+docker compose --project-directory . -f docker/docker-compose.prod.yml up -d
 ```
 
 ### 5. On Cloudflare
