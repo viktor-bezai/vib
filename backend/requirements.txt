@@ -14,7 +14,7 @@ django==5.2.18
     #   django-cors-headers
     #   djangorestframework
     #   drf-spectacular
-django-cors-headers==4.6.0
+django-cors-headers==4.9.0
     # via -r requirements.in
 djangorestframework==3.18.3
     # via
@@ -32,9 +32,9 @@ jsonschema-specifications==2025.4.1
     # via jsonschema
 packaging==24.1
     # via gunicorn
-psycopg2==2.9.10
+psycopg2==2.9.13
     # via -r requirements.in
-python-dotenv==1.0.1
+python-dotenv==1.2.4
     # via -r requirements.in
 pyyaml==6.0.2
     # via drf-spectacular
