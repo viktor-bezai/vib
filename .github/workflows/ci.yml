@@ -241,8 +241,8 @@ jobs:
         run: npm run build
 
   # Not one of the checks the deploy gate requires: a broken build already stops the deploy
-  # before the server is touched. This only moves that failure from master to the PR, which
-  # matters most for Dependabot base-image bumps.
+  # before the server is touched. This only moves that failure from master to the release PR,
+  # which also tests the Dependabot updates merged into preview since the last release.
   build-images:
     name: Build ${{ matrix.service }} image
     needs: changes
