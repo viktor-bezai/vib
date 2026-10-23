@@ -1,3 +1,3 @@
-from .vib_user import VIBUser
+from accounts.models.vib_user import VIBUser
 
 __all__ = ["VIBUser"]

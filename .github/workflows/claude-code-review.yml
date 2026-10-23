@@ -1,0 +1,89 @@
+name: Claude Code Review
+
+# Reviews PRs targeting preview only. Preview -> master PRs re-ship the same
+# diff, so reviewing them again would just double the cost.
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+    branches:
+      - preview
+    # Skip PRs that only touch docs, Markdown or images: there is no code to review.
+    # Safe to skip, because this workflow is not a required check in deploy.yml.
+    paths-ignore:
+      - "docs/**"
+      - "**/*.md"
+      - "**/*.png"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.webp"
+      - "**/*.svg"
+
+# A new push to the same PR cancels the in-flight review of the outdated diff.
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    # Dependabot PRs get no repo secrets, so the review could only fail; CI still tests them.
+    if: github.event.pull_request.draft == false && github.actor != 'dependabot[bot]'
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          track_progress: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review this pull request. Follow the conventions in CLAUDE.md
+            when the repo has one, plus these project rules that are easy to
+            miss:
+
+            1. Privacy: this is a personal site. Never expose more personal
+               data than the owner already shows on it, and never log it.
+            2. Django/DRF: serializers for request AND response payloads,
+               `raise_exception=True`, `query_params`, select_related /
+               prefetch_related for N+1s, package-based app structure
+               (models/, admin/, serializers/, views/ with __init__.py exports).
+            3. Frontend: absolute imports only (`@/...`), CSS modules for
+               styles, and site facts from `src/constants/` (never repeat the
+               domain, name or project details in a page).
+            4. Writing style: simple English, short sentences. Comments explain
+               WHY, not WHAT. Never use em-dashes; use "-".
+            5. Code design: every review checks that the code stays readable
+               and maintainable. Flag a rule that now lives in two places (one
+               home per rule), logic copied instead of shared, unclear names,
+               functions or components doing too much, business rules buried
+               in views or UI instead of a model, service or pure helper, and
+               new logic with no test. Suggest a pattern (service layer,
+               strategy, factory, value object) only where it improves type
+               safety, testability or extension, and say which one and why.
+               Do not ask for an abstraction with a single user.
+            6. Test quality: flag tests that do not guard a real failure -
+               duplicates, tests of the framework, constants or plain wiring,
+               tests that restate the implementation or reach into private
+               details, many narrow tests where one test of the rule would
+               do, and tests left behind for removed code. Ask for a missing
+               test only when a real bug could slip through without it.
+
+            Focus on real bugs, security issues, rule violations and the
+            design points above. Skip style nitpicks that Ruff/Prettier
+            already enforce. Post inline
+            comments on specific lines; use a top-level comment only for
+            overall observations.
+
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"

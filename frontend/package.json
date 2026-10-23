@@ -7,7 +7,8 @@
     "build": "next build",
     "build:env": "node -r dotenv/config next build dotenv_config_path=../.env",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
     "next": "15.5.28",

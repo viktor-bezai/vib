@@ -187,7 +187,7 @@
 }
 
 .sectionTitle::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -10px;
   left: 50%;
@@ -213,7 +213,7 @@
 }
 
 .timeline::before {
-  content: "";
+  content: '';
   position: absolute;
   left: 15px;
   top: 0;
@@ -317,7 +317,7 @@
 }
 
 .highlights li::before {
-  content: "▸";
+  content: '▸';
   position: absolute;
   left: 0.5rem;
   color: #0070f3;
