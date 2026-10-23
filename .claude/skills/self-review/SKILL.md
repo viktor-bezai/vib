@@ -385,7 +385,7 @@ While waiting for agents, identify and run relevant tests for the changed code. 
 
 1. **Find test files.** Backend tests live alongside each app (e.g. `backend/accounts/tests.py`, or a `tests/` package with `test_*.py` if the app has grown one). Frontend tests, if present, sit beside the source under `frontend/src/` (`*.test.ts` / `*.test.tsx`).
 
-2. **Run targeted tests.** Prefer running inside the backend container (Postgres is wired for the container via `docker-compose.yml`); the container is named `vib_backend_local` (service `vib-backend`). Confirm it's up first — if `docker ps` doesn't list it, run `docker compose up -d vib-backend` or fall back to the local `.venv`.
+2. **Run targeted tests.** Prefer running inside the backend container (its own Postgres, `vib-db`, is wired in `docker/docker-compose.yml`); the container is named `vib_backend_local` (service `vib-backend`). Confirm it's up first — if `docker ps` doesn't list it, run `cd docker && docker compose up -d vib-backend`.
 
    In Docker (targeted, then the app as a regression check):
 

@@ -1,0 +1,73 @@
+# VIB dev stack. Run from this folder: `docker compose up -d`.
+# Host ports have their own block (3200, 8200, 5434), so EnvolPrep, Egypt and BucketList
+# can run at the same time.
+name: vib
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: vib-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: vib
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  vib-backend:
+    build:
+      context: ../backend
+    container_name: vib_backend_local
+    restart: always
+    ports:
+      - "8200:8000"
+    env_file:
+      - ../.env
+    # The dev database above, whatever .env says (it may point at production).
+    environment:
+      - POSTGRES_NAME=vib
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+    volumes:
+      - ../backend:/app
+    depends_on:
+      db:
+        condition: service_healthy
+    # The image entrypoint only waits for the database, so local dev installs and migrates here.
+    command: ["sh", "-c", "pip install --no-cache-dir -r requirements.txt && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]
+
+  vib-frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    container_name: vib_frontend_local
+    restart: always
+    ports:
+      - "3200:3000"
+    env_file:
+      - ../.env
+    environment:
+      - NODE_PATH=./
+      - PORT=3000
+      # Server-side rewrites reach the backend by its service name, inside Docker.
+      - NEXT_PUBLIC_API_BASE_URL=http://vib-backend:8000
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: ["npm", "run", "dev"]
+
+volumes:
+  postgres_data:
