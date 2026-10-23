@@ -10,8 +10,8 @@
 #
 # This file is shared, word for word, by EnvolPrep, VIB and Egypt. What differs per project (the
 # extra lint checks, CI's backend environment and commands, the frontend steps) lives in
-# scripts/check-local.project.sh. That file only sets variables and defines functions: it is read
-# twice, by this script and by the clean shell the backend checks run in.
+# scripts/project.sh. That file only sets variables and defines functions: it is read twice, by
+# this script and by the clean shell the backend checks run in.
 #
 # Runs on this machine, not in containers: Docker's file sharing on macOS made a run 3-5x slower.
 # Backend and frontend run at the same time.
@@ -31,7 +31,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-PROJECT_FILE="$SCRIPT_DIR/check-local.project.sh"
+PROJECT_FILE="$SCRIPT_DIR/project.sh"
 COMPOSE_FILE="$PROJECT_ROOT/docker/docker-compose.yml"
 VENV_PYTHON="$PROJECT_ROOT/.venv/bin/python"
 CHECKOUT_ID="$(echo -n "$PROJECT_ROOT" | shasum -a 256 | cut -c1-8)"

@@ -1,10 +1,13 @@
-# VIB's part of scripts/check-local.sh: what CI runs here and nowhere else.
-# Sourced by check-local.sh; the functions run from the folder named in each comment.
+# What is VIB's own in the shared scripts: check-local.sh, dev/doctor.sh and prod/exec-backend.sh.
+# Those three are the same file in EnvolPrep, VIB and Egypt.
+# Only variables and functions here: the file is read more than once.
 
 # Names the frontend copy's cache folder.
 PROJECT_SLUG=vib
 # CI's Python (ci.yml), for .venv.
 PYTHON_VERSION=3.13
+
+# --- check-local.sh ---------------------------------------------------------------------------
 
 LINT_STEPS="Ruff, Prettier"
 BACKEND_STEPS="system checks, migrations, OpenAPI schema, tests"
@@ -44,4 +47,22 @@ project_frontend_checks() {
 
 project_frontend_build() {
     npm run build
+}
+
+# --- dev/doctor.sh ----------------------------------------------------------------------------
+
+# The dev backend's Compose service, and the pages that must answer (docker/docker-compose.yml).
+DEV_BACKEND_SERVICE=vib-backend
+DEV_SITE_URL=http://localhost:3200/
+DEV_API_URL=http://localhost:8200/api/health/
+
+# VIB needs no checks beyond the shared ones.
+doctor_project() {
+    true
+}
+
+# --- prod/exec-backend.sh ---------------------------------------------------------------------
+
+prod_backend_container() {
+    echo vib-backend
 }
