@@ -8,7 +8,7 @@ attrs==25.3.0
     # via
     #   jsonschema
     #   referencing
-django==5.2.18
+django==5.2.19
     # via
     #   -r requirements.in
     #   django-cors-headers
