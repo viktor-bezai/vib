@@ -10,7 +10,7 @@ attrs==25.3.0
     #   -c requirements.txt
     #   jsonschema
     #   referencing
-django==5.2.18
+django==5.2.19
     # via
     #   -c requirements.txt
     #   -r requirements.in
@@ -72,7 +72,7 @@ rpds-py==0.26.0
     #   -c requirements.txt
     #   jsonschema
     #   referencing
-ruff==0.17.2
+ruff==0.17.4
     # via -r requirements-dev.in
 sqlparse==0.6.0
     # via
